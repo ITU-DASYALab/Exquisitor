@@ -5,7 +5,6 @@
 #include "gtest/gtest.h"
 #include "ExqDataHandlerR64.h"
 #include "ExqDataHandlerR64.cpp"
-#include "ExqDescriptor.h"
 #include <vector>
 #include <string>
 
