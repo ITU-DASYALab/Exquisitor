@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "ExqR64Descriptor.h"
+#include "ExqDescriptor.h"
 
 namespace exq {
 

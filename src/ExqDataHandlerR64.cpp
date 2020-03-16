@@ -6,16 +6,16 @@
 #include <hdf5.h>
 #include <cstring>
 
-#include "ExqDataHandler.h"
+#include "ExqDataHandlerR64.h"
 
 using namespace exq;
 
-ExqDataHandler::ExqDataHandler(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers) : items(modalities) {
+ExqDataHandlerR64::ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers) : items(modalities) {
     for (int m = 0; m < N_MOD; m++) {
         if (!activeModalities[m]) {
             continue;
         }
-        items.push_back(new vector<ExqR64Descriptor*>());
+        items.push_back(new vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>*>());
         loadDescriptorsFromFiles(
                 compCnfgFiles[m][TOP_FEATURES_PATH],
                 compCnfgFiles[m][FEATURE_IDS_PATH],
@@ -26,7 +26,7 @@ ExqDataHandler::ExqDataHandler(vector<vector<string>>& compCnfgFiles, int modali
     }
 }
 
-void ExqDataHandler::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
+void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
     char script[1024];
     vector<uint64_t> topFeats;
     vector<uint64_t> featIds;
@@ -88,13 +88,13 @@ void ExqDataHandler::loadDescriptorsFromFiles(string topFeatureFile, string feat
     //HDFql::execute("CLOSE FILE");
 
     for (uint32_t i = 0; i < totalItems; i++) {
-        items[modality]->push_back(new ExqR64Descriptor(i, topFeats[i], featIds[i], featRatios[i]));
+        items[modality]->push_back(new ExqDescriptor<uint64_t,uint64_t,uint64_t>(i, topFeats[i], featIds[i], featRatios[i]));
     }
 }
 
-ExqDataHandler::~ExqDataHandler() {
-    for(vector<ExqR64Descriptor*>* vecs : items) {
-        for (ExqR64Descriptor* desc : *vecs) {
+ExqDataHandlerR64::~ExqDataHandlerR64() {
+    for(auto vecs : items) {
+        for (auto desc : *vecs) {
             delete desc;
         }
         delete vecs;
@@ -108,7 +108,7 @@ _data_item_count()
 Checks the number of items in the HDF5 iota-I64 dataset.
 -------------------------------------------------------------------------------
 */
-uint32_t ExqDataHandler::dataItemCount    (char* filePath, const char* datasetName) {
+uint32_t ExqDataHandlerR64::dataItemCount    (char* filePath, const char* datasetName) {
     hid_t f, dSet, dSpace;
     uint64_t itemCount;
 
@@ -131,11 +131,11 @@ _load_hdf5_dataset()
 Loads a chunk of the iota-I64 HDF5 dataset.
 -------------------------------------------------------------------------------
 */
-void ExqDataHandler::loadHdf5Dataset  (void** data,
-                                          char* filePath,
-                                          hsize_t chunkOffset,
-                                          hsize_t nChunk,
-                                          const char* datasetName) {
+void ExqDataHandlerR64::loadHdf5Dataset  (void** data,
+                                                 char* filePath,
+                                                 hsize_t chunkOffset,
+                                                 hsize_t nChunk,
+                                                 const char* datasetName) {
     hid_t f, dSet, dType, dSpace, memSpace;
     hsize_t offset[1], nData[1];
 

@@ -3,8 +3,9 @@
 //
 
 #include "gtest/gtest.h"
-#include "ExqDataHandler.h"
-#include "ExqR64Descriptor.h"
+#include "ExqDataHandlerR64.h"
+#include "ExqDataHandlerR64.cpp"
+#include "ExqDescriptor.h"
 #include <vector>
 #include <string>
 
@@ -14,7 +15,7 @@ using std::string;
 
 class SingleModalityDataHandlerFixture: public ::testing::Test {
 public:
-    ExqDataHandler* dataHandler;
+    ExqDataHandlerR64* dataHandler;
 
     SingleModalityDataHandlerFixture() {
         vector<vector<string>> compFiles(1);
@@ -22,7 +23,7 @@ public:
         compFiles.push_back(fileNames);
         vector<bool> activeModalities {true};
 
-        ExqDataHandler* dataHandler = new ExqDataHandler(compFiles, 1, activeModalities, 1);
+        this->dataHandler = new ExqDataHandlerR64(compFiles, 1, activeModalities, 1);
     }
 
     void SetUp() {}
@@ -35,20 +36,20 @@ public:
 };
 
 TEST_F(SingleModalityDataHandlerFixture, firstItem) {
-    ExqR64Descriptor* firstItem = dataHandler->items.at(0)->at(0);
-    ASSERT_EQ(firstItem->id, 0);
-    ASSERT_EQ(firstItem->topFeature, 0);
-    ASSERT_EQ(firstItem->featureIds, 0);
-    ASSERT_EQ(firstItem->featureRatios, 0);
+    auto firstItem = this->dataHandler->items.at(0)->at(0);
+    ASSERT_EQ(firstItem->getId(), 0);
+    ASSERT_EQ(firstItem->getTop(), 0);
+    ASSERT_EQ(firstItem->getFeatureIds(), 0);
+    ASSERT_EQ(firstItem->getFeatureRatios(), 0);
 }
 
 TEST_F(SingleModalityDataHandlerFixture, lastitem) {
-    ExqR64Descriptor* lastItem = dataHandler->items.at(0)->at(4);
+    auto lastItem = dataHandler->items.at(0)->at(4);
 
-    ASSERT_EQ(lastItem->id, 4);
-    ASSERT_EQ(lastItem->topFeature, 0);
-    ASSERT_EQ(lastItem->featureIds, 0);
-    ASSERT_EQ(lastItem->featureRatios, 0);
+    ASSERT_EQ(lastItem->getId(), 4);
+    ASSERT_EQ(lastItem->getTop(), 0);
+    ASSERT_EQ(lastItem->getFeatureIds(), 0);
+    ASSERT_EQ(lastItem->getFeatureRatios(), 0);
 }
 
 TEST_F(SingleModalityDataHandlerFixture, count) {

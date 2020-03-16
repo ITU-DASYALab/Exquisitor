@@ -2,8 +2,8 @@
 // Created by Omar Shahbaz Khan on 13/03/2020.
 //
 
-#ifndef EXQUISITOR_EXQDATAHANDLER_H
-#define EXQUISITOR_EXQDATAHANDLER_H
+#ifndef EXQUISITOR_EXQDATAHANDLERR64_H
+#define EXQUISITOR_EXQDATAHANDLERR64_H
 
 #pragma once
 
@@ -13,7 +13,7 @@
 
 #include <hdf5.h>
 
-#include "ExqR64Descriptor.h"
+#include "ExqDescriptor.h"
 #include "ExqConstants.h"
 
 namespace exq {
@@ -22,13 +22,14 @@ namespace exq {
     using std::array;
     using std::string;
 
-    class ExqDataHandler {
+    class ExqDataHandlerR64 {
     public:
-        vector<vector<ExqR64Descriptor*>*> items;
+        //TODO: Change this to DescriptorContainer<T,U,V>
+        vector<vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>*>*> items;
 
-        ExqDataHandler(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers);
+        ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers);
 
-        ~ExqDataHandler();
+        ~ExqDataHandlerR64();
 
 
     private:
@@ -40,5 +41,4 @@ namespace exq {
 
 } //End of namespace exq
 
-
-#endif //EXQUISITOR_EXQDATAHANDLER_H
+#endif //EXQUISITOR_EXQDATAHANDLERR64_H
