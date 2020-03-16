@@ -10,24 +10,28 @@
 
 using namespace exq;
 
-ExqDataHandlerR64::ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers) : items(modalities) {
+ExqDataHandlerR64::ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers) {
     for (int m = 0; m < N_MOD; m++) {
         if (!activeModalities[m]) {
             continue;
         }
-        items.push_back(new vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>*>());
-        loadDescriptorsFromFiles(
-                compCnfgFiles[m][TOP_FEATURES_PATH],
-                compCnfgFiles[m][FEATURE_IDS_PATH],
-                compCnfgFiles[m][FEATURE_RATIOS_PATH],
-                m,
-                workers
-        );
+        this->items = new vector<vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>*>*>();
+        this->items->reserve(modalities);
+        for (int i = 0; i < modalities; i++) {
+            this->items->push_back(new vector<ExqDescriptor<uint64_t, uint64_t, uint64_t>*>());
+            loadDescriptorsFromFiles(
+                    compCnfgFiles[m][TOP_FEATURES_PATH],
+                    compCnfgFiles[m][FEATURE_IDS_PATH],
+                    compCnfgFiles[m][FEATURE_RATIOS_PATH],
+                    m,
+                    workers
+            );
+        }
     }
 }
 
 void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
-    char script[1024];
+    //char script[1024];
     vector<uint64_t> topFeats;
     vector<uint64_t> featIds;
     vector<uint64_t> featRatios;
@@ -43,7 +47,7 @@ void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string f
     strcpy(ratiosFileC, ratiosFile.c_str());
 
     uint32_t totalItems = dataItemCount(topFeatureFileC, "/data");
-    items[modality]->reserve(totalItems);
+    this->items->at(modality)->reserve(totalItems);
     topFeats.reserve(totalItems);
     featIds.reserve(totalItems);
     featRatios.reserve(totalItems);
@@ -88,18 +92,11 @@ void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string f
     //HDFql::execute("CLOSE FILE");
 
     for (uint32_t i = 0; i < totalItems; i++) {
-        items[modality]->push_back(new ExqDescriptor<uint64_t,uint64_t,uint64_t>(i, topFeats[i], featIds[i], featRatios[i]));
+        items->at(modality)->push_back(new ExqDescriptor<uint64_t,uint64_t,uint64_t>(i, topFeats[i], featIds[i], featRatios[i]));
     }
 }
 
-ExqDataHandlerR64::~ExqDataHandlerR64() {
-    for(auto vecs : items) {
-        for (auto desc : *vecs) {
-            delete desc;
-        }
-        delete vecs;
-    }
-}
+ExqDataHandlerR64::~ExqDataHandlerR64() {}
 
 /*
 -------------------------------------------------------------------------------

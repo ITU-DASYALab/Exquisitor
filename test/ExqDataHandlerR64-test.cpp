@@ -19,7 +19,7 @@ public:
     SingleModalityDataHandlerFixture() {
         vector<vector<string>> compFiles(1);
         vector<string> fileNames {"data/singleModTop.h5", "data/singleModIds.h5", "data/singleModRatios.h5"};
-        compFiles.push_back(fileNames);
+        compFiles[0] = fileNames;
         vector<bool> activeModalities {true};
 
         this->dataHandler = new ExqDataHandlerR64(compFiles, 1, activeModalities, 1);
@@ -35,7 +35,7 @@ public:
 };
 
 TEST_F(SingleModalityDataHandlerFixture, firstItem) {
-    auto firstItem = this->dataHandler->items.at(0)->at(0);
+    auto firstItem = this->dataHandler->getItems()->at(0)->at(0);
     ASSERT_EQ(firstItem->getId(), 0);
     ASSERT_EQ(firstItem->getTop(), 0);
     ASSERT_EQ(firstItem->getFeatureIds(), 0);
@@ -43,7 +43,7 @@ TEST_F(SingleModalityDataHandlerFixture, firstItem) {
 }
 
 TEST_F(SingleModalityDataHandlerFixture, lastitem) {
-    auto lastItem = dataHandler->items.at(0)->at(4);
+    auto lastItem = dataHandler->getItems()->at(0)->at(4);
 
     ASSERT_EQ(lastItem->getId(), 4);
     ASSERT_EQ(lastItem->getTop(), 0);
@@ -52,5 +52,5 @@ TEST_F(SingleModalityDataHandlerFixture, lastitem) {
 }
 
 TEST_F(SingleModalityDataHandlerFixture, count) {
-    ASSERT_EQ(dataHandler->items.at(0)->size(), 5);
+    ASSERT_EQ(dataHandler->getItems()->at(0)->size(), 5);
 }

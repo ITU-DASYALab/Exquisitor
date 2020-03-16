@@ -13,6 +13,7 @@
 
 #include <hdf5.h>
 
+#include "ExqDataHandler.h"
 #include "ExqDescriptor.h"
 #include "ExqConstants.h"
 
@@ -22,11 +23,8 @@ namespace exq {
     using std::array;
     using std::string;
 
-    class ExqDataHandlerR64 {
+    class ExqDataHandlerR64 : public ExqDataHandler<uint64_t, uint64_t, uint64_t> {
     public:
-        //TODO: Change this to DescriptorContainer<T,U,V>
-        vector<vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>*>*> items;
-
         ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers);
 
         ~ExqDataHandlerR64();
