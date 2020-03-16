@@ -43,7 +43,6 @@ namespace exq {
             return arr;
         };
 
-        friend class ExqArrDescriptor;
     private:
         int size;
         T* arr;
