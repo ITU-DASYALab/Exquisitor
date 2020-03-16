@@ -22,6 +22,7 @@ namespace exq {
             this->size = n;
             this->arr = new T[n];
         };
+
         ~ExqArray() {
             delete[] this->arr;
         };
