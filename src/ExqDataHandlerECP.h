@@ -2,14 +2,14 @@
 // Created by Omar Shahbaz Khan on 13/03/2020.
 //
 
-#ifndef EXQUISITOR_EXQINDEX_H
-#define EXQUISITOR_EXQINDEX_H
+#ifndef EXQUISITOR_EXQDATAHANDLERECP_H
+#define EXQUISITOR_EXQDATAHANDLERECP_H
 
 #pragma once
 
 namespace exq {
 
-    class ExqIndex {
+    class ExqDataHandlerECP {
     public:
 
     private:
@@ -19,4 +19,4 @@ namespace exq {
 } //End of namespace exq
 
 
-#endif //EXQUISITOR_EXQINDEX_H
+#endif //EXQUISITOR_EXQDATAHANDLERECP_H
