@@ -29,7 +29,7 @@ namespace exq {
     template<typename T, typename U, typename V>
     class IExqFunctions {
     public:
-        virtual ~IExqFunctions();
+        ~IExqFunctions() {};
 
         /**
          * @brief convert compressed descriptor representation into actual feature id and value pairs
