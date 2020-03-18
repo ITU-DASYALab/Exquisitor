@@ -56,17 +56,17 @@ void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string f
     loadHdf5Dataset((void**)&(topFeats),
                        topFeatureFileC,
                        0,
-                       0,
+                       (totalItems/workers),
                        dataset);
     loadHdf5Dataset((void**)&(featIds),
                        featuresFileC,
                        0,
-                       0,
+                       (totalItems/workers),
                        dataset);
     loadHdf5Dataset((void**)&(featRatios),
                        ratiosFileC,
                        0,
-                       0,
+                       (totalItems/workers),
                        dataset);
     //TODO: Add thread and chunk logic here
     //TODO: Is it possible to use HDFql instead? Utilize 3 cursors and run through them creating Descriptors.
