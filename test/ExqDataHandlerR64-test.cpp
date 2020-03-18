@@ -18,7 +18,7 @@ public:
 
     SingleModalityDataHandlerFixture() {
         vector<vector<string>> compFiles(1);
-        vector<string> fileNames {"data/singleModTop.h5", "data/singleModIds.h5", "data/singleModRatios.h5"};
+        vector<string> fileNames {"data/random_5_10/top.h5", "data/random_5_10/ids.h5", "data/random_5_10/ratios.h5"};
         compFiles[0] = fileNames;
         vector<bool> activeModalities {true};
 
@@ -34,21 +34,21 @@ public:
     }
 };
 
-TEST_F(SingleModalityDataHandlerFixture, firstItem) {
+TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
     auto firstItem = this->dataHandler->getItems()->at(0)->at(0);
     ASSERT_EQ(firstItem->getId(), 0);
-    ASSERT_EQ(firstItem->getTop(), 0);
-    ASSERT_EQ(firstItem->getFeatureIds(), 0);
-    ASSERT_EQ(firstItem->getFeatureRatios(), 0);
+    ASSERT_EQ(firstItem->getTop(), 2533274790396757);
+    ASSERT_EQ(firstItem->getFeatureIds(), 1125912792203265);
+    ASSERT_EQ(firstItem->getFeatureRatios(), 242353128979235512);
 }
 
-TEST_F(SingleModalityDataHandlerFixture, lastitem) {
+TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
     auto lastItem = dataHandler->getItems()->at(0)->at(4);
 
     ASSERT_EQ(lastItem->getId(), 4);
-    ASSERT_EQ(lastItem->getTop(), 0);
-    ASSERT_EQ(lastItem->getFeatureIds(), 0);
-    ASSERT_EQ(lastItem->getFeatureRatios(), 0);
+    ASSERT_EQ(lastItem->getTop(), 281474976711517);
+    ASSERT_EQ(lastItem->getFeatureIds(), 1407404948324356);
+    ASSERT_EQ(lastItem->getFeatureRatios(), 255864967252411121);
 }
 
 TEST_F(SingleModalityDataHandlerFixture, count) {
