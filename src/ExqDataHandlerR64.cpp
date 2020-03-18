@@ -35,9 +35,6 @@ void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string f
     vector<uint64_t> topFeats;
     vector<uint64_t> featIds;
     vector<uint64_t> featRatios;
-    //uint64_t* topFeats;
-    //uint64_t* featIds;
-    //uint64_t* featRatios;
 
     char topFeatureFileC[topFeatureFile.size() + 1];
     char featuresFileC[featuresFile.size() + 1];
@@ -69,27 +66,6 @@ void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string f
                        (totalItems/workers),
                        dataset);
     //TODO: Add thread and chunk logic here
-    //TODO: Is it possible to use HDFql instead? Utilize 3 cursors and run through them creating Descriptors.
-    //sprintf(script, "USE FILE %s", topFeatureFileC);
-    //HDFql::execute(script);
-    //HDFql::variableRegister((void*)&topFeats);
-    //sprintf(script, "SELECT FROM data INTO MEMORY %d", HDFql::variableGetNumber((void*)&topFeats));
-    //HDFql::execute(script);
-    //HDFql::execute("CLOSE FILE");
-
-    //sprintf(script, "USE FILE %s", featuresFileC);
-    //HDFql::execute(script);
-    //HDFql::variableRegister((void*)&featIds);
-    //sprintf(script, "SELECT FROM data INTO MEMORY %d", HDFql::variableGetNumber((void*)&featIds));
-    //HDFql::execute(script);
-    //HDFql::execute("CLOSE FILE");
-
-    //sprintf(script, "SELECT FROM /data %s", ratiosFileC);
-    //HDFql::execute(script);
-    //HDFql::variableRegister((void*)&featRatios);
-    //sprintf(script, "SELECT FROM data INTO MEMORY %d", HDFql::variableGetNumber((void*)&featRatios));
-    //HDFql::execute(script);
-    //HDFql::execute("CLOSE FILE");
 
     for (uint32_t i = 0; i < totalItems; i++) {
         items->at(modality)->push_back(new ExqDescriptor<uint64_t,uint64_t,uint64_t>(i, topFeats[i], featIds[i], featRatios[i]));
