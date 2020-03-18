@@ -22,7 +22,7 @@ namespace exq {
      */
     class ExqFunctionsR64 : public IExqFunctions<uint64_t, uint64_t, uint64_t> {
     public:
-        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int idsPadding, int ratiosShift, int ratiosPadding);
+        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor);
 
         ~ExqFunctionsR64();
 
@@ -46,11 +46,11 @@ namespace exq {
         int nDescFeatures;
         int topFeatureShift;
         int idsFeatureShift;
-        int ratioFeatureShift;
+        int ratiosFeatureShift;
         uint64_t* idsBitShifts;
-        int idsPadding;
-        uint64_t* ratioBitShifts;
-        int ratiosPadding;
+        uint64_t* ratiosBitShifts;
+        float topDivisor;
+        float ratiosDivisor;
     }; //End of class ExqFunctions
 
 } //End of namespace exq
