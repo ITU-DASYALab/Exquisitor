@@ -6,11 +6,11 @@
 #include <hdf5.h>
 #include <cstring>
 
-#include "ExqDataHandlerR64.h"
+#include "ExqDataHandlerH5.h"
 
 using namespace exq;
 
-ExqDataHandlerR64::ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers) {
+ExqDataHandlerH5::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers) {
     for (int m = 0; m < N_MOD; m++) {
         if (!activeModalities[m]) {
             continue;
@@ -30,7 +30,7 @@ ExqDataHandlerR64::ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int 
     }
 }
 
-void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
+void ExqDataHandlerH5::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
     //char script[1024];
     vector<uint64_t> topFeats;
     vector<uint64_t> featIds;
@@ -72,7 +72,7 @@ void ExqDataHandlerR64::loadDescriptorsFromFiles(string topFeatureFile, string f
     }
 }
 
-ExqDataHandlerR64::~ExqDataHandlerR64() {}
+ExqDataHandlerH5::~ExqDataHandlerH5() {}
 
 /*
 -------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ _data_item_count()
 Checks the number of items in the HDF5 iota-I64 dataset.
 -------------------------------------------------------------------------------
 */
-uint32_t ExqDataHandlerR64::dataItemCount    (char* filePath, const char* datasetName) {
+uint32_t ExqDataHandlerH5::dataItemCount    (char* filePath, const char* datasetName) {
     hid_t f, dSet, dSpace;
     uint64_t itemCount;
 
@@ -104,11 +104,11 @@ _load_hdf5_dataset()
 Loads a chunk of the iota-I64 HDF5 dataset.
 -------------------------------------------------------------------------------
 */
-void ExqDataHandlerR64::loadHdf5Dataset  (void** data,
-                                                 char* filePath,
-                                                 hsize_t chunkOffset,
-                                                 hsize_t nChunk,
-                                                 const char* datasetName) {
+void ExqDataHandlerH5::loadHdf5Dataset  (void** data,
+                                         char* filePath,
+                                         hsize_t chunkOffset,
+                                         hsize_t nChunk,
+                                         const char* datasetName) {
     hid_t f, dSet, dType, dSpace, memSpace;
     hsize_t offset[1], nData[1];
 

@@ -3,8 +3,8 @@
 //
 
 #include "gtest/gtest.h"
-#include "ExqDataHandlerR64.h"
-#include "ExqDataHandlerR64.cpp"
+#include "ExqDataHandlerH5.h"
+#include "ExqDataHandlerH5.cpp"
 #include <vector>
 #include <string>
 
@@ -16,7 +16,7 @@ using std::endl;
 
 class SingleModalityDataHandlerFixture: public ::testing::Test {
 public:
-    ExqDataHandlerR64* dataHandler;
+    ExqDataHandlerH5* dataHandler;
 
     SingleModalityDataHandlerFixture() {
         vector<vector<string>> compFiles(1);
@@ -24,7 +24,7 @@ public:
         compFiles[0] = fileNames;
         vector<bool> activeModalities {true};
 
-        this->dataHandler = new ExqDataHandlerR64(compFiles, 1, activeModalities, 1);
+        this->dataHandler = new ExqDataHandlerH5(compFiles, 1, activeModalities, 1);
     }
 
     void SetUp() {}

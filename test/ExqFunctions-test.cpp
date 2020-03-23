@@ -4,12 +4,12 @@
 
 #include "gtest/gtest.h"
 #include "ExqFunctionsR64.h"
-#include "ExqDataHandlerR64.h"
+#include "ExqDataHandlerH5.h"
 
 #include <cmath>
 
 using exq::ExqFunctionsR64;
-using exq::ExqDataHandlerR64;
+using exq::ExqDataHandlerH5;
 
 using std::vector;
 using std::string;
@@ -19,7 +19,7 @@ using std::endl;
 
 class FunctionsR64Fixture: public ::testing::Test {
 public:
-    ExqDataHandlerR64* dataHandler;
+    ExqDataHandlerH5* dataHandler;
     ExqFunctionsR64* functionsR64;
 
     FunctionsR64Fixture() {
@@ -28,7 +28,7 @@ public:
         compFiles[0] = fileNames;
         vector<bool> activeModalities {true};
 
-        this->dataHandler = new ExqDataHandlerR64(compFiles, 1, activeModalities, 1);
+        this->dataHandler = new ExqDataHandlerH5(compFiles, 1, activeModalities, 1);
         this->functionsR64 = new ExqFunctionsR64(5, 48, 16, 16, 1000, 1000);
     }
 

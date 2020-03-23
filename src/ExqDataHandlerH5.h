@@ -2,8 +2,8 @@
 // Created by Omar Shahbaz Khan on 13/03/2020.
 //
 
-#ifndef EXQUISITOR_EXQDATAHANDLERR64_H
-#define EXQUISITOR_EXQDATAHANDLERR64_H
+#ifndef EXQUISITOR_EXQDATAHANDLERH5_H
+#define EXQUISITOR_EXQDATAHANDLERH5_H
 
 #pragma once
 
@@ -23,11 +23,11 @@ namespace exq {
     using std::array;
     using std::string;
 
-    class ExqDataHandlerR64 : public ExqDataHandler<uint64_t, uint64_t, uint64_t> {
+    class ExqDataHandlerH5 : public ExqDataHandler<uint64_t, uint64_t, uint64_t> {
     public:
-        ExqDataHandlerR64(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers);
+        ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers);
 
-        ~ExqDataHandlerR64();
+        ~ExqDataHandlerH5();
 
 
     private:
@@ -39,4 +39,4 @@ namespace exq {
 
 } //End of namespace exq
 
-#endif //EXQUISITOR_EXQDATAHANDLERR64_H
+#endif //EXQUISITOR_EXQDATAHANDLERH5_H

@@ -29,7 +29,7 @@ ExqFunctionsR64::~ExqFunctionsR64() {
     delete this->ratiosBitShifts;
 }
 
-ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(ExqDescriptor<uint64_t, uint64_t, uint64_t> &descriptor) {
+inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(ExqDescriptor<uint64_t, uint64_t, uint64_t> &descriptor) {
     auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
 
     int featId = descriptor.getTop() >> this->topFeatureShift;
