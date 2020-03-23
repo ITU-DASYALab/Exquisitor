@@ -9,6 +9,10 @@ find_package(HDF5 COMPONENTS CXX REQUIRED)
 link_directories(${HDF5_LIBRARY_DIRS})
 include_directories(${HDF5_INCLUDE_DIRS})
 
+# OpenCV
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 # HDFql (Mac OS)
 #set(HDFQL_ROOT ${PROJECT_SOURCE_DIR}/external/hdfql-2.1.0)
 #include_directories(${HDFQL_ROOT}/include)

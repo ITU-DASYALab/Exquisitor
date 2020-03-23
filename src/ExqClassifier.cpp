@@ -3,3 +3,8 @@
 //
 
 #include "ExqClassifier.h"
+
+#include <opencv2/ml.hpp>
+
+using namespace exq;
+using cv::ml::SVMSGD;
