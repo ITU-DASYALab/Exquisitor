@@ -17,7 +17,7 @@ namespace exq {
     class ExqDataHandler {
     public:
         ~ExqDataHandler() {
-            for(auto vecs : *this->items) {
+            for(auto vecs : this->items) {
                 for (auto desc : *vecs) {
                     delete desc;
                 }
@@ -25,13 +25,13 @@ namespace exq {
             }
         }
 
-        vector<vector<ExqDescriptor<T,U,V>*>*>* getItems() {
+        vector<vector<ExqDescriptor<T,U,V>*>*> getItems() {
             return this->items;
         }
 
     protected:
         //TODO: Change this to DescriptorContainer<T,U,V>
-        vector<vector<ExqDescriptor<T,U,V>*>*>* items;
+        vector<vector<ExqDescriptor<T,U,V>*>*> items;
     };
 
 }

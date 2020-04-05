@@ -43,7 +43,7 @@ public:
 };
 
 TEST_F(FunctionsR64Fixture, getTopFeatIdForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems()->at(0)->at(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems()[0]->at(0));
     auto topFeature = firstItemDesc.getItem(0);
 
     ASSERT_EQ(topFeature.first, 9);
@@ -52,7 +52,7 @@ TEST_F(FunctionsR64Fixture, getTopFeatIdForFirstItemR64) {
 }
 
 TEST_F(FunctionsR64Fixture, getTopFeatValueForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems()->at(0)->at(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems()[0]->at(0));
     auto topFeature = firstItemDesc.getItem(0);
 
     ASSERT_FLOAT_EQ(topFeature.second, 0.853);
@@ -61,7 +61,7 @@ TEST_F(FunctionsR64Fixture, getTopFeatValueForFirstItemR64) {
 }
 
 TEST_F(FunctionsR64Fixture, getFeatIdsForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems()->at(0)->at(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems()[0]->at(0));
     int correctIds[4] = {1, 7, 3, 4};
     for (int i = 1; i < 5; i++) {
         ASSERT_EQ(firstItemDesc.getItem(i).first, correctIds[i-1]);
