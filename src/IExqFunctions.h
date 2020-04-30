@@ -24,9 +24,8 @@ namespace exq {
 
     /**
      * @class ExqFunctions
-     * @brief the class contains the scoring and ranking functions utilizing Ratio-i64 compression
+     * @brief the class contains the scoring and ranking functions
      */
-    template<typename T, typename U, typename V>
     class IExqFunctions {
     public:
         ~IExqFunctions() {};
@@ -35,12 +34,14 @@ namespace exq {
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return
          */
-        virtual ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<T,U,V>& descriptor) = 0;
+        template<typename T, typename U, typename V>
+        ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<T,U,V>& descriptor);
 
         /**
          * @brief calculates distance between hyperplane and item
          */
-        virtual double distance(ExqClassifier& hyperplane, ExqDescriptor<T,U,V>& descriptor) = 0;
+        template<typename T, typename U, typename V>
+        double distance(ExqClassifier<T,U,V>& hyperplane, ExqDescriptor<T,U,V>& descriptor);
 
         /**
          * @brief rank aggregation using scores from each modality

@@ -13,6 +13,8 @@
 #include <string>
 
 #include "ExqConstants.h"
+#include "ExqClassifier.h"
+#include "IExqFunctions.h"
 //#include <taskflow/taskflow.hpp>
 
 namespace exq {
@@ -21,10 +23,10 @@ namespace exq {
     using std::vector;
     using std::string;
 
-/**
- * @class ExqController
- * @brief the class that controls the flow of Exquisitor
- */
+    /**
+     * @class ExqController
+     * @brief the class that controls the flow of Exquisitor
+     */
     class ExqController {
     public:
         /**
@@ -100,6 +102,8 @@ namespace exq {
         int _modActivity;
         int _workers;
         int _segments;
+
+        IExqFunctions* _functions;
 
         vector<bool> _seenItems;
 

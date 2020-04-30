@@ -3,6 +3,7 @@
 //
 
 #include "ExqFunctionsR64.h"
+#include "IExqFunctions.h"
 
 #include <cmath>
 
@@ -29,7 +30,7 @@ ExqFunctionsR64::~ExqFunctionsR64() {
     delete this->ratiosBitShifts;
 }
 
-inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(ExqDescriptor<uint64_t, uint64_t, uint64_t> &descriptor) {
+inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(ExqDescriptor<uint64_t,uint64_t,uint64_t> &descriptor) {
     auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
 
     int featId = descriptor.getTop() >> this->topFeatureShift;
@@ -47,7 +48,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(ExqD
     return *exqArr;
 }
 
-double ExqFunctionsR64::distance(ExqClassifier &hyperplane, ExqDescriptor<uint64_t, uint64_t, uint64_t> &descriptor) {
+double ExqFunctionsR64::distance(ExqClassifier<uint64_t,uint64_t,uint64_t>& hyperplane, ExqDescriptor<uint64_t,uint64_t,uint64_t> &descriptor) {
     double score = 0.0;
     auto desc = getDescriptorInformation(descriptor);
 

@@ -20,7 +20,7 @@ namespace exq {
      * @class ExqFunctions
      * @brief the class contains the scoring and ranking functions utilizing Ratio-i64 compression
      */
-    class ExqFunctionsR64 : public IExqFunctions<uint64_t, uint64_t, uint64_t> {
+    class ExqFunctionsR64 : public IExqFunctions {
     public:
         ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor);
 
@@ -35,7 +35,7 @@ namespace exq {
         /**
          * @brief calculates distance between hyperplane and item
          */
-        double distance(ExqClassifier& hyperplane, ExqDescriptor<uint64_t, uint64_t, uint64_t>& descriptor);
+        double distance(ExqClassifier<uint64_t,uint64_t,uint64_t>& hyperplane, ExqDescriptor<uint64_t,uint64_t,uint64_t>& descriptor);
 
         /**
          * @brief rank aggregation using scores from each modality
