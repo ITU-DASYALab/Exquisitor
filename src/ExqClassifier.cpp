@@ -8,3 +8,8 @@
 
 using namespace exq;
 using cv::ml::SVMSGD;
+
+template <typename T, typename U, typename V>
+ExqClassifier<T,U,V>::ExqClassifier() {
+
+}
