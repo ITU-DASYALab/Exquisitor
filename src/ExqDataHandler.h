@@ -25,8 +25,8 @@ namespace exq {
             }
         }
 
-        vector<vector<ExqDescriptor<T,U,V>*>*> getItems() {
-            return this->items;
+        vector<ExqDescriptor<T,U,V>*>* getItems(int modality) {
+            return this->items[modality];
         }
 
     protected:
