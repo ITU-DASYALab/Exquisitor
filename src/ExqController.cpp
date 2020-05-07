@@ -17,9 +17,10 @@ ExqController::ExqController(
     vector<int> modFeatureDimensions,
     vector<vector<string>> compFiles,
     vector<string> cnfgFiles,
-    int bClusters
+    int bClusters,
+    IExqFunctions* functions
     ) {
 
 
-    this->_functions = new ExqFunctionsR64(1000,48,16,16,1000,1000);
+    this->_functions = functions;//new ExqFunctionsR64(1000,48,16,16,1000,1000);
 }

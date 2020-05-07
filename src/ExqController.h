@@ -42,7 +42,8 @@ namespace exq {
                 vector<int> modFeatureDimensions,
                 vector<vector<string>> compFiles,
                 vector<string> cnfgFiles,
-                int bClusters
+                int bClusters,
+                IExqFunctions functions
         );
 
         /**
