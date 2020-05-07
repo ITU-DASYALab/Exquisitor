@@ -3,8 +3,8 @@
 //
 
 #include "gtest/gtest.h"
+#include "ExqDataHandler.h"
 #include "ExqDataHandlerH5.h"
-#include "ExqDataHandlerH5.cpp"
 #include <vector>
 #include <string>
 
@@ -37,7 +37,7 @@ public:
 };
 
 TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
-    auto firstItem = this->dataHandler->getItems(0)->at(0);
+    auto firstItem = this->dataHandler->getItem(0);
     ASSERT_EQ(firstItem->getId(), 0);
     ASSERT_EQ(firstItem->getTop(), 2533274790396757);
     ASSERT_EQ(firstItem->getFeatureIds(), 1125912792203265);
@@ -47,7 +47,7 @@ TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
 }
 
 TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
-    auto lastItem = dataHandler->getItems(0)->at(4);
+    auto lastItem = dataHandler->getItem(4, 0);
 
     ASSERT_EQ(lastItem->getId(), 4);
     ASSERT_EQ(lastItem->getTop(), 281474976711517);
@@ -58,7 +58,15 @@ TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
 }
 
 TEST_F(SingleModalityDataHandlerFixture, count) {
-    ASSERT_EQ(dataHandler->getItems(0)->size(), 5);
+    ASSERT_EQ(dataHandler->getTotalItemsCount(0), 5);
 
     cout << "TEST count in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
+}
+
+TEST_F(SingleModalityDataHandlerFixture, inheritance) {
+    ExqDataHandler<uint64_t,uint64_t,uint64_t>* dh = dataHandler;
+
+    ASSERT_EQ(dh->getItem(0)->getId(), 0);
+
+    cout << "TEST inheritance in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }

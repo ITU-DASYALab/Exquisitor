@@ -3,7 +3,7 @@
 //
 
 #include "ExqFunctionsR64.h"
-#include "IExqFunctions.h"
+#include "ExqFunctions.h"
 
 #include <cmath>
 

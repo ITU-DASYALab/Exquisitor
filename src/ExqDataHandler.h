@@ -16,22 +16,31 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ExqDataHandler {
     public:
-        ~ExqDataHandler() {
-            for(auto vecs : this->items) {
-                for (auto desc : *vecs) {
-                    delete desc;
-                }
-                delete vecs;
-            }
+        /**
+         * Returns descriptor with for item i. Assumes modality is 0.
+         * @param i - item id
+         * @return Descriptor for item i.
+         */
+        ExqDescriptor<T,U,V>* getItem(uint32_t i) {
+            return this->_descriptors[0][i];
         }
 
-        vector<ExqDescriptor<T,U,V>*>* getItems(int modality) {
-            return this->items[modality];
+        /**
+         * Returns item with id i from specific modality
+         * @param i - item id
+         * @param mod - modality
+         * @return Descriptor for item i in modality mod
+         */
+        ExqDescriptor<T,U,V>* getItem(uint32_t i, int mod) {
+           return this->_descriptors[mod][i];
         }
+
+        int getTotalItemsCount(int mod) {
+            return this->_descriptors[mod].size();
+        };
 
     protected:
-        //TODO: Change this to DescriptorContainer<T,U,V>
-        vector<vector<ExqDescriptor<T,U,V>*>*> items;
+        vector<vector<ExqDescriptor<T,U,V>*>> _descriptors;
     };
 
 }

@@ -3,11 +3,13 @@
 //
 
 #include "gtest/gtest.h"
+#include "ExqFunctions.h"
 #include "ExqFunctionsR64.h"
 #include "ExqDataHandlerH5.h"
 
 #include <cmath>
 
+using exq::ExqFunctions;
 using exq::ExqFunctionsR64;
 using exq::ExqDataHandlerH5;
 
@@ -43,7 +45,7 @@ public:
 };
 
 TEST_F(FunctionsR64Fixture, getTopFeatIdForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems(0)->at(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItem(0));
     auto topFeature = firstItemDesc.getItem(0);
 
     ASSERT_EQ(topFeature.first, 9);
@@ -52,7 +54,7 @@ TEST_F(FunctionsR64Fixture, getTopFeatIdForFirstItemR64) {
 }
 
 TEST_F(FunctionsR64Fixture, getTopFeatValueForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems(0)->at(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItem(0));
     auto topFeature = firstItemDesc.getItem(0);
 
     ASSERT_FLOAT_EQ(topFeature.second, 0.853);
@@ -61,7 +63,7 @@ TEST_F(FunctionsR64Fixture, getTopFeatValueForFirstItemR64) {
 }
 
 TEST_F(FunctionsR64Fixture, getFeatIdsForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItems(0)->at(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItem(0));
     int correctIds[4] = {1, 7, 3, 4};
     for (int i = 1; i < 5; i++) {
         ASSERT_EQ(firstItemDesc.getItem(i).first, correctIds[i-1]);
@@ -69,3 +71,13 @@ TEST_F(FunctionsR64Fixture, getFeatIdsForFirstItemR64) {
 
     cout << "TEST getFeatIdsForFirstItemR64 in FunctionsR64Fixture SUCCEEDED!" << endl;
 }
+
+//TEST_F(FunctionsR64Fixture, inheritance) {
+//    ExqFunctions<uint64_t,uint64_t,uint64_t>* f = this->functionsR64;
+//    auto firstItemDesc = f->getDescriptorInformation(*this->dataHandler->getItem(0));
+//    int correctIds[4] = {1, 7, 3, 4};
+//    for (int i = 1; i < 5; i++) {
+//        ASSERT_EQ(firstItemDesc.getItem(i).first, correctIds[i-1]);
+//    }
+//    cout << "TEST getFeatIdsForFirstItemR64 in FunctionsR64Fixture SUCCEEDED!" << endl;
+//}

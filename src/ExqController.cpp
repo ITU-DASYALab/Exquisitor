@@ -8,17 +8,17 @@
 using namespace exq;
 
 ExqController::ExqController(
-    int iota,
-    int noms,
-    int workers,
-    int segments,
-    int numberModalities,
-    vector<bool> activeModalities,
-    vector<int> modFeatureDimensions,
-    vector<vector<string>> compFiles,
-    vector<string> cnfgFiles,
-    int bClusters,
-    IExqFunctions* functions
+        int iota,
+        int noms,
+        int workers,
+        int segments,
+        int numberModalities,
+        vector<bool> activeModalities,
+        vector<int> modFeatureDimensions,
+        vector<vector<string>> compFiles,
+        vector<string> cnfgFiles,
+        int bClusters,
+        ExqFunctions* functions
     ) {
 
 

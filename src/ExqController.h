@@ -14,7 +14,7 @@
 
 #include "ExqConstants.h"
 #include "ExqClassifier.h"
-#include "IExqFunctions.h"
+#include "ExqFunctions.h"
 //#include <taskflow/taskflow.hpp>
 
 namespace exq {
@@ -43,7 +43,7 @@ namespace exq {
                 vector<vector<string>> compFiles,
                 vector<string> cnfgFiles,
                 int bClusters,
-                IExqFunctions* functions
+                ExqFunctions* functions
         );
 
         /**
@@ -104,7 +104,7 @@ namespace exq {
         int _workers;
         int _segments;
 
-        IExqFunctions* _functions;
+        ExqFunctions* _functions;
 
         vector<bool> _seenItems;
 

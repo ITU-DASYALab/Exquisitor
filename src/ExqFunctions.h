@@ -2,8 +2,8 @@
 // Created by Omar Shahbaz Khan on 13/03/2020.
 //
 
-#ifndef EXQUISITOR_IEXQFUNCTIONS_H
-#define EXQUISITOR_IEXQFUNCTIONS_H
+#ifndef EXQUISITOR_EXQFUNCTIONS_H
+#define EXQUISITOR_EXQFUNCTIONS_H
 
 #pragma once
 
@@ -26,9 +26,9 @@ namespace exq {
      * @class ExqFunctions
      * @brief the class contains the scoring and ranking functions
      */
-    class IExqFunctions {
+    class ExqFunctions {
     public:
-        ~IExqFunctions() {};
+        ~ExqFunctions() {};
 
         /**
          * @brief convert compressed descriptor representation into actual feature id and value pairs
@@ -54,4 +54,4 @@ namespace exq {
 
 } //End of namespace exq
 
-#endif //EXQUISITOR_IEXQFUNCTIONS_H
+#endif //EXQUISITOR_EXQFUNCTIONS_H

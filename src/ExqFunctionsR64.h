@@ -9,7 +9,7 @@
 #include "ExqDescriptor.h"
 #include "ExqClassifier.h"
 #include "ExqItem.h"
-#include "IExqFunctions.h"
+#include "ExqFunctions.h"
 
 namespace exq {
 
@@ -20,7 +20,7 @@ namespace exq {
      * @class ExqFunctions
      * @brief the class contains the scoring and ranking functions utilizing Ratio-i64 compression
      */
-    class ExqFunctionsR64 : public IExqFunctions {
+    class ExqFunctionsR64 : public ExqFunctions {
     public:
         ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor);
 

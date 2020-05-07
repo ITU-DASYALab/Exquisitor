@@ -15,10 +15,9 @@ ExqDataHandlerH5::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int mo
         if (!activeModalities[m]) {
             continue;
         }
-        this->items = vector<vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>*>*>();
-        this->items.reserve(modalities);
+        this->_descriptors.reserve(modalities);
         for (int i = 0; i < modalities; i++) {
-            this->items.push_back(new vector<ExqDescriptor<uint64_t, uint64_t, uint64_t>*>());
+            this->_descriptors.push_back(vector<ExqDescriptor<uint64_t, uint64_t, uint64_t>*>());
             loadDescriptorsFromFiles(
                     compCnfgFiles[m][TOP_FEATURES_PATH],
                     compCnfgFiles[m][FEATURE_IDS_PATH],
@@ -26,6 +25,14 @@ ExqDataHandlerH5::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int mo
                     m,
                     workers
             );
+        }
+    }
+}
+
+ExqDataHandlerH5::~ExqDataHandlerH5() {
+    for(auto vecs : this->_descriptors) {
+        for (auto desc : vecs) {
+            delete desc;
         }
     }
 }
@@ -44,7 +51,7 @@ void ExqDataHandlerH5::loadDescriptorsFromFiles(string topFeatureFile, string fe
     strcpy(ratiosFileC, ratiosFile.c_str());
 
     uint32_t totalItems = dataItemCount(topFeatureFileC, "/data");
-    this->items[modality]->reserve(totalItems);
+    this->_descriptors[modality].reserve(totalItems);
     topFeats.reserve(totalItems);
     featIds.reserve(totalItems);
     featRatios.reserve(totalItems);
@@ -68,11 +75,9 @@ void ExqDataHandlerH5::loadDescriptorsFromFiles(string topFeatureFile, string fe
     //TODO: Add thread and chunk logic here
 
     for (uint32_t i = 0; i < totalItems; i++) {
-        this->items[modality]->push_back(new ExqDescriptor<uint64_t,uint64_t,uint64_t>(i, topFeats[i], featIds[i], featRatios[i]));
+        this->_descriptors[modality].push_back(new ExqDescriptor<uint64_t,uint64_t,uint64_t>(i, topFeats[i], featIds[i], featRatios[i]));
     }
 }
-
-ExqDataHandlerH5::~ExqDataHandlerH5() {}
 
 /*
 -------------------------------------------------------------------------------
