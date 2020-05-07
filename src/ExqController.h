@@ -43,7 +43,7 @@ namespace exq {
                 vector<vector<string>> compFiles,
                 vector<string> cnfgFiles,
                 int bClusters,
-                IExqFunctions functions
+                IExqFunctions* functions
         );
 
         /**
