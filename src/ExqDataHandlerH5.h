@@ -23,13 +23,27 @@ namespace exq {
     using std::array;
     using std::string;
 
-    class ExqDataHandlerH5 : public ExqDataHandler<uint64_t,uint64_t,uint64_t> {
+    template<typename T, typename U, typename V>
+    class ExqDataHandlerH5 : public ExqDataHandler<ExqDescriptor<T,U,V>> {
     public:
-        ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers);
+        ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities);
+
+        void loadData(vector<bool>& activeModalities, int workers) override;
+
+        ExqDescriptor<T,U,V>* getDescriptor(uint32_t i) override;
+
+        ExqDescriptor<T,U,V>* getDescriptor(uint32_t i, int mod) override;
+
+        int getTotalItemsCount(int mod) override;
 
         ~ExqDataHandlerH5();
 
     private:
+        vector<vector<ExqDescriptor<T,U,V>*>> _descriptors;
+        vector<string> _topFeatPaths;
+        vector<string> _featIdsPaths;
+        vector<string> _ratiosPaths;
+
         void loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers);
         uint32_t dataItemCount(char* filePath, const char* datasetName);
         void loadHdf5Dataset(void** data, char* filePath, hsize_t chunkOffset, hsize_t nChunk, const char* datasetName);

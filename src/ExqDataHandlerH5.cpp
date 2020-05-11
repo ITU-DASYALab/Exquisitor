@@ -10,26 +10,49 @@
 
 using namespace exq;
 
-ExqDataHandlerH5::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities, vector<bool>& activeModalities, int workers) {
-    for (int m = 0; m < N_MOD; m++) {
-        if (!activeModalities[m]) {
-            continue;
-        }
-        this->_descriptors.reserve(modalities);
-        for (int i = 0; i < modalities; i++) {
-            this->_descriptors.push_back(vector<ExqDescriptor<uint64_t, uint64_t, uint64_t>*>());
-            loadDescriptorsFromFiles(
-                    compCnfgFiles[m][TOP_FEATURES_PATH],
-                    compCnfgFiles[m][FEATURE_IDS_PATH],
-                    compCnfgFiles[m][FEATURE_RATIOS_PATH],
-                    m,
-                    workers
-            );
-        }
+template <typename T, typename U, typename V>
+ExqDataHandlerH5<T,U,V>::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities) {
+    for (int m = 0; m < modalities; m++) {
+        this->_descriptors.push_back(vector<ExqDescriptor<T,U,V>*>());
+        this->_topFeatPaths.push_back(compCnfgFiles[m][TOP_FEATURES_PATH]);
+        this->_featIdsPaths.push_back(compCnfgFiles[m][FEATURE_IDS_PATH]);
+        this->_ratiosPaths.push_back(compCnfgFiles[m][FEATURE_RATIOS_PATH]);
     }
 }
 
-ExqDataHandlerH5::~ExqDataHandlerH5() {
+template <typename T, typename U, typename V>
+void ExqDataHandlerH5<T,U,V>::loadData(vector<bool> &activeModalities, int workers) {
+    for (int m = 0; m < this->_topFeatPaths.size(); m++) {
+        if (!activeModalities[m]) {
+            continue;
+        }
+        loadDescriptorsFromFiles(
+                this->_topFeatPaths[m],
+                this->_featIdsPaths[m],
+                this->_ratiosPaths[m],
+                m,
+                workers
+        );
+    }
+}
+
+template <typename T, typename U, typename V>
+ExqDescriptor<T,U,V>* ExqDataHandlerH5<T,U,V>::getDescriptor(uint32_t i) {
+    return this->_descriptors[0][i];
+}
+
+template <typename T, typename U, typename V>
+ExqDescriptor<T,U,V>* ExqDataHandlerH5<T,U,V>::getDescriptor(uint32_t i, int mod) {
+    return this->_descriptors[mod][i];
+}
+
+template <typename T, typename U, typename V>
+int ExqDataHandlerH5<T,U,V>::getTotalItemsCount(int mod) {
+    return this->_descriptors[mod].size();
+}
+
+template <typename T, typename U, typename V>
+ExqDataHandlerH5<T,U,V>::~ExqDataHandlerH5() {
     for(auto vecs : this->_descriptors) {
         for (auto desc : vecs) {
             delete desc;
@@ -37,7 +60,8 @@ ExqDataHandlerH5::~ExqDataHandlerH5() {
     }
 }
 
-void ExqDataHandlerH5::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
+template <typename T, typename U, typename V>
+void ExqDataHandlerH5<T,U,V>::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
     //char script[1024];
     vector<uint64_t> topFeats;
     vector<uint64_t> featIds;
@@ -86,7 +110,8 @@ _data_item_count()
 Checks the number of items in the HDF5 iota-I64 dataset.
 -------------------------------------------------------------------------------
 */
-uint32_t ExqDataHandlerH5::dataItemCount    (char* filePath, const char* datasetName) {
+template <typename T, typename U, typename V>
+uint32_t ExqDataHandlerH5<T,U,V>::dataItemCount    (char* filePath, const char* datasetName) {
     hid_t f, dSet, dSpace;
     uint64_t itemCount;
 
@@ -109,7 +134,8 @@ _load_hdf5_dataset()
 Loads a chunk of the iota-I64 HDF5 dataset.
 -------------------------------------------------------------------------------
 */
-void ExqDataHandlerH5::loadHdf5Dataset  (void** data,
+template <typename T, typename U, typename V>
+void ExqDataHandlerH5<T,U,V>::loadHdf5Dataset  (void** data,
                                          char* filePath,
                                          hsize_t chunkOffset,
                                          hsize_t nChunk,
@@ -138,4 +164,5 @@ void ExqDataHandlerH5::loadHdf5Dataset  (void** data,
     H5Fclose(f);
 }
 
-
+template class exq::ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>;
+template class exq::ExqDataHandlerH5<uint64_t,uint64_t*,uint64_t*>;

@@ -13,34 +13,30 @@ namespace exq {
 
     using std::vector;
 
-    template <typename T, typename U, typename V>
+    template<class T>
     class ExqDataHandler {
     public:
+        ExqDataHandler() {}
+
+        virtual void loadData(vector<bool>& activeModalities, int workers) = 0;
+
         /**
-         * Returns descriptor with for item i. Assumes modality is 0.
+         * Returns descriptor for item i. Assumes modality is 0.
          * @param i - item id
          * @return Descriptor for item i.
          */
-        ExqDescriptor<T,U,V>* getItem(uint32_t i) {
-            return this->_descriptors[0][i];
-        }
+        virtual T* getDescriptor(uint32_t i) = 0;
 
         /**
-         * Returns item with id i from specific modality
+         * Returns descriptor for item i from specific modality
          * @param i - item id
          * @param mod - modality
          * @return Descriptor for item i in modality mod
          */
-        ExqDescriptor<T,U,V>* getItem(uint32_t i, int mod) {
-           return this->_descriptors[mod][i];
-        }
+        virtual T* getDescriptor(uint32_t i, int mod) = 0;
 
-        int getTotalItemsCount(int mod) {
-            return this->_descriptors[mod].size();
-        };
+        virtual int getTotalItemsCount(int mod) = 0;
 
-    protected:
-        vector<vector<ExqDescriptor<T,U,V>*>> _descriptors;
     };
 
 }
