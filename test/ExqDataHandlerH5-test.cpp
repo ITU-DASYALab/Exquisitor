@@ -16,7 +16,7 @@ using std::endl;
 
 class SingleModalityDataHandlerFixture: public ::testing::Test {
 public:
-    ExqDataHandlerH5* dataHandler;
+    ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>* dataHandler;
 
     SingleModalityDataHandlerFixture() {
         vector<vector<string>> compFiles(1);
@@ -24,7 +24,7 @@ public:
         compFiles[0] = fileNames;
         vector<bool> activeModalities {true};
 
-        this->dataHandler = new ExqDataHandlerH5(compFiles, 1, activeModalities, 1);
+        this->dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compFiles, 1);
     }
 
     void SetUp() {}
@@ -37,7 +37,7 @@ public:
 };
 
 TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
-    auto firstItem = this->dataHandler->getItem(0);
+    auto firstItem = this->dataHandler->getDescriptor(0);
     ASSERT_EQ(firstItem->getId(), 0);
     ASSERT_EQ(firstItem->getTop(), 2533274790396757);
     ASSERT_EQ(firstItem->getFeatureIds(), 1125912792203265);
@@ -47,7 +47,7 @@ TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
 }
 
 TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
-    auto lastItem = dataHandler->getItem(4, 0);
+    auto lastItem = dataHandler->getDescriptor(4, 0);
 
     ASSERT_EQ(lastItem->getId(), 4);
     ASSERT_EQ(lastItem->getTop(), 281474976711517);
@@ -64,9 +64,9 @@ TEST_F(SingleModalityDataHandlerFixture, count) {
 }
 
 TEST_F(SingleModalityDataHandlerFixture, inheritance) {
-    ExqDataHandler<uint64_t,uint64_t,uint64_t>* dh = dataHandler;
+    ExqDataHandler<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* dh = dataHandler;
 
-    ASSERT_EQ(dh->getItem(0)->getId(), 0);
+    ASSERT_EQ(dh->getDescriptor(0)->getId(), 0);
 
     cout << "TEST inheritance in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }
