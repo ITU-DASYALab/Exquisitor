@@ -28,7 +28,7 @@ namespace exq {
         /**
          * @brief constructs the Descriptor
          */
-        ExqDescriptor(uint32_t itemId, uint64_t top, uint64_t featIds, uint64_t ratios) {
+        ExqDescriptor(uint32_t itemId, T top, U featIds, V ratios) {
             id = itemId;
             topFeature = top;
             featureIds = featIds;

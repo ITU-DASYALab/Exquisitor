@@ -9,10 +9,7 @@
 
 #include <cmath>
 
-using exq::ExqFunctions;
-using exq::ExqFunctionsR64;
-using exq::ExqDataHandlerH5;
-
+using namespace exq;
 using std::vector;
 using std::string;
 using std::cout;
@@ -21,8 +18,8 @@ using std::endl;
 
 class FunctionsR64Fixture: public ::testing::Test {
 public:
-    ExqDataHandlerH5* dataHandler;
-    ExqFunctionsR64* functionsR64;
+    ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>* dataHandler;
+    ExqFunctionsR64<uint64_t,uint64_t,uint64_t>* functionsR64;
 
     FunctionsR64Fixture() {
         vector<vector<string>> compFiles(1);
@@ -30,8 +27,9 @@ public:
         compFiles[0] = fileNames;
         vector<bool> activeModalities {true};
 
-        this->dataHandler = new ExqDataHandlerH5(compFiles, 1, activeModalities, 1);
-        this->functionsR64 = new ExqFunctionsR64(5, 48, 16, 16, 1000, 1000);
+        this->dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compFiles, 1);
+        this->dataHandler->loadData(activeModalities,1);
+        this->functionsR64 = new ExqFunctionsR64<uint64_t,uint64_t,uint64_t>(5, 48, 16, 16, 1000, 1000);
     }
 
     void SetUp() {}
@@ -45,7 +43,7 @@ public:
 };
 
 TEST_F(FunctionsR64Fixture, getTopFeatIdForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItem(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getDescriptor(0));
     auto topFeature = firstItemDesc.getItem(0);
 
     ASSERT_EQ(topFeature.first, 9);
@@ -54,7 +52,7 @@ TEST_F(FunctionsR64Fixture, getTopFeatIdForFirstItemR64) {
 }
 
 TEST_F(FunctionsR64Fixture, getTopFeatValueForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItem(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getDescriptor(0));
     auto topFeature = firstItemDesc.getItem(0);
 
     ASSERT_FLOAT_EQ(topFeature.second, 0.853);
@@ -63,7 +61,7 @@ TEST_F(FunctionsR64Fixture, getTopFeatValueForFirstItemR64) {
 }
 
 TEST_F(FunctionsR64Fixture, getFeatIdsForFirstItemR64) {
-    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getItem(0));
+    auto firstItemDesc = this->functionsR64->getDescriptorInformation(*this->dataHandler->getDescriptor(0));
     int correctIds[4] = {1, 7, 3, 4};
     for (int i = 1; i < 5; i++) {
         ASSERT_EQ(firstItemDesc.getItem(i).first, correctIds[i-1]);
@@ -72,12 +70,12 @@ TEST_F(FunctionsR64Fixture, getFeatIdsForFirstItemR64) {
     cout << "TEST getFeatIdsForFirstItemR64 in FunctionsR64Fixture SUCCEEDED!" << endl;
 }
 
-//TEST_F(FunctionsR64Fixture, inheritance) {
-//    ExqFunctions<uint64_t,uint64_t,uint64_t>* f = this->functionsR64;
-//    auto firstItemDesc = f->getDescriptorInformation(*this->dataHandler->getItem(0));
-//    int correctIds[4] = {1, 7, 3, 4};
-//    for (int i = 1; i < 5; i++) {
-//        ASSERT_EQ(firstItemDesc.getItem(i).first, correctIds[i-1]);
-//    }
-//    cout << "TEST getFeatIdsForFirstItemR64 in FunctionsR64Fixture SUCCEEDED!" << endl;
-//}
+TEST_F(FunctionsR64Fixture, inheritance) {
+    ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* f = this->functionsR64;
+    auto firstItemDesc = f->getDescriptorInformation(*this->dataHandler->getDescriptor(0));
+    int correctIds[4] = {1, 7, 3, 4};
+    for (int i = 1; i < 5; i++) {
+        ASSERT_EQ(firstItemDesc.getItem(i).first, correctIds[i-1]);
+    }
+    cout << "TEST getFeatIdsForFirstItemR64 in FunctionsR64Fixture SUCCEEDED!" << endl;
+}

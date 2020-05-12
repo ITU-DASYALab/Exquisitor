@@ -18,7 +18,7 @@ ExqController::ExqController(
         vector<vector<string>> compFiles,
         vector<string> cnfgFiles,
         int bClusters,
-        ExqFunctions* functions
+        ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* functions
     ) {
 
 

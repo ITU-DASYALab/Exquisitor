@@ -63,9 +63,9 @@ ExqDataHandlerH5<T,U,V>::~ExqDataHandlerH5() {
 template <typename T, typename U, typename V>
 void ExqDataHandlerH5<T,U,V>::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
     //char script[1024];
-    vector<uint64_t> topFeats;
-    vector<uint64_t> featIds;
-    vector<uint64_t> featRatios;
+    vector<T> topFeats;
+    vector<U> featIds;
+    vector<V> featRatios;
 
     char topFeatureFileC[topFeatureFile.size() + 1];
     char featuresFileC[featuresFile.size() + 1];
@@ -99,7 +99,7 @@ void ExqDataHandlerH5<T,U,V>::loadDescriptorsFromFiles(string topFeatureFile, st
     //TODO: Add thread and chunk logic here
 
     for (uint32_t i = 0; i < totalItems; i++) {
-        this->_descriptors[modality].push_back(new ExqDescriptor<uint64_t,uint64_t,uint64_t>(i, topFeats[i], featIds[i], featRatios[i]));
+        this->_descriptors[modality].push_back(new ExqDescriptor<T,U,V>(i, topFeats[i], featIds[i], featRatios[i]));
     }
 }
 

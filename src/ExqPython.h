@@ -5,12 +5,12 @@
 #ifndef EXQUISITOR_EXQPYTHON_H
 #define EXQUISITOR_EXQPYTHON_H
 
+namespace exq {
 
+    class ExqPython {
 
-class ExqPython {
+    };
 
-};
-
-
+}
 
 #endif //EXQUISITOR_EXQPYTHON_H

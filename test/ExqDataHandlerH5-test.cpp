@@ -25,6 +25,7 @@ public:
         vector<bool> activeModalities {true};
 
         this->dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compFiles, 1);
+        this->dataHandler->loadData(activeModalities, 1);
     }
 
     void SetUp() {}

@@ -11,14 +11,14 @@ namespace exq {
 
     using std::vector;
 
-    template <typename T, typename U, typename V>
+    template <class T>
     class ExqClassifier {
     public:
         ExqClassifier();
 
         ~ExqClassifier();
 
-        void train(vector<ExqDescriptor<T,U,V>*> items);
+        void train(vector<T*> items);
 
 
 

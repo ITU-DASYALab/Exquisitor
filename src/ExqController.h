@@ -43,7 +43,7 @@ namespace exq {
                 vector<vector<string>> compFiles,
                 vector<string> cnfgFiles,
                 int bClusters,
-                ExqFunctions* functions
+                ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* functions
         );
 
         /**
@@ -104,7 +104,7 @@ namespace exq {
         int _workers;
         int _segments;
 
-        ExqFunctions* _functions;
+        ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* _functions;
 
         vector<bool> _seenItems;
 

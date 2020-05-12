@@ -3,13 +3,13 @@
 //
 
 #include "ExqFunctionsR64.h"
-#include "ExqFunctions.h"
 
 #include <cmath>
 
 using namespace exq;
 
-ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor) {
+template <typename T, typename U, typename V>
+ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor) {
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
     this->idsFeatureShift = idsShift;
@@ -17,20 +17,22 @@ ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int 
     this->topDivisor = topDivisor;
     this->ratiosDivisor = ratiosDivisor;
 
-    this->idsBitShifts = new uint64_t[nFeatures];
-    this->ratiosBitShifts = new uint64_t[nFeatures];
+    this->idsBitShifts = new uint64_t[this->nFeatures];
+    this->ratiosBitShifts = new uint64_t[this->nFeatures];
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
         this->idsBitShifts[i] = i * this->idsFeatureShift + remainder(64, this->idsFeatureShift);
         this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + remainder(64, this->ratiosFeatureShift);
     }
 }
 
-ExqFunctionsR64::~ExqFunctionsR64() {
+template <typename T, typename U, typename V>
+ExqFunctionsR64<T,U,V>::~ExqFunctionsR64() {
     delete this->idsBitShifts;
     delete this->ratiosBitShifts;
 }
 
-inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(ExqDescriptor<uint64_t,uint64_t,uint64_t> &descriptor) {
+template <typename T, typename U, typename V>
+inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformation(ExqDescriptor<T,U,V> &descriptor) {
     auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
 
     int featId = descriptor.getTop() >> this->topFeatureShift;
@@ -48,7 +50,8 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(ExqD
     return *exqArr;
 }
 
-double ExqFunctionsR64::distance(ExqClassifier<uint64_t,uint64_t,uint64_t>& hyperplane, ExqDescriptor<uint64_t,uint64_t,uint64_t> &descriptor) {
+template <typename T, typename U, typename V>
+double ExqFunctionsR64<T,U,V>::distance(ExqClassifier<ExqDescriptor<T,U,V>>& hyperplane, ExqDescriptor<T,U,V> &descriptor) {
     double score = 0.0;
     auto desc = getDescriptorInformation(descriptor);
 
@@ -61,6 +64,10 @@ double ExqFunctionsR64::distance(ExqClassifier<uint64_t,uint64_t,uint64_t>& hype
     return score;
 }
 
-void ExqFunctionsR64::rankItems(vector<ExqItem> &items2Rank) {
+template <typename T, typename U, typename V>
+void ExqFunctionsR64<T,U,V>::rankItems(vector<ExqItem> &items2Rank) {
 
 }
+
+template class exq::ExqFunctionsR64<uint64_t,uint64_t,uint64_t>;
+//template class exq::ExqFunctionsR64<uint64_t,uint64_t*,uint64_t*>;

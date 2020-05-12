@@ -26,6 +26,7 @@ namespace exq {
      * @class ExqFunctions
      * @brief the class contains the scoring and ranking functions
      */
+    template <class T>
     class ExqFunctions {
     public:
         ~ExqFunctions() {};
@@ -34,14 +35,12 @@ namespace exq {
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return
          */
-        template<typename T, typename U, typename V>
-        ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<T,U,V>& descriptor);
+        virtual ExqArray<pair<int,float>> getDescriptorInformation(T& descriptor) = 0;
 
         /**
          * @brief calculates distance between hyperplane and item
          */
-        template<typename T, typename U, typename V>
-        double distance(ExqClassifier<T,U,V>& hyperplane, ExqDescriptor<T,U,V>& descriptor);
+        virtual double distance(ExqClassifier<T>& hyperplane, T& descriptor) = 0;
 
         /**
          * @brief rank aggregation using scores from each modality

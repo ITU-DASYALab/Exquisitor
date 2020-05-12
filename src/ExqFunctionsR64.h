@@ -20,7 +20,8 @@ namespace exq {
      * @class ExqFunctions
      * @brief the class contains the scoring and ranking functions utilizing Ratio-i64 compression
      */
-    class ExqFunctionsR64 : public ExqFunctions {
+    template <typename T, typename U, typename V>
+    class ExqFunctionsR64 : public ExqFunctions<ExqDescriptor<T,U,V>> {
     public:
         ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor);
 
@@ -30,17 +31,17 @@ namespace exq {
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return
          */
-        ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<uint64_t,uint64_t,uint64_t>& descriptor);
+        ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<T,U,V>& descriptor) override;
 
         /**
          * @brief calculates distance between hyperplane and item
          */
-        double distance(ExqClassifier<uint64_t,uint64_t,uint64_t>& hyperplane, ExqDescriptor<uint64_t,uint64_t,uint64_t>& descriptor);
+        double distance(ExqClassifier<ExqDescriptor<T,U,V>>& hyperplane, ExqDescriptor<T,U,V>& descriptor) override;
 
         /**
          * @brief rank aggregation using scores from each modality
          */
-        void rankItems(vector<ExqItem>& items2Rank);
+        void rankItems(vector<ExqItem>& items2Rank) override;
 
     private:
         int nDescFeatures;
