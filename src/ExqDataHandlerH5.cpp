@@ -165,4 +165,3 @@ void ExqDataHandlerH5<T,U,V>::loadHdf5Dataset  (void** data,
 }
 
 template class exq::ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>;
-template class exq::ExqDataHandlerH5<uint64_t,uint64_t*,uint64_t*>;

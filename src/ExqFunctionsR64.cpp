@@ -70,4 +70,3 @@ void ExqFunctionsR64<T,U,V>::rankItems(vector<ExqItem> &items2Rank) {
 }
 
 template class exq::ExqFunctionsR64<uint64_t,uint64_t,uint64_t>;
-//template class exq::ExqFunctionsR64<uint64_t,uint64_t*,uint64_t*>;
