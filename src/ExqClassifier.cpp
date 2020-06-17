@@ -7,6 +7,8 @@
 #include <opencv2/ml.hpp>
 
 using namespace exq;
+using std::cout;
+using std::endl;
 
 ExqClassifier::ExqClassifier() {
     this->svm = SVMSGD::create();
@@ -14,7 +16,7 @@ ExqClassifier::ExqClassifier() {
     this->trainData = TrainData();
 }
 
-void ExqClassifier::trainSVM(vector<vector<double>> data, vector<double> labels) {
+std::vector<double> ExqClassifier::trainSVM(vector<vector<double>> data, vector<double> labels) {
     //Controller calculates scores and creates the 2D data vector
     this->trainData.data = data;
     this->trainData.labels = labels;
@@ -30,4 +32,13 @@ void ExqClassifier::trainSVM(vector<vector<double>> data, vector<double> labels)
     }
 
     this->svm->train(dataMat, cv::ml::ROW_SAMPLE, labelsMat);
+    cout << "Shift: " << this->svm->getShift() << endl;
+
+    cv::Mat weights = this->svm->getWeights();
+    vector<double> wVector = vector<double>();
+    if (weights.isContinuous()) {
+        wVector.assign(weights.begin<double>(), weights.end<double>());
+    }
+
+    return wVector;
 }

@@ -31,7 +31,7 @@ namespace exq {
 
         ~ExqClassifier();
 
-        void trainSVM(vector<vector<double>> data, vector<double> labels);
+        std::vector<double> trainSVM(vector<vector<double>> data, vector<double> labels);
 
     protected:
         Ptr<SVMSGD> svm;

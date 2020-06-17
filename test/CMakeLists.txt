@@ -16,5 +16,6 @@ add_test(NAME ${BINARY} COMMAND ${BINARY})
 #)
 
 target_link_libraries(${BINARY} ${HDF5_CXX_LIBRARIES})
+target_link_libraries(${BINARY} ${OpenCV_LIBS})
 #target_link_libraries(${BINARY} ${HDFQL_LIB})
 target_link_libraries(${BINARY} ${CMAKE_PROJECT_NAME}_lib gtest)
