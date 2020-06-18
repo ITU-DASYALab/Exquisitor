@@ -13,6 +13,7 @@ namespace exq {
     using std::vector;
     using cv::Ptr;
     using cv::ml::SVMSGD;
+    using cv::ml::SVM;
 
     //struct TrainData {
     //    double*** x; //VIS/TXT->POS/NEG->FEATURE
@@ -34,7 +35,8 @@ namespace exq {
         std::vector<double> trainSVM(vector<vector<double>> data, vector<double> labels);
 
     protected:
-        Ptr<SVMSGD> svm;
+        //Ptr<SVMSGD> svmsgd;
+        Ptr<SVM> svm;
         TrainData trainData;
     }; //End of class ExqClassifier
 
