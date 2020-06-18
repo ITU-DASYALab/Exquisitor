@@ -15,15 +15,9 @@ namespace exq {
     using cv::ml::SVMSGD;
     using cv::ml::SVM;
 
-    //struct TrainData {
-    //    double*** x; //VIS/TXT->POS/NEG->FEATURE
-    //    int* i;      //POS/NEG: Current Index
-    //    int* nEx;    //POS/NEG: Total number of examples
-    //};
-
     struct TrainData {
         vector<vector<double>> data; //Item->Feature
-        vector<double> labels; //POS/NEG aka. 1.0/-1.0
+        vector<short> labels; //POS/NEG aka. 1.0/-1.0
     };
 
     class ExqClassifier {
@@ -32,13 +26,17 @@ namespace exq {
 
         ~ExqClassifier();
 
-        std::vector<double> trainSVM(vector<vector<double>> data, vector<double> labels);
+        vector<double> trainSVM(vector<vector<double>> data, vector<short> labels);
+
+        vector<double> getWeights();
 
     protected:
-        //Ptr<SVMSGD> svmsgd;
         Ptr<SVM> svm;
         TrainData trainData;
+        vector<double> weights;
+
     }; //End of class ExqClassifier
+
 
 } //End of namespace exq
 

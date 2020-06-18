@@ -18,10 +18,10 @@ using std::vector;
 using std::pair;
 
 TEST (SvmModel, trainModel) {
-    const double POS_L = 1.0;
-    const double NEG_L = -1.0;
+    const short POS_L = 1;
+    const short NEG_L = -1;
     vector<vector<double>> trainingItems;
-    vector<double> trainingItemLabels;
+    vector<short> trainingItemLabels;
     auto classifier = new ExqClassifier();
     auto functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 281474976710655,
                                                                        200000000000000.0, 65535, 65535, 50000.0);
@@ -52,8 +52,8 @@ TEST (SvmModel, trainModel) {
         }
         for (int j = 0; j < descVals.getSize(); j++) {
             pair<int, float> item = descVals.getItem(j);
-            //cout << "Feat Id " << item.first << endl;
-            //cout << "Val " << item.second << endl;
+            cout << "Feat Id " << item.first << endl;
+            cout << "Val " << item.second << endl;
             featVals[item.first] = item.second;
         }
         trainingItems.push_back(featVals);
@@ -66,75 +66,76 @@ TEST (SvmModel, trainModel) {
         }
         for (int j = 0; j < descVals.getSize(); j++) {
             pair<int, float> item = descVals.getItem(j);
-            //cout << "Feat Id " << item.first << endl;
-            //cout << "Val " << item.second << endl;
+            cout << "Feat Id " << item.first << endl;
+            cout << "Val " << item.second << endl;
             featVals[item.first] = item.second;
         }
         trainingItems.push_back(featVals);
     }
 
     auto weights = classifier->trainSVM(trainingItems, trainingItemLabels);
-    //cout << "wSize " << weights.size() << endl;
+    //8845 is most positive feature - Should always be highest
+    cout << "P " << weights[8845] << endl;
     for (int i = 0; i < weights.size(); i++) {
         if (weights[i] != 0.0) {
             cout << i << " " << weights[i] << endl;
+            double w = weights[i];
+            assert(weights[8845] >= w);
         }
     }
-    //2760 -0.594964
-    cout << "N " << weights[2760] << endl;
-    assert(weights[2760] != 0.0);
-    //4999 -1.56635
-    cout << "N " << weights[4999] << endl;
-    assert(weights[4999] != 0.0);
-    //6486 -1.13351
-    cout << "N " << weights[6486] << endl;
-    assert(weights[6486] != 0.0);
-    //6601 -0.452613
-    cout << "N " << weights[6601] << endl;
-    assert(weights[6601] != 0.0);
-    //8819 1.08677
-    cout << "P " << weights[8819] << endl;
-    assert(weights[8819] != 0.0);
-    //8822 0.448359
-    cout << "P " << weights[8822] << endl;
-    assert(weights[8822] != 0.0);
-    //8827 0.00279007
-    cout << "P " << weights[8827] << endl;
-    assert(weights[8827] != 0.0);
-    //8836 0.426009
-    cout << "P " << weights[8836] << endl;
-    assert(weights[8836] != 0.0);
-    //8845 3.54465
-    cout << "P " << weights[8845] << endl;
-    assert(weights[8845] != 0.0);
-    //8858 0.00404155
-    cout << "P " << weights[8858] << endl;
-    assert(weights[8858] != 0.0);
-    //8880 0.00351882
-    cout << "P " << weights[8880] << endl;
-    assert(weights[8880] != 0.0);
-    //8890 0.002407
-    cout << "P " << weights[8890] << endl;
-    assert(weights[8890] != 0.0);
-    //8914 0.439329
-    cout << "P " << weights[8914] << endl;
-    assert(weights[8914] != 0.0);
-    //9299 -0.0382548
-    cout << "N " << weights[9299] << endl;
-    assert(weights[9299] != 0.0);
-    //9433 -0.773048
-    cout << "N " << weights[9433] << endl;
-    assert(weights[9433] != 0.0);
-    //9870 -0.903546
-    cout << "N " << weights[9870] << endl;
-    assert(weights[9870] != 0.0);
-    //9891 -0.0381898
-    cout << "N " << weights[9891] << endl;
-    assert(weights[9891] != 0.0);
-    //9927 -2.70116
-    cout << "N " << weights[9927] << endl;
-    assert(weights[9927] != 0.0);
-    //12694 -0.842394
-    cout << "N " << weights[12694] << endl;
-    assert(weights[12694] != 0.0);
+
+//    //2760 -0.594964
+//    cout << "N " << weights[2760] << endl;
+//    assert(weights[2760] != 0.0);
+//    //4999 -1.56635
+//    cout << "N " << weights[4999] << endl;
+//    assert(weights[4999] != 0.0);
+//    //6486 -1.13351
+//    cout << "N " << weights[6486] << endl;
+//    assert(weights[6486] != 0.0);
+//    //6601 -0.452613
+//    cout << "N " << weights[6601] << endl;
+//    assert(weights[6601] != 0.0);
+//    //8819 1.08677
+//    cout << "P " << weights[8819] << endl;
+//    assert(weights[8819] != 0.0);
+//    //8822 0.448359
+//    cout << "P " << weights[8822] << endl;
+//    assert(weights[8822] != 0.0);
+//    //8827 0.00279007
+//    cout << "P " << weights[8827] << endl;
+//    assert(weights[8827] != 0.0);
+//    //8836 0.426009
+//    cout << "P " << weights[8836] << endl;
+//    assert(weights[8836] != 0.0);
+//    //8858 0.00404155
+//    cout << "P " << weights[8858] << endl;
+//    assert(weights[8858] != 0.0);
+//    //8880 0.00351882
+//    cout << "P " << weights[8880] << endl;
+//    assert(weights[8880] != 0.0);
+//    //8890 0.002407
+//    cout << "P " << weights[8890] << endl;
+//    assert(weights[8890] != 0.0);
+//    //8914 0.439329
+//    cout << "P " << weights[8914] << endl;
+//    assert(weights[8914] != 0.0);
+//    //9299 -0.0382548
+//    cout << "N " << weights[9299] << endl;
+//    assert(weights[9299] != 0.0);
+//    //9433 -0.773048
+//    cout << "N " << weights[9433] << endl;
+//    assert(weights[9433] != 0.0);
+//    //9870 -0.903546
+//    cout << "N " << weights[9870] << endl;
+//    assert(weights[9870] != 0.0);
+//    //9891 -0.0381898
+//    cout << "N " << weights[9891] << endl;
+//    assert(weights[9891] != 0.0);
+//    //9927 -2.70116
+//    cout << "N " << weights[9927] << endl;
+//    assert(weights[9927] != 0.0);
+//    //12694 -0.842394
+//    cout << "N " << weights[12694] << endl;
+//    assert(weights[12694] != 0.0);
 }
