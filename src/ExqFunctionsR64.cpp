@@ -21,8 +21,8 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShif
     this->ratiosMask = (uint64_t)(pow(2, this->ratiosFeatureShift)-1);
     this->ratiosDivisor = ratiosDivisor;
 
-    this->idsBitShifts = new uint64_t[this->nFeatures];
-    this->ratiosBitShifts = new uint64_t[this->nFeatures];
+    this->idsBitShifts = new uint64_t[this->nDescFeatures];
+    this->ratiosBitShifts = new uint64_t[this->nDescFeatures];
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
         this->idsBitShifts[i] = i * this->idsFeatureShift + remainder(64, this->idsFeatureShift);
         this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + remainder(64, this->ratiosFeatureShift);
