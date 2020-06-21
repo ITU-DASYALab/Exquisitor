@@ -36,8 +36,6 @@ namespace exq {
 
         int getTotalItemsCount(int mod) override;
 
-        int suggest(int k, vector<ExqItem>& itemsToReturn, vector<double>& model, double bias, int startIndex) override;
-
         ~ExqDataHandlerH5();
 
     private:
