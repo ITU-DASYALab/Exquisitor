@@ -21,6 +21,13 @@ namespace exq {
         array<double, N_MOD> distance;
         double aggScore;
         int workerId;
+
+        ExqItem() {
+            itemId = UINT32_MAX;
+            int fromModality = -1;
+            double aggScore = -1.0;
+            workerId = -1;
+        };
     }; //End of struct ExqItem
 
 } //End of namespace exq

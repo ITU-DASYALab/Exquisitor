@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ExqDescriptor.h"
+#include "ExqItem.h"
 
 namespace exq {
 
@@ -36,6 +37,8 @@ namespace exq {
         virtual T* getDescriptor(uint32_t i, int mod) = 0;
 
         virtual int getTotalItemsCount(int mod) = 0;
+
+        virtual int suggest(int k, vector<ExqItem>& itemsToReturn, vector<double>& model, double bias, int startIndex) = 0;
 
     };
 
