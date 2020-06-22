@@ -13,7 +13,7 @@ ExqController::ExqController(
         int workers,
         int segments,
         int numberModalities,
-        vector<bool> activeModalities,
+        int modalities,
         vector<int> modFeatureDimensions,
         vector<vector<string>> compFiles,
         vector<string> cnfgFiles,
