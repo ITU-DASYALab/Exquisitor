@@ -10,7 +10,8 @@ using namespace exq;
 
 
 template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor) {
+ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, double topDivisor,
+                                        double ratiosDivisor) {
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
     this->idsFeatureShift = idsShift;
@@ -30,7 +31,8 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShif
 }
 
 template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
+ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
+                                        double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
     this->idsFeatureShift = idsShift;
@@ -65,7 +67,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
         featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
-        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask) / this->ratiosDivisor;
+        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask)/this->ratiosDivisor;
         exqArr->setItem(std::make_pair(featId, featVal), i+1);
     }
 
@@ -73,7 +75,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 }
 
 template <typename T, typename U, typename V>
-double ExqFunctionsR64<T,U,V>::distance(ExqClassifier& hyperplane, ExqDescriptor<T,U,V> &descriptor) {
+double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqDescriptor<T,U,V> &descriptor) {
     double score = 0.0;
     auto desc = getDescriptorInformation(descriptor);
 

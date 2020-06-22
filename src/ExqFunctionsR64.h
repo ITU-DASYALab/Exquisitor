@@ -23,8 +23,10 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ExqFunctionsR64 : public ExqFunctions<ExqDescriptor<T,U,V>> {
     public:
-        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
-        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor);
+        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, double topDivisor,
+                        double ratiosDivisor);
+        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
+                        uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor);
 
         ~ExqFunctionsR64();
 
@@ -37,7 +39,7 @@ namespace exq {
         /**
          * @brief calculates distance between hyperplane and item
          */
-        double distance(ExqClassifier& hyperplane, ExqDescriptor<T,U,V>& descriptor) override;
+        double distance(vector<double>& model, double bias, ExqDescriptor<T,U,V>& descriptor) override;
 
         /**
          * @brief rank aggregation using scores from each modality

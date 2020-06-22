@@ -40,7 +40,7 @@ namespace exq {
         /**
          * @brief calculates distance between hyperplane and item
          */
-        virtual double distance(ExqClassifier& hyperplane, T& descriptor) = 0;
+        virtual double distance(vector<double>& model, double bias, T& descriptor) = 0;
 
         /**
          * @brief rank aggregation using scores from each modality

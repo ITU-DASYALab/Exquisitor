@@ -21,8 +21,9 @@ namespace exq {
     class ExqWorker {
     public:
         template<typename T>
-        void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& model, double bias, int startIndex,
-                     int noms, ExqDataHandler<T>& handler, ExqFunctions<T>& functions);
+        void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& model, double bias, int currentSegment,
+                     int totalSegments, int noms, int modalities, ExqDataHandler<T>& handler,
+                     ExqFunctions<T>& functions);
     private:
 
     }; //End of class ExqWorker

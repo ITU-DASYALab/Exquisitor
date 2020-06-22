@@ -28,13 +28,19 @@ namespace exq {
     public:
         ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities);
 
-        void loadData(vector<bool>& activeModalities, int workers) override;
+        void loadData(int modalities, int workers) override;
 
         ExqDescriptor<T,U,V>* getDescriptor(uint32_t i) override;
 
         ExqDescriptor<T,U,V>* getDescriptor(uint32_t i, int mod) override;
 
         int getTotalItemsCount(int mod) override;
+
+        void selectClusters(int b, vector<double>& model, double bias,
+                            double(*dist)(vector<double>&,double,ExqDescriptor<T,U,V>&)) override;
+
+        void getSegmentDescriptors(int currentSegments, int totalSegments, int modalities,
+                                   vector<vector<ExqDescriptor<T,U,V>>>& descriptors) override;
 
         ~ExqDataHandlerH5();
 

@@ -18,15 +18,15 @@ namespace exq {
     struct ExqItem {
         uint32_t itemId;
         int fromModality;
-        array<double, N_MOD> distance;
+        vector<double> distance;
         double aggScore;
-        int workerId;
+        int segment;
 
         ExqItem() {
             itemId = UINT32_MAX;
             int fromModality = -1;
             double aggScore = -1.0;
-            workerId = -1;
+            segment = -1;
         };
     }; //End of struct ExqItem
 

@@ -21,11 +21,8 @@ ExqDataHandlerH5<T,U,V>::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles,
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::loadData(vector<bool> &activeModalities, int workers) {
-    for (int m = 0; m < this->_topFeatPaths.size(); m++) {
-        if (!activeModalities[m]) {
-            continue;
-        }
+void ExqDataHandlerH5<T,U,V>::loadData(int modalities, int workers) {
+    for (int m = 0; m < modalities; m++) {
         loadDescriptorsFromFiles(
                 this->_topFeatPaths[m],
                 this->_featIdsPaths[m],
@@ -52,6 +49,31 @@ int ExqDataHandlerH5<T,U,V>::getTotalItemsCount(int mod) {
 }
 
 template <typename T, typename U, typename V>
+void ExqDataHandlerH5<T,U,V>::selectClusters(int b, vector<double>& model, double bias,
+                                             double(*dist)(vector<double>&,double,ExqDescriptor<T,U,V>&)) {}
+
+template <typename T, typename U, typename V>
+void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegments, int totalSegments, int modalities,
+                                                    vector<vector<ExqDescriptor<T,U,V>>> &descriptors) {
+    for (int m = 0; m < modalities; m++) {
+        vector<ExqDescriptor<T,U,V>> descs = vector<ExqDescriptor<T,U,V>>();
+        int segmentSize = this->getTotalItemsCount(m)/totalSegments;
+        int startIndex = currentSegments * segmentSize;
+        int stopIndex;
+        if (currentSegments + 1 == totalSegments) {
+            stopIndex = this->getTotalItemsCount(m);
+        } else {
+            stopIndex = startIndex + segmentSize;
+        }
+
+        for (int i = startIndex; i < stopIndex; i++) {
+            descs.push_back(this->getDescriptor(i, m));
+        }
+        descriptors.push_back(descs);
+    }
+}
+
+template <typename T, typename U, typename V>
 ExqDataHandlerH5<T,U,V>::~ExqDataHandlerH5() {
     for(auto vecs : this->_descriptors) {
         for (auto desc : vecs) {
@@ -61,7 +83,8 @@ ExqDataHandlerH5<T,U,V>::~ExqDataHandlerH5() {
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers) {
+void ExqDataHandlerH5<T,U,V>::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile,
+        int modality, int workers) {
     //char script[1024];
     vector<T> topFeats;
     vector<U> featIds;
