@@ -24,8 +24,8 @@ namespace exq {
 
         ExqItem() {
             itemId = UINT32_MAX;
-            int fromModality = -1;
-            double aggScore = -1.0;
+            int fromModality = VIS;
+            double aggScore = 0.0;
             segment = -1;
         };
     }; //End of struct ExqItem

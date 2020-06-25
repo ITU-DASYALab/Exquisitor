@@ -51,5 +51,23 @@ void ExqWorker::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& 
         }
     }
 
-    //TODO: Utilize Functions rankItems function to fuse modalities and get k candidates
+    functions.rankItems(candidateItems, modalities);
+
+    int cnt = 0;
+    for (int i = 0; i < candidateItems.size(); i++) {
+        if (candidateItems[i].aggScore != -1) {
+            candidateItems[i].segment = currentSegment;
+
+            itemsToReturn[cnt++] = candidateItems[i];
+
+            for (int j = i; j < candidateItems.size(); j++) {
+                if (candidateItems[i].itemId == candidateItems[j].itemId) {
+                    candidateItems[j].aggScore = -1.0;
+                }
+            }
+        }
+        if (cnt == k) {
+            break;
+        }
+    }
 }

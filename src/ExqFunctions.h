@@ -45,7 +45,7 @@ namespace exq {
         /**
          * @brief rank aggregation using scores from each modality
          */
-        virtual void rankItems(vector<ExqItem>& items2Rank) = 0;
+        virtual void rankItems(vector<ExqItem>& items2Rank, int modalities) = 0;
 
     protected:
         int nFeatures;
