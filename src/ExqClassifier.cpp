@@ -24,7 +24,7 @@ ExqClassifier::~ExqClassifier() {
     delete this->svm;
 }
 
-std::vector<double> ExqClassifier::trainSVM(vector<vector<double>> data, vector<short> labels) {
+std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<short> labels) {
     //Controller calculates scores and creates the 2D data vector
     this->trainData.data = data;
     this->trainData.labels = labels;

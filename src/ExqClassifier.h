@@ -26,7 +26,7 @@ namespace exq {
 
         ~ExqClassifier();
 
-        vector<double> trainSVM(vector<vector<double>> data, vector<short> labels);
+        vector<double> train(vector<vector<double>> data, vector<short> labels);
 
         vector<double> getWeights();
 
