@@ -15,6 +15,8 @@
 #include "ExqConstants.h"
 #include "ExqClassifier.h"
 #include "ExqFunctions.h"
+#include "ExqDataHandler.h"
+#include "ExqWorker.h"
 //#include <taskflow/taskflow.hpp>
 
 namespace exq {
@@ -27,6 +29,7 @@ namespace exq {
      * @class ExqController
      * @brief the class that controls the flow of Exquisitor
      */
+    template <typename T>
     class ExqController {
     public:
         /**
@@ -38,15 +41,17 @@ namespace exq {
                 int workers,
                 int segments,
                 int numberModalities,
-                vector<bool> activeModalities,
                 vector<int> modFeatureDimensions,
-                vector<vector<string>> compFiles,
-                vector<string> cnfgFiles,
+                //vector<vector<string>> compFiles,
+                //vector<string> cnfgFiles,
                 int bClusters,
-                ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* functions
+                ExqFunctions<T>* functions,
+                ExqDataHandler<T>* handler,
+                ExqClassifier* classifier,
+                const ExqWorker* worker
         );
 
-        /**
+/**
          * @brief destroys the controller object
          */
         ~ExqController();
@@ -64,9 +69,9 @@ namespace exq {
          */
         void setWorkers(int workers);
         /**
-         * @brief sets the modality to use, default is 0 which means use all
+         * @brief sets the number of modalities
          */
-        void setModActivity(int modActivity);
+        void setNumModalities(int modalities);
         /**
          * @brief sets the modality to use, default is 0 which means use all
          */
@@ -80,7 +85,7 @@ namespace exq {
         /**
          * @brief train the Linear SVM model
          */
-        double* train(uint32_t* newXI, double* newY, int nNewTrain);
+        vector<double> train(uint32_t* newXI, double* newY, int nNewTrain);
 
         /**
          * @brief get \a k suggestions from the latest generated SVM model
@@ -100,12 +105,17 @@ namespace exq {
     private:
         int _iota;
         int _noms;
-        int _modActivity;
-        int _workers;
+        int _numWorkers;
         int _segments;
+        int _modalities;
+        int _bClusters;
 
-        ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* _functions;
+        ExqFunctions<T>* _functions;
+        ExqDataHandler<T>* _handler;
+        ExqClassifier* _classifier;
+        const ExqWorker* _worker;
 
+        vector<int> _featureDimensions;
         vector<bool> _seenItems;
 
         void _init_filters();
@@ -114,26 +124,35 @@ namespace exq {
 
     }; //End of class ExqController
 
-    inline void ExqController::setIota(int iota) {
+    template <typename T>
+    inline void ExqController<T>::setIota(int iota) {
         _iota = iota;
     }
 
-    inline void ExqController::setNominationsPerModality(int noms) {
+    template <typename T>
+    inline void ExqController<T>::setNominationsPerModality(int noms) {
         _noms = noms;
     }
 
-    inline void ExqController::setModActivity(int modActivity) {
-        _modActivity = modActivity;
+    template <typename T>
+    inline void ExqController<T>::setNumModalities(int modalities) {
+        _modalities = modalities;
     }
 
-    inline void ExqController::setWorkers(int workers) {
-        _workers = workers;
+    template <typename T>
+    inline void ExqController<T>::setWorkers(int numWorkers) {
+        _numWorkers = numWorkers;
     }
 
-    inline void ExqController::setSegments(int segments) {
+    template <typename T>
+    inline void ExqController<T>::setSegments(int segments) {
         _segments = segments;
     }
 
+    template <typename T>
+    inline void ExqController<T>::setClusterScope(int b) {
+        _bClusters = b;
+    }
 } //End of namespace exq
 
 
