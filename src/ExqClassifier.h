@@ -30,6 +30,8 @@ namespace exq {
 
         vector<double> getWeights();
 
+        double getBias();
+
     protected:
         Ptr<SVM> svm;
         TrainData trainData;

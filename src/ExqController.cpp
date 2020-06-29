@@ -49,11 +49,22 @@ vector<double> ExqController<T>::train(uint32_t* newXI, double* newY, int nNewTr
     vector<double> times = vector<double>();
     vector<vector<double>> data = vector<vector<double>>();
     vector<short> labels = vector<short>();
+    void (*dist)(vector<double>&, double, T&) = this->_functions.distance;
 
     //TODO: Get descriptor informations for positive and negatives and store them in data
 
     this->_classifier->train(data, labels);
+    this->_handler->selectClusters(this->_bClusters, this->_classifier->getWeights(), this->_classifier->getBias(), dist);
     return times;
+}
+
+template <typename T>
+TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
+    TopResults results = TopResults();
+
+    //TODO: Utilize Thread to collect segment suggestions from ExqWorker
+
+    return results;
 }
 
 

@@ -60,3 +60,7 @@ std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<sho
 inline vector<double> ExqClassifier::getWeights() {
     return this->weights;
 }
+
+inline double ExqClassifier::getBias() {
+    return this->svm->getDecisionFunction();
+}

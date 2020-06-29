@@ -93,9 +93,11 @@ void ExqFunctionsR64<T,U,V>::rankItems(vector<ExqItem> &items2Rank, int modaliti
     double rank = 0.0;
 
     //TODO: For more flexibility/adaptability for modalities implement own quicksort function
-    if (modalities == 1) {
+    if (modalities == 0) {
         std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreVis);
-    } else if (modalities == 2) {
+    } else if (modalities == 1) {
+        std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreTxt);
+    } else {
         std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreVis);
         _assignRanking(items2Rank, VIS);
         std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreTxt);

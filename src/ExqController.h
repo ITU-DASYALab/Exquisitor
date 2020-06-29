@@ -25,6 +25,12 @@ namespace exq {
     using std::vector;
     using std::string;
 
+    struct TopResults {
+        vector<uint32_t> suggs;
+        int* total;
+        double* time;
+        double overhead_time;
+    };
     /**
      * @class ExqController
      * @brief the class that controls the flow of Exquisitor
@@ -90,7 +96,7 @@ namespace exq {
         /**
          * @brief get \a k suggestions from the latest generated SVM model
          */
-        void suggest(int k);
+        TopResults suggest(int k, vector<uint32_t> seen);
 
         /**
          * @brief create a new SVM model
