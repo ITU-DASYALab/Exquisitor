@@ -28,7 +28,7 @@ public:
         vector<bool> activeModalities {true};
 
         this->dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compFiles, 1);
-        this->dataHandler->loadData(activeModalities,1);
+        this->dataHandler->loadData(activeModalities.size(),1);
         this->functionsR64 = new ExqFunctionsR64<uint64_t,uint64_t,uint64_t>(5, 48, 16, 16, 1000, 1000);
     }
 

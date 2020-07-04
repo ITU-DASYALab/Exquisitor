@@ -62,5 +62,6 @@ inline vector<double> ExqClassifier::getWeights() {
 }
 
 inline double ExqClassifier::getBias() {
-    return this->svm->getDecisionFunction();
+    cv::Mat alpha, svidx;
+    return this->svm->getDecisionFunction(0, alpha, svidx);
 }
