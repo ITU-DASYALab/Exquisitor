@@ -14,6 +14,7 @@
 namespace exq {
 
     using std::array;
+    using std::vector;
 
     struct ExqItem {
         uint32_t itemId;
