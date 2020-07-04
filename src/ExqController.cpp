@@ -62,7 +62,15 @@ template <typename T>
 TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
     TopResults results = TopResults();
 
-    //TODO: Utilize Thread to collect segment suggestions from ExqWorker
+    vector<ExqItem> items2Return;
+    //TODO: Fix Loop logic
+    for (int s = 0; s < this->_segments; s++) {
+        for (int w = 0; w < this->_numWorkers; w++) {
+            //TODO: Utilize Thread to collect segment suggestions from ExqWorker
+            _worker->suggest(k, items2Return, _classifier->getWeights(), _classifier->getBias(), s, this->_segments,
+                             this->_noms, this->_modalities, this->_handler, this->_functions);
+        }
+    }
 
     return results;
 }
