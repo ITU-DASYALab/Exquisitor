@@ -89,58 +89,37 @@ double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqD
 }
 
 template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::rankItems(vector<ExqItem> &items2Rank, int modalities) {
+void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modalities) {
     double rank = 0.0;
 
     //TODO: For more flexibility/adaptability for modalities implement own quicksort function
     if (modalities == 0) {
-        std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreVis);
+        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
+            return lhs.distance[VIS] < rhs.distance[VIS];
+        });
     } else if (modalities == 1) {
-        std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreTxt);
+        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
+            return lhs.distance[TXT] < rhs.distance[TXT];
+        });
     } else {
-        std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreVis);
-        _assignRanking(items2Rank, VIS);
-        std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreTxt);
-        _assignRanking(items2Rank, TXT);
+        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
+            return lhs.distance[VIS] < rhs.distance[VIS];
+        });
+        assignRanking(items2Rank, VIS);
 
-        std::sort(items2Rank.begin(), items2Rank.end(), _compareScoreAgg);
+        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
+            return lhs.distance[TXT] < rhs.distance[TXT];
+        });
+        assignRanking(items2Rank, TXT);
+
+        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
+            return lhs.aggScore > rhs.aggScore;
+        });
     }
 }
 
-int _compareScoreVis(const void* item1, const void* item2) {
-    double s1 = ((ExqItem*)item1)->distance[VIS];
-    double s2 = ((ExqItem*)item2)->distance[VIS];
-    if (s1 < s2) {
-        return 1;
-    } else if (s1 > s2) {
-        return -1;
-    }
-    return 0;
-}
-
-int _compareScoreTxt(const void* item1, const void* item2) {
-    double s1 = ((ExqItem*)item1)->distance[TXT];
-    double s2 = ((ExqItem*)item2)->distance[TXT];
-    if (s1 < s2) {
-        return 1;
-    } else if (s1 > s2) {
-        return -1;
-    }
-    return 0;
-}
-
-int _compareScoreAgg(const void* item1, const void* item2) {
-    double s1 = ((ExqItem*)item1)->aggScore;
-    double s2 = ((ExqItem*)item2)->aggScore;
-    if (s1 < s2) {
-        return -1;
-    } else if (s1 > s2) {
-        return 1;
-    }
-    return 0;
-}
-
-void _assignRanking(vector<ExqItem>& items, int mod) {
+template <typename T, typename U, typename V>
+void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
     double rank = 0.0;
     items[0].aggScore += 0.0;
 

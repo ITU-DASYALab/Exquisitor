@@ -43,9 +43,14 @@ namespace exq {
         virtual double distance(vector<double>& model, double bias, T& descriptor) = 0;
 
         /**
-         * @brief rank aggregation using scores from each modality
+         * @brief sort items using scores from each modality
          */
-        virtual void rankItems(vector<ExqItem>& items2Rank, int modalities) = 0;
+        virtual void sortItems(vector<ExqItem>& items2Rank, int modalities) = 0;
+
+        /**
+         * @brief assign aggregate score for multimodal items
+         */
+        virtual void assignRanking(vector<ExqItem>& items, int mod) = 0;
 
     protected:
         int nFeatures;

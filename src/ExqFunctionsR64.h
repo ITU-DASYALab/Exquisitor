@@ -44,7 +44,12 @@ namespace exq {
         /**
          * @brief rank aggregation using scores from each modality
          */
-        void rankItems(vector<ExqItem>& items2Rank, int modalities) override;
+        void sortItems(vector<ExqItem>& items2Rank, int modalities) override;
+
+        /**
+         * @brief assign aggregate score for multimodal items
+         */
+        void assignRanking(vector<ExqItem>& items, int mod) override;
 
     private:
         int nDescFeatures;
@@ -60,10 +65,6 @@ namespace exq {
         double ratiosDivisor;
     }; //End of class ExqFunctions
 
-    int _compareScoreVis(const void* item1, const void* item2);
-    int _compareScoreTxt(const void* item1, const void* item2);
-    int _compareScoreAgg(const void* item1, const void* item2);
-    void _assignRanking(vector<ExqItem>& items, int mod);
 } //End of namespace exq
 
 #endif //EXQUISITOR_EXQFUNCTIONSR64_H
