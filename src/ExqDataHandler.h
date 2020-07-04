@@ -41,7 +41,7 @@ namespace exq {
         virtual void selectClusters(int b, vector<double>& model, double bias,
                                     double(*dist)(vector<double>&model, double, T&)) = 0;
 
-        virtual void getSegmentDescriptors(int currentSegments, int totalSegments, int modalities,
+        virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                            vector<vector<T>>& descriptors) = 0;
     };
 

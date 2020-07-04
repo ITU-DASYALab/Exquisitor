@@ -39,7 +39,7 @@ namespace exq {
         void selectClusters(int b, vector<double>& model, double bias,
                             double(*dist)(vector<double>&,double,ExqDescriptor<T,U,V>&)) override;
 
-        void getSegmentDescriptors(int currentSegments, int totalSegments, int modalities,
+        void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors) override;
 
         ~ExqDataHandlerH5();

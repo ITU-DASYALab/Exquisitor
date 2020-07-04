@@ -53,14 +53,14 @@ void ExqDataHandlerH5<T,U,V>::selectClusters(int b, vector<double>& model, doubl
                                              double(*dist)(vector<double>&,double,ExqDescriptor<T,U,V>&)) {}
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegments, int totalSegments, int modalities,
+void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                                     vector<vector<ExqDescriptor<T,U,V>>> &descriptors) {
     for (int m = 0; m < modalities; m++) {
         vector<ExqDescriptor<T,U,V>> descs = vector<ExqDescriptor<T,U,V>>();
         int segmentSize = this->getTotalItemsCount(m)/totalSegments;
-        int startIndex = currentSegments * segmentSize;
+        int startIndex = currentSegment * segmentSize;
         int stopIndex;
-        if (currentSegments + 1 == totalSegments) {
+        if (currentSegment + 1 == totalSegments) {
             stopIndex = this->getTotalItemsCount(m);
         } else {
             stopIndex = startIndex + segmentSize;
