@@ -91,6 +91,12 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
         }
     }
 
+    _functions->sortItems(items2Return, _modalities);
+
+    for (int i = 0; i < k; i++) {
+        results.suggs.push_back(items2Return[i].itemId);
+    }
+
     return results;
 }
 
