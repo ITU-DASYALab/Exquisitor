@@ -4,7 +4,6 @@
 
 #include "ExqController.h"
 #include "ExqFunctionsR64.h"
-#include <thread>
 #include <future>
 
 using namespace exq;
