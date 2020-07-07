@@ -11,6 +11,7 @@
 #include <array>
 #include <vector>
 #include <string>
+#include <future>
 
 #include "ExqConstants.h"
 #include "ExqClassifier.h"
@@ -24,6 +25,7 @@ namespace exq {
     using std::array;
     using std::vector;
     using std::string;
+    using std::future;
 
     struct TopResults {
         vector<uint32_t> suggs;
@@ -121,6 +123,7 @@ namespace exq {
         ExqClassifier* _classifier;
         const ExqWorker* _worker;
 
+        vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;
         vector<bool> _seenItems;
 
