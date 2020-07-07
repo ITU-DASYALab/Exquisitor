@@ -6,6 +6,7 @@
 #define EXQUISITOR_EXQDATAHANDLER_H
 
 #include <vector>
+#include <unordered_set>
 
 #include "ExqDescriptor.h"
 #include "ExqItem.h"
@@ -13,6 +14,7 @@
 namespace exq {
 
     using std::vector;
+    using std::unordered_set;
 
     template<class T>
     class ExqDataHandler {
@@ -42,7 +44,7 @@ namespace exq {
                                     double(*dist)(vector<double>&model, double, T&)) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                           vector<vector<T>>& descriptors) = 0;
+                                           vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems) = 0;
     };
 
 }

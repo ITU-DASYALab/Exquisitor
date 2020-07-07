@@ -40,7 +40,8 @@ namespace exq {
                             double(*dist)(vector<double>&,double,ExqDescriptor<T,U,V>&)) override;
 
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                   vector<vector<ExqDescriptor<T,U,V>>>& descriptors) override;
+                                   vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
+                                   unordered_set<uint32_t>& seenItems) override;
 
         ~ExqDataHandlerH5();
 

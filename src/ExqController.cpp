@@ -73,13 +73,17 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
     for (int i = 0; i < _numWorkers; i++) {
         workerSegments[i] = -1;
     }
+    unordered_set<uint32_t> seenSet;
+    for (int i = 0; i < seenItems.size(); i++) {
+        seenSet.insert(seenItems[i]);
+    }
     vector<ExqItem> items2Return;
     while (completedSegments < _segments) {
         for (int w = 0; w < _numWorkers; w++) {
             if (workerSegments[w] == -1 && runningSegments < _segments) {
                 _threads[w] = async(_worker->suggest(k, items2Return, _classifier->getWeights(),
                                     _classifier->getBias(), runningSegments, _segments, _noms, _modalities,
-                                    _handler, _functions));
+                                    _handler, _functions, seenSet));
                 workerSegments[w] = runningSegments;
                 runningSegments++;
             } else if (workerSegments[w] != -1 &&
@@ -90,13 +94,14 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
             }
         }
     }
-
+    //TODO: Duplicate check
     _functions->sortItems(items2Return, _modalities);
 
     for (int i = 0; i < k; i++) {
         results.suggs.push_back(items2Return[i].itemId);
     }
 
+    //TODO: Get other results values
     return results;
 }
 
