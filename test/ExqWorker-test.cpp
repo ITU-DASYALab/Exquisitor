@@ -7,13 +7,17 @@
 #include "ExqFunctionsR64.h"
 #include "ExqDataHandlerH5.h"
 
+using std::vector;
+using std::string;
+using namespace exq;
+
 class SingleModalityWorker: public ::testing::Test {
 public:
     ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>* dataHandler;
     ExqFunctionsR64<uint64_t,uint64_t,uint64_t>* functionsR64;
 
     //TODO: Initialize all mock object and values to test suggest
-    SingleModalityDataHandlerFixture() {
+    SingleModalityWorker() {
         vector<vector<string>> compFiles(1);
         vector<string> fileNames {"data/random_5_10/top.h5", "data/random_5_10/ids.h5", "data/random_5_10/ratios.h5"};
         compFiles[0] = fileNames;
