@@ -74,6 +74,7 @@ TEST (SvmModel, trainModel) {
     }
 
     auto weights = classifier->train(trainingItems, trainingItemLabels);
+    auto bias = classifier->getBias();
     //8845 is most positive feature - Should always be highest
     cout << "P " << weights[8845] << endl;
     for (int i = 0; i < weights.size(); i++) {

@@ -49,16 +49,22 @@ ExqController<T>::ExqController(
 }
 
 template <typename T>
-//TODO: Come up with more descriptive signature argument names
-vector<double> ExqController<T>::train(uint32_t* newXI, double* newY, int nNewTrain) {
+vector<double> ExqController<T>::train(vector<uint32_t> trainIds, vector<short> trainLabels) {
     vector<double> times = vector<double>();
-    vector<vector<double>> data = vector<vector<double>>();
-    vector<short> labels = vector<short>();
+    vector<vector<double>> trainingItems = vector<vector<double>>();
     void (*dist)(vector<double>&, double, T&) = _functions->distance;
 
-    //TODO: Get descriptor informations for positive and negatives and store them in data
+    for (int i = 0; i < trainIds.size(); i++) {
+        ExqArray<pair<int,float>> descVals = _functions->getDescriptorInformation(_handler->getDescriptor(i));
+        vector<double> featVals = vector<double>(N_TOTAL_FEAT, 0.0);
+        for (int j = 0; j < descVals.getSize(); j++) {
+            pair<int,float> item = descVals.getItem(i);
+            featVals[item.first] = item.second;
+        }
+        trainingItems.push_back(featVals);
+    }
 
-    _classifier->train(data, labels);
+    _classifier->train(trainingItems, trainLabels);
     _handler->selectClusters(_bClusters, _classifier->getWeights(), _classifier->getBias(), dist);
     return times;
 }

@@ -93,7 +93,7 @@ namespace exq {
         /**
          * @brief train the Linear SVM model
          */
-        vector<double> train(uint32_t* newXI, double* newY, int nNewTrain);
+        vector<double> train(vector<uint32_t> trainIds, vector<short> trainLabels);
 
         /**
          * @brief get \a k suggestions from the latest generated SVM model
