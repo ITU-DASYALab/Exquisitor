@@ -4,6 +4,11 @@ project(Exquisitor)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
 
+# Python3
+find_package (Python3 COMPONENTS Interpreter Development)
+link_directories(${Python3_LIBRARY_DIRS})
+include_directories(${Python3_INCLUDE_DIRS})
+
 # HDF5
 find_package(HDF5 COMPONENTS CXX REQUIRED)
 link_directories(${HDF5_LIBRARY_DIRS})
