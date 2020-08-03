@@ -52,8 +52,6 @@ namespace exq {
          */
         virtual void assignRanking(vector<ExqItem>& items, int mod) = 0;
 
-    protected:
-        int nFeatures;
     }; //End of class ExqFunctions
 
 } //End of namespace exq

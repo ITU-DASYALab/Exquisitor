@@ -89,15 +89,15 @@ double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqD
 }
 
 template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modalities) {
+void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality) {
     double rank = 0.0;
 
     //TODO: For more flexibility/adaptability for modalities implement own quicksort function
-    if (modalities == 0) {
+    if (modality == 0) {
         std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
             return lhs.distance[VIS] < rhs.distance[VIS];
         });
-    } else if (modalities == 1) {
+    } else if (modality == 1) {
         std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
             return lhs.distance[TXT] < rhs.distance[TXT];
         });
