@@ -6,8 +6,14 @@
 #define EXQUISITOR_EXQPYINTERFACE_H
 
 #include <Python.h>
+#include "ExqController.h"
 
 namespace exq {
+
+    struct PyExquisitorV1 {
+        ExqController<ExqDescriptor<uint64_t, uint64_t, uint64_t>>* _controller;
+    };
+    PyExquisitorV1 _pyExqV1;
 
     PyMODINIT_FUNC PyInit_exquisitor(void);
 
