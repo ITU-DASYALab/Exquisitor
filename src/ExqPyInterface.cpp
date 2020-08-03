@@ -62,7 +62,24 @@ PyObject* initialize_py(PyObject* self, PyObject* args) {
 }
 
 PyObject* train_py(PyObject* self, PyObject* args) {
+    vector<uint32_t> trainIds = vector<uint32_t>();
+    vector<short> trainLabels = vector<short>();
 
+    PyObject* trainIdsPy = PyTuple_GetItem(args, 0);
+    PyObject* trainLabelsPy = PyTuple_GetItem(args, 1);
+    for (int i = 0; i < PyList_Size(trainIdsPy); i++) {
+        trainIds.push_back((int)PyLong_AsLong(PyList_GetItem(trainIdsPy,i)));
+        trainLabels.push_back((short)PyLong_AsLong(PyList_GetItem(trainLabelsPy,i)));
+    }
+
+    auto times = _pyExqV1._controller->train(trainIds, trainLabels);
+
+    PyObject* timeList = PyList_New(times.size());
+    for (int i = 0; i < times.size(); i++) {
+        PyList_SET_ITEM(timeList, i, PyFloat_FromDouble(times[i]));
+    }
+
+    return timeList;
 }
 
 PyObject* suggest_py(PyObject* self, PyObject* args) {
