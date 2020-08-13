@@ -11,6 +11,8 @@ using std::milli;
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
 using std::chrono::time_point;
+using std::cout;
+using std::endl;
 
 PyObject* initialize_py(PyObject* self, PyObject* args) {
     vector<vector<string>> compCnfgFiles = vector<vector<string>>();
@@ -39,8 +41,45 @@ PyObject* initialize_py(PyObject* self, PyObject* args) {
         modFeatureDimensions.push_back((int)PyLong_AsLong(PyList_GetItem(modFeatureDimensionsPy,i)));
     }
 
+    int func = (int)PyLong_AsLong(PyTuple_GetItem(args,8));
     auto dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compCnfgFiles, numModalities);
-    auto functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 1000, 1000);
+    ExqFunctions<ExqDescriptor<uint64_t, uint64_t, uint64_t>>* functions;
+    switch(func) {
+        case 0: {
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 1000, 1000);
+            break;
+        }
+        case 1: {
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 281474976710655,
+                                                                          200000000000000.0, 65535, 65535, 50000.0);
+            break;
+        }
+        case 2: {
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, 54, 10, 10, 18014398509481983,
+                                                                          10000000000000000.0, 1023, 1023, 1000.0);
+            break;
+        }
+        case 3: {
+            int nFeat = (int) PyLong_AsLong(PyTuple_GetItem(args, 9));
+            int topShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 10));
+            int idsShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 11));
+            int ratiosShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 12));
+            uint64_t topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 13));
+            double topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 14));
+            uint64_t idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 15));
+            uint64_t ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 16));
+            double ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 17));
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, topShift, idsShift, ratiosShift,
+                                                                          topMask,
+                                                                          topDivisor, idsMask, ratiosMask,
+                                                                          ratiosDivisor);
+            break;
+        }
+        default: {
+            cout << "WRONG ExqFunctions SELECTION!" << endl;
+            exit(1);
+        }
+    }
     auto classifier = new ExqClassifier();
     const auto worker = new ExqWorker();
 
