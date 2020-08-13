@@ -31,7 +31,7 @@ namespace exq {
         vector<uint32_t> suggs;
         int* total;
         double* time;
-        double overhead_time;
+        double overheadTime;
     };
     /**
      * @class ExqController

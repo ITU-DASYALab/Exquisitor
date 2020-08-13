@@ -7,21 +7,24 @@
 #include "ExqFunctionsR64.h"
 
 using namespace exq;
+using std::milli;
+using std::chrono::duration;
+using std::chrono::high_resolution_clock;
+using std::chrono::time_point;
 
 PyObject* initialize_py(PyObject* self, PyObject* args) {
     vector<vector<string>> compCnfgFiles = vector<vector<string>>();
-    int iota, noms, numWorkers, segments, numModalities, bClusters;
     vector<int> modFeatureDimensions = vector<int>();
 
     PyObject* compCnfgFilesPy;
     PyObject* modFeatureDimensionsPy;
 
-    iota = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
-    noms = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
-    numWorkers = (int)PyLong_AsLong(PyTuple_GetItem(args, 2));
-    segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 3));
-    numModalities = (int)PyLong_AsLong(PyTuple_GetItem(args, 4));
-    bClusters = (int)PyLong_AsLong(PyTuple_GetItem(args, 5));
+    int iota = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
+    int noms = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
+    int numWorkers = (int)PyLong_AsLong(PyTuple_GetItem(args, 2));
+    int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 3));
+    int numModalities = (int)PyLong_AsLong(PyTuple_GetItem(args, 4));
+    int bClusters = (int)PyLong_AsLong(PyTuple_GetItem(args, 5));
     compCnfgFilesPy = PyTuple_GetItem(args, 6);
     for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
         PyObject* cnfgFilesPy = PyList_GetItem(compCnfgFilesPy, i);
@@ -81,10 +84,7 @@ PyObject* train_py(PyObject* self, PyObject* args) {
 }
 
 PyObject* suggest_py(PyObject* self, PyObject* args) {
-    int r, nWorkers;
-    vector<uint32_t> seen;
     TopResults top;
-    PyObject* alreadySeenPy;
     PyObject* suggsPy;
     PyObject* totalPy;
     PyObject* workerTimesPy;
@@ -92,15 +92,53 @@ PyObject* suggest_py(PyObject* self, PyObject* args) {
     PyObject* totalTimePy;
     PyObject* overheadTimePy;
 
+    vector<uint32_t> seen = vector<uint32_t>();
+    int r = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
+    int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
+    PyObject* alreadySeenPy = PyTuple_GetItem(args, 2);
+
+    for (int i = 0; i < PyList_Size(alreadySeenPy); i++) {
+        seen.push_back((uint32_t)PyLong_AsLong(PyList_GetItem(alreadySeenPy,i)));
+    }
+    time_point<high_resolution_clock> begin = high_resolution_clock::now();
     top = _pyExqV1._controller->suggest(r, seen);
+    time_point<high_resolution_clock> finish = high_resolution_clock::now();
+
+    suggsPy = PyList_New(top.suggs.size());
+    totalPy = PyList_New(segments);
+    workerTimesPy = PyList_New(segments);
+    finalPy = PyTuple_New(5);
+    totalTimePy = PyFloat_FromDouble(duration<double, milli>(finish-begin).count());
+    overheadTimePy = PyFloat_FromDouble(top.overheadTime);
+
+    for (int i = 0; i < top.suggs.size(); i++) {
+        PyList_SetItem(suggsPy, i, PyLong_FromUnsignedLong((unsigned long)(top.suggs[i])));
+    }
+    for (int i = 0; i < segments; i++) {
+        PyList_SetItem(totalPy, i, PyLong_FromUnsignedLong(top.total[i]));
+        PyList_SetItem(workerTimesPy, i, PyLong_FromUnsignedLong(top.time[i]));
+    }
+
+    PyTuple_SetItem(finalPy, 0, suggsPy);
+    PyTuple_SetItem(finalPy, 1, totalPy);
+    PyTuple_SetItem(finalPy, 2, workerTimesPy);
+    PyTuple_SetItem(finalPy, 3, totalTimePy);
+    PyTuple_SetItem(finalPy, 4, overheadTimePy);
+
+    return finalPy;
 }
 
 PyObject* reset_model_py(PyObject* self, PyObject* args) {
+    _pyExqV1._controller->reset_model();
 
+    Py_IncRef(Py_None);
+    return Py_None;
 }
 
 PyObject* safe_exit_py(PyObject* self, PyObject* args) {
-
+    //TODO: Call terminate function
+    Py_IncRef(Py_None);
+    return Py_None;
 }
 
 PyMODINIT_FUNC PyInit_exquisitor(void) {
