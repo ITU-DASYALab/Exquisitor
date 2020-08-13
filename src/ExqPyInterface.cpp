@@ -16,8 +16,6 @@ PyObject* initialize_py(PyObject* self, PyObject* args) {
     PyObject* compCnfgFilesPy;
     PyObject* modFeatureDimensionsPy;
 
-    Py_Initialize();
-
     iota = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
     noms = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
     numWorkers = (int)PyLong_AsLong(PyTuple_GetItem(args, 2));
@@ -83,7 +81,18 @@ PyObject* train_py(PyObject* self, PyObject* args) {
 }
 
 PyObject* suggest_py(PyObject* self, PyObject* args) {
+    int r, nWorkers;
+    vector<uint32_t> seen;
+    TopResults top;
+    PyObject* alreadySeenPy;
+    PyObject* suggsPy;
+    PyObject* totalPy;
+    PyObject* workerTimesPy;
+    PyObject* finalPy;
+    PyObject* totalTimePy;
+    PyObject* overheadTimePy;
 
+    top = _pyExqV1._controller->suggest(r, seen);
 }
 
 PyObject* reset_model_py(PyObject* self, PyObject* args) {
