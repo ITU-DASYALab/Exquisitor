@@ -24,7 +24,7 @@ ExqController<T>::ExqController(
         ExqFunctions<T>* functions,
         ExqDataHandler<T>* handler,
         ExqClassifier* classifier,
-        const ExqWorker* worker
+        ExqWorker<T>* worker
     ) {
 
     //Set standard fields
@@ -52,10 +52,10 @@ template <typename T>
 vector<double> ExqController<T>::train(vector<uint32_t> trainIds, vector<short> trainLabels) {
     vector<double> times = vector<double>();
     vector<vector<double>> trainingItems = vector<vector<double>>();
-    void (*dist)(vector<double>&, double, T&) = _functions->distance;
 
     for (int i = 0; i < trainIds.size(); i++) {
-        ExqArray<pair<int,float>> descVals = _functions->getDescriptorInformation(_handler->getDescriptor(i));
+        T desc = _handler->getDescriptor(i);
+        ExqArray<pair<int,float>> descVals = _functions->getDescriptorInformation(desc);
         vector<double> featVals = vector<double>(N_TOTAL_FEAT, 0.0);
         for (int j = 0; j < descVals.getSize(); j++) {
             pair<int,float> item = descVals.getItem(i);
@@ -65,7 +65,8 @@ vector<double> ExqController<T>::train(vector<uint32_t> trainIds, vector<short> 
     }
 
     _classifier->train(trainingItems, trainLabels);
-    _handler->selectClusters(_bClusters, _classifier->getWeights(), _classifier->getBias(), dist);
+    vector<double> weights = _classifier->getWeights();
+    _handler->selectClusters(_bClusters, weights, _classifier->getBias(), *_functions);
     return times;
 }
 
@@ -86,9 +87,9 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
     while (completedSegments < _segments) {
         for (int w = 0; w < _numWorkers; w++) {
             if (workerSegments[w] == -1 && runningSegments < _segments) {
-                _threads[w] = async(_worker->suggest(k, items2Return, _classifier->getWeights(),
-                                    _classifier->getBias(), runningSegments, _segments, _noms, _modalities,
-                                    _handler, _functions, seenSet));
+                _threads[w] = async(std::launch::async, [&] { return _worker->suggest(k, items2Return,
+                                _classifier->getWeights(),_classifier->getBias(), runningSegments, _segments,
+                                _noms, _modalities, _handler, _functions, seenSet); });
                 workerSegments[w] = runningSegments;
                 runningSegments++;
             } else if (workerSegments[w] != -1 &&
@@ -109,5 +110,11 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
     //TODO: Get other results values
     return results;
 }
+
+template <typename T>
+void ExqController<T>::reset_model() {
+
+}
+template class exq::ExqController<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
 
 

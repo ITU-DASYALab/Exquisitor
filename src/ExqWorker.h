@@ -18,12 +18,14 @@ namespace exq {
 
     using std::vector;
 
+    template<typename T>
     class ExqWorker {
     public:
-        template<typename T>
-        static void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& model, double bias,
-                            int currentSegment, int totalSegments, int noms, int modalities,
-                            ExqDataHandler<T>& handler, ExqFunctions<T>& functions, unordered_set<uint32_t> seenItems);
+        ExqWorker();
+
+        void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double> model, double bias,
+                     int currentSegment, int totalSegments, int noms, int modalities,
+                     ExqDataHandler<T>*& handler, ExqFunctions<T>*& functions, unordered_set<uint32_t> seenItems);
     private:
 
     }; //End of class ExqWorker

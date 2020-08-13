@@ -16,6 +16,7 @@
 #include "ExqDataHandler.h"
 #include "ExqDescriptor.h"
 #include "ExqConstants.h"
+#include "ExqFunctions.h"
 
 namespace exq {
 
@@ -37,7 +38,7 @@ namespace exq {
         int getTotalItemsCount(int mod) override;
 
         void selectClusters(int b, vector<double>& model, double bias,
-                            double(*dist)(vector<double>&,double,ExqDescriptor<T,U,V>&)) override;
+                            ExqFunctions<ExqDescriptor<T,U,V>>& functions) override;
 
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,

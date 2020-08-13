@@ -14,7 +14,8 @@ using std::chrono::time_point;
 using std::cout;
 using std::endl;
 
-PyObject* initialize_py(PyObject* self, PyObject* args) {
+PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
+    _pyExqV1 = PyExquisitorV1();
     vector<vector<string>> compCnfgFiles = vector<vector<string>>();
     vector<int> modFeatureDimensions = vector<int>();
 
@@ -81,7 +82,7 @@ PyObject* initialize_py(PyObject* self, PyObject* args) {
         }
     }
     auto classifier = new ExqClassifier();
-    const auto worker = new ExqWorker();
+    auto worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
 
     _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t, uint64_t, uint64_t>>(
             iota,
@@ -101,7 +102,7 @@ PyObject* initialize_py(PyObject* self, PyObject* args) {
     return Py_None;
 }
 
-PyObject* train_py(PyObject* self, PyObject* args) {
+PyObject* exq::train_py(PyObject* self, PyObject* args) {
     vector<uint32_t> trainIds = vector<uint32_t>();
     vector<short> trainLabels = vector<short>();
 
@@ -122,7 +123,7 @@ PyObject* train_py(PyObject* self, PyObject* args) {
     return timeList;
 }
 
-PyObject* suggest_py(PyObject* self, PyObject* args) {
+PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     TopResults top;
     PyObject* suggsPy;
     PyObject* totalPy;
@@ -167,20 +168,20 @@ PyObject* suggest_py(PyObject* self, PyObject* args) {
     return finalPy;
 }
 
-PyObject* reset_model_py(PyObject* self, PyObject* args) {
+PyObject* exq::reset_model_py(PyObject* self, PyObject* args) {
     _pyExqV1._controller->reset_model();
 
     Py_IncRef(Py_None);
     return Py_None;
 }
 
-PyObject* safe_exit_py(PyObject* self, PyObject* args) {
+PyObject* exq::safe_exit_py(PyObject* self, PyObject* args) {
     //TODO: Call terminate function
     Py_IncRef(Py_None);
     return Py_None;
 }
 
-PyMODINIT_FUNC PyInit_exquisitor(void) {
+PyMODINIT_FUNC exq::PyInit_exquisitor(void) {
     Py_Initialize();
     return PyModule_Create(&exquisitor_definition);
 }

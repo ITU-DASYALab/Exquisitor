@@ -56,7 +56,7 @@ namespace exq {
                 ExqFunctions<T>* functions,
                 ExqDataHandler<T>* handler,
                 ExqClassifier* classifier,
-                const ExqWorker* worker
+                ExqWorker<T>* worker
         );
 
 /**
@@ -121,7 +121,7 @@ namespace exq {
         ExqFunctions<T>* _functions;
         ExqDataHandler<T>* _handler;
         ExqClassifier* _classifier;
-        const ExqWorker* _worker;
+        ExqWorker<T>* _worker;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;

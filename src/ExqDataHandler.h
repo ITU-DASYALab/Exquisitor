@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "ExqDescriptor.h"
+#include "ExqFunctions.h"
 #include "ExqItem.h"
 
 namespace exq {
@@ -41,12 +42,14 @@ namespace exq {
         virtual int getTotalItemsCount(int mod) = 0;
 
         virtual void selectClusters(int b, vector<double>& model, double bias,
-                                    double(*dist)(vector<double>&model, double, T&)) = 0;
+                                    ExqFunctions<T>& functions) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                            vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems) = 0;
     };
 
 }
+
+template class exq::ExqDataHandler<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
 
 #endif //EXQUISITOR_EXQDATAHANDLER_H

@@ -57,11 +57,11 @@ std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<sho
     return this->weights;
 }
 
-inline vector<double> ExqClassifier::getWeights() {
+vector<double> ExqClassifier::getWeights() {
     return this->weights;
 }
 
-inline double ExqClassifier::getBias() {
+double ExqClassifier::getBias() {
     cv::Mat alpha, svidx;
     return this->svm->getDecisionFunction(0, alpha, svidx);
 }

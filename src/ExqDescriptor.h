@@ -23,6 +23,10 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ExqDescriptor {
     public:
+        uint32_t id;
+        T topFeature;
+        U featureIds;
+        V featureRatios;
         ExqDescriptor() = default;
 
         /**
@@ -76,11 +80,6 @@ namespace exq {
 
         V getFeatureRatios() { return this->featureRatios; }
 
-    protected:
-        uint32_t id;
-        T topFeature;
-        U featureIds;
-        V featureRatios;
     }; //End of class ExqDescriptor
 
 } //End of namespace exq

@@ -10,12 +10,15 @@ using std::vector;
 using std::array;
 
 template<typename T>
-void ExqWorker::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& model, double bias, int currentSegment,
-                        int totalSegments, int noms, int modalities, ExqDataHandler<T>& handler,
-                        ExqFunctions<T>& functions, unordered_set<uint32_t> seenItems) {
+ExqWorker<T>::ExqWorker() {}
+
+template<typename T>
+void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double> model, double bias, int currentSegment,
+                        int totalSegments, int noms, int modalities, ExqDataHandler<T>*& handler,
+                        ExqFunctions<T>*& functions, unordered_set<uint32_t> seenItems) {
     vector<ExqItem> candidateItems = vector<ExqItem>();
     vector<vector<T>> descriptors = vector<vector<T>>();
-    handler.getSegmentDescriptors(currentSegment, totalSegments, modalities, descriptors);
+    handler->getSegmentDescriptors(currentSegment, totalSegments, modalities, descriptors, seenItems);
     int modSize[modalities];
     //void (*descInfo)(T&) = functions.getDescriptorInformation;
     //void (*dist)(vector<double>&, double, T&) = functions.distance;
@@ -28,10 +31,10 @@ void ExqWorker::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& 
             candItem.segment = currentSegment;
             candItem.itemId = descriptors[m][i].id;
             candItem.distance.resize(modalities);
-            candItem.distance[m] = functions.distance(model, bias, descriptors[m][i]);
+            candItem.distance[m] = functions->distance(model, bias, descriptors[m][i]);
             for (int mm = 0; mm < modalities; mm++) {
                 if (mm == m) continue;
-                candItem.distance[mm] = functions.distance(model, bias, descriptors[mm][i]);
+                candItem.distance[mm] = functions->distance(model, bias, descriptors[mm][i]);
             }
 
             if (candidateItems.size() == noms * (modalities+1)) {
@@ -51,7 +54,7 @@ void ExqWorker::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& 
         }
     }
 
-    functions.rankItems(candidateItems, modalities);
+    functions->assignRanking(candidateItems, modalities);
 
     int cnt = 0;
     for (int i = 0; i < candidateItems.size(); i++) {
@@ -71,3 +74,6 @@ void ExqWorker::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double>& 
         }
     }
 }
+
+template class exq::ExqWorker<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
+
