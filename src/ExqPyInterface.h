@@ -15,7 +15,7 @@ namespace exq {
     };
     PyExquisitorV1 _pyExqV1;
 
-    PyMODINIT_FUNC PyInit_exquisitor(void);
+    PyMODINIT_FUNC PyInit_exq(void);
 
     static PyObject* initialize_py(PyObject* self, PyObject* args);
     static PyObject* train_py(PyObject* self, PyObject* args);

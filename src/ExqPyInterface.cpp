@@ -181,7 +181,7 @@ PyObject* exq::safe_exit_py(PyObject* self, PyObject* args) {
     return Py_None;
 }
 
-PyMODINIT_FUNC exq::PyInit_exquisitor(void) {
+PyMODINIT_FUNC exq::PyInit_exq(void) {
     Py_Initialize();
     return PyModule_Create(&exquisitor_definition);
 }
