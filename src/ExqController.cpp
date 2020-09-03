@@ -53,6 +53,7 @@ vector<double> ExqController<T>::train(vector<uint32_t> trainIds, vector<short> 
     vector<double> times = vector<double>();
     vector<vector<double>> trainingItems = vector<vector<double>>();
 
+    //TODO: Time measurements!
     for (int i = 0; i < trainIds.size(); i++) {
         T desc = _handler->getDescriptor(i);
         ExqArray<pair<int,float>> descVals = _functions->getDescriptorInformation(desc);
@@ -84,6 +85,8 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
         seenSet.insert(seenItems[i]);
     }
     vector<ExqItem> items2Return;
+
+    //TODO: Time measurements
     while (completedSegments < _segments) {
         for (int w = 0; w < _numWorkers; w++) {
             if (workerSegments[w] == -1 && runningSegments < _segments) {
@@ -107,7 +110,6 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
         results.suggs.push_back(items2Return[i].itemId);
     }
 
-    //TODO: Get other results values
     return results;
 }
 
