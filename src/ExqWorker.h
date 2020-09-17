@@ -25,7 +25,8 @@ namespace exq {
 
         void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double> model, double bias,
                      int currentSegment, int totalSegments, int noms, int modalities,
-                     ExqDataHandler<T>*& handler, ExqFunctions<T>*& functions, unordered_set<uint32_t> seenItems);
+                     ExqDataHandler<T>*& handler, ExqFunctions<T>*& functions, unordered_set<uint32_t> seenItems,
+                     double& times, int& totalItemsConsidered);
     private:
 
     }; //End of class ExqWorker

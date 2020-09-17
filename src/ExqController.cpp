@@ -9,6 +9,11 @@
 using namespace exq;
 using std::async;
 using std::future_status;
+using std::milli;
+using std::chrono::duration;
+using std::chrono::high_resolution_clock;
+using std::chrono::time_point;
+
 
 template <typename T>
 ExqController<T>::ExqController(
@@ -48,12 +53,14 @@ ExqController<T>::ExqController(
     _threads.resize(_numWorkers);
 }
 
+
 template <typename T>
 vector<double> ExqController<T>::train(vector<uint32_t> trainIds, vector<short> trainLabels) {
     vector<double> times = vector<double>();
     vector<vector<double>> trainingItems = vector<vector<double>>();
+    time_point<high_resolution_clock> begin = high_resolution_clock::now();
+    time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
-    //TODO: Time measurements!
     for (int i = 0; i < trainIds.size(); i++) {
         T desc = _handler->getDescriptor(i);
         ExqArray<pair<int,float>> descVals = _functions->getDescriptorInformation(desc);
@@ -64,15 +71,24 @@ vector<double> ExqController<T>::train(vector<uint32_t> trainIds, vector<short> 
         }
         trainingItems.push_back(featVals);
     }
-
+    finish = high_resolution_clock::now();
+    times.push_back(duration<double, milli>(finish - begin).count());
+    begin = high_resolution_clock::now();
     _classifier->train(trainingItems, trainLabels);
     vector<double> weights = _classifier->getWeights();
+    finish = high_resolution_clock::now();
+    times.push_back(duration<double, milli>(finish - begin).count());
+    begin = high_resolution_clock::now();
     _handler->selectClusters(_bClusters, weights, _classifier->getBias(), *_functions);
+    finish = high_resolution_clock::now();
+    times.push_back(duration<double, milli>(finish - begin).count());
     return times;
 }
 
+
 template <typename T>
 TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
+    time_point<high_resolution_clock> begin = high_resolution_clock::now();
     TopResults results = TopResults();
     int completedSegments = 0;
     int runningSegments = 0;
@@ -86,13 +102,14 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
     }
     vector<ExqItem> items2Return;
 
-    //TODO: Time measurements
     while (completedSegments < _segments) {
         for (int w = 0; w < _numWorkers; w++) {
             if (workerSegments[w] == -1 && runningSegments < _segments) {
                 _threads[w] = async(std::launch::async, [&] { return _worker->suggest(k, items2Return,
                                 _classifier->getWeights(),_classifier->getBias(), runningSegments, _segments,
-                                _noms, _modalities, _handler, _functions, seenSet); });
+                                _noms, _modalities, _handler, _functions, seenSet,
+                                results.totalTimePerSegment[runningSegments],
+                                results.totalItemsConsideredPerSegment[runningSegments]); });
                 workerSegments[w] = runningSegments;
                 runningSegments++;
             } else if (workerSegments[w] != -1 &&
@@ -110,6 +127,8 @@ TopResults ExqController<T>::suggest(int k, vector<uint32_t> seenItems) {
         results.suggs.push_back(items2Return[i].itemId);
     }
 
+    time_point<high_resolution_clock> finish = high_resolution_clock::now();
+    results.overheadTime = duration<double, milli>(finish - begin).count();
     return results;
 }
 

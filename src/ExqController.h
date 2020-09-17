@@ -29,8 +29,8 @@ namespace exq {
 
     struct TopResults {
         vector<uint32_t> suggs;
-        int* total;
-        double* time;
+        int* totalItemsConsideredPerSegment;
+        double* totalTimePerSegment;
         double overheadTime;
     };
     /**

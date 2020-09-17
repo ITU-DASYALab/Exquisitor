@@ -155,8 +155,8 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
         PyList_SetItem(suggsPy, i, PyLong_FromUnsignedLong((unsigned long)(top.suggs[i])));
     }
     for (int i = 0; i < segments; i++) {
-        PyList_SetItem(totalPy, i, PyLong_FromUnsignedLong(top.total[i]));
-        PyList_SetItem(workerTimesPy, i, PyLong_FromUnsignedLong(top.time[i]));
+        PyList_SetItem(totalPy, i, PyLong_FromUnsignedLong(top.totalItemsConsideredPerSegment[i]));
+        PyList_SetItem(workerTimesPy, i, PyLong_FromUnsignedLong(top.totalTimePerSegment[i]));
     }
 
     PyTuple_SetItem(finalPy, 0, suggsPy);

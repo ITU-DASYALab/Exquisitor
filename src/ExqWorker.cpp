@@ -8,6 +8,11 @@ using namespace exq;
 using std::make_pair;
 using std::vector;
 using std::array;
+using std::milli;
+using std::chrono::duration;
+using std::chrono::high_resolution_clock;
+using std::chrono::time_point;
+
 
 template<typename T>
 ExqWorker<T>::ExqWorker() {}
@@ -15,10 +20,15 @@ ExqWorker<T>::ExqWorker() {}
 template<typename T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double> model, double bias, int currentSegment,
                         int totalSegments, int noms, int modalities, ExqDataHandler<T>*& handler,
-                        ExqFunctions<T>*& functions, unordered_set<uint32_t> seenItems) {
+                        ExqFunctions<T>*& functions, unordered_set<uint32_t> seenItems, double& time,
+                        int& totalItemsConsidered) {
+    time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
+    time_point<high_resolution_clock> begin = high_resolution_clock::now();
+    time_point<high_resolution_clock> finish = high_resolution_clock::now();
     vector<ExqItem> candidateItems = vector<ExqItem>();
     vector<vector<T>> descriptors = vector<vector<T>>();
     handler->getSegmentDescriptors(currentSegment, totalSegments, modalities, descriptors, seenItems);
+    totalItemsConsidered = descriptors.size();
     int modSize[modalities];
     //void (*descInfo)(T&) = functions.getDescriptorInformation;
     //void (*dist)(vector<double>&, double, T&) = functions.distance;
@@ -53,6 +63,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double
             }
         }
     }
+    finish = high_resolution_clock::now();
 
     functions->assignRanking(candidateItems, modalities);
 
@@ -73,6 +84,8 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<double
             break;
         }
     }
+    finish = high_resolution_clock::now();
+    time = duration<double, milli>(finish - beginOverall).count();
 }
 
 template class exq::ExqWorker<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
