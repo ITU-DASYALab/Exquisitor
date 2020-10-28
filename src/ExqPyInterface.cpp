@@ -17,7 +17,7 @@ using std::endl;
 PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     _pyExqV1 = PyExquisitorV1();
     vector<vector<string>> compCnfgFiles = vector<vector<string>>();
-    vector<int> modFeatureDimensions = vector<int>();
+    vector<int> modFeatureDimensions;
 
     PyObject* compCnfgFilesPy;
     PyObject* modFeatureDimensionsPy;
@@ -27,13 +27,14 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     int numWorkers = (int)PyLong_AsLong(PyTuple_GetItem(args, 2));
     int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 3));
     int numModalities = (int)PyLong_AsLong(PyTuple_GetItem(args, 4));
+    modFeatureDimensions = vector<int>(numModalities);
     int bClusters = (int)PyLong_AsLong(PyTuple_GetItem(args, 5));
     compCnfgFilesPy = PyTuple_GetItem(args, 6);
     for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
         PyObject* cnfgFilesPy = PyList_GetItem(compCnfgFilesPy, i);
-        vector<string> cnfgFiles = vector<string>();
+        vector<string> cnfgFiles = vector<string>(PyList_Size(cnfgFilesPy));
         for (int j = 0; j < PyList_Size(cnfgFilesPy); j++) {
-             cnfgFiles.push_back(_PyUnicode_AsString(PyList_GetItem(cnfgFilesPy,j)));
+             cnfgFiles.emplace_back(_PyUnicode_AsString(PyList_GetItem(cnfgFilesPy,j)));
         }
         compCnfgFiles.push_back(cnfgFiles);
     }
@@ -65,11 +66,11 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             int topShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 10));
             int idsShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 11));
             int ratiosShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 12));
-            uint64_t topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 13));
-            double topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 14));
-            uint64_t idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 15));
-            uint64_t ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 16));
-            double ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 17));
+            auto topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 13));
+            auto topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 14));
+            auto idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 15));
+            auto ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 16));
+            auto ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 17));
             functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift, ratiosShift,
                                                                           topMask,
                                                                           topDivisor, idsMask, ratiosMask,
