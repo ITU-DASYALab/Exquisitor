@@ -55,7 +55,7 @@ namespace exq {
                 int bClusters,
                 ExqFunctions<T>* functions,
                 ExqDataHandler<T>* handler,
-                ExqClassifier* classifier,
+                vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker
         );
 
@@ -120,7 +120,7 @@ namespace exq {
 
         ExqFunctions<T>* _functions;
         ExqDataHandler<T>* _handler;
-        ExqClassifier* _classifier;
+        vector<ExqClassifier*> _classifiers;
         ExqWorker<T>* _worker;
 
         vector<future<void>> _threads = vector<future<void>>();

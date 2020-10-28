@@ -28,7 +28,7 @@ ExqController<T>::ExqController(
         int bClusters,
         ExqFunctions<T>* functions,
         ExqDataHandler<T>* handler,
-        ExqClassifier* classifier,
+        vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker
     ) {
 
@@ -44,7 +44,7 @@ ExqController<T>::ExqController(
     //Set exq class object fields
     _functions = functions;
     _handler = handler;
-    _classifier = classifier;
+    _classifiers = classifiers;
     _worker = worker;
 
     //Load data
@@ -57,29 +57,39 @@ ExqController<T>::ExqController(
 template <typename T>
 vector<double> ExqController<T>::train(vector<uint32_t> trainIds, vector<short> trainLabels) {
     vector<double> times = vector<double>();
-    vector<vector<double>> trainingItems = vector<vector<double>>();
+    vector<vector<double>> weights = vector<vector<double>>(_modalities, vector<double>());
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
-    for (int i = 0; i < trainIds.size(); i++) {
-        T desc = _handler->getDescriptor(i);
-        ExqArray<pair<int,float>> descVals = _functions->getDescriptorInformation(desc);
-        vector<double> featVals = vector<double>(N_TOTAL_FEAT, 0.0);
-        for (int j = 0; j < descVals.getSize(); j++) {
-            pair<int,float> item = descVals.getItem(i);
-            featVals[item.first] = item.second;
+    for (int m = 0; m < _modalities; m++) {
+        vector<vector<double>> trainingItems = vector<vector<double>>();
+        for (int i = 0; i < trainIds.size(); i++) {
+            T desc = _handler->getDescriptor(i);
+            ExqArray<pair<int, float>> descVals = _functions->getDescriptorInformation(desc);
+            vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
+            for (int j = 0; j < descVals.getSize(); j++) {
+                pair<int, float> item = descVals.getItem(i);
+                featVals[item.first] = item.second;
+            }
+            trainingItems.push_back(featVals);
         }
-        trainingItems.push_back(featVals);
+
+        finish = high_resolution_clock::now();
+        times.push_back(duration<double, milli>(finish - begin).count());
+        begin = high_resolution_clock::now();
+        _classifiers[m]->train(trainingItems, trainLabels);
+        weights[m] = _classifiers[m]->getWeights();
+        finish = high_resolution_clock::now();
+        times.push_back(duration<double, milli>(finish - begin).count());
     }
-    finish = high_resolution_clock::now();
-    times.push_back(duration<double, milli>(finish - begin).count());
     begin = high_resolution_clock::now();
-    _classifier->train(trainingItems, trainLabels);
-    vector<double> weights = _classifier->getWeights();
-    finish = high_resolution_clock::now();
-    times.push_back(duration<double, milli>(finish - begin).count());
-    begin = high_resolution_clock::now();
-    _handler->selectClusters(_bClusters, weights, _classifier->getBias(), *_functions);
+    vector<int> bPerMod;
+    vector<double> bias;
+    for (int m = 0; m < _modalities; m++) {
+        bPerMod.push_back(_bClusters);
+        bias.push_back(_classifiers[m]->getBias());
+    }
+    _handler->selectClusters(bPerMod, weights, bias, *_functions);
     finish = high_resolution_clock::now();
     times.push_back(duration<double, milli>(finish - begin).count());
     return times;

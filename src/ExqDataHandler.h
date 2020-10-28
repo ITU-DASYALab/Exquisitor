@@ -41,7 +41,7 @@ namespace exq {
 
         virtual int getTotalItemsCount(int mod) = 0;
 
-        virtual void selectClusters(int b, vector<double>& model, double bias,
+        virtual void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
                                     ExqFunctions<T>& functions) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,

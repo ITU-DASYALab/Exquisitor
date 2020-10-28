@@ -23,11 +23,11 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ExqFunctionsR64 : public ExqFunctions<ExqDescriptor<T,U,V>> {
     public:
-        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
+        ExqFunctionsR64(int nFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
         //Constructor for different compression per modality
         //ExqFunctionsR64(vector<int> nFeat, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<double> topDivisor,
         //                vector<double> ratiosDivisor);
-        ExqFunctionsR64(int nFeat, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
+        ExqFunctionsR64(int nFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
                         uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor);
         //Constructor for different compression per modality
         //ExqFunctionsR64(vector<int> nFeat, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<uint64_t> topMask, vector<double> topDivisor,
@@ -57,6 +57,7 @@ namespace exq {
         void assignRanking(vector<ExqItem>& items, int mod) override;
 
     private:
+        int iota;
         int nDescFeatures;
         int topFeatureShift;
         int idsFeatureShift;

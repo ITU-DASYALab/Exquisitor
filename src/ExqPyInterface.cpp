@@ -47,16 +47,16 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     ExqFunctions<ExqDescriptor<uint64_t, uint64_t, uint64_t>>* functions;
     switch(func) {
         case 0: {
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 1000, 1000);
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16, 16, 1000, 1000);
             break;
         }
         case 1: {
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 281474976710655,
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16, 16, 281474976710655,
                                                                           200000000000000.0, 65535, 65535, 50000.0);
             break;
         }
         case 2: {
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, 54, 10, 10, 18014398509481983,
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, iota, 54, 10, 10, 18014398509481983,
                                                                           10000000000000000.0, 1023, 1023, 1000.0);
             break;
         }
@@ -70,7 +70,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             uint64_t idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 15));
             uint64_t ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 16));
             double ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 17));
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, topShift, idsShift, ratiosShift,
+            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift, ratiosShift,
                                                                           topMask,
                                                                           topDivisor, idsMask, ratiosMask,
                                                                           ratiosDivisor);
@@ -81,7 +81,10 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             exit(1);
         }
     }
-    auto classifier = new ExqClassifier();
+    vector<ExqClassifier*> classifiers = vector<ExqClassifier*>(numModalities);
+    for (int m = 0; m < numModalities; m++) {
+        classifiers[m] = new ExqClassifier(modFeatureDimensions[m]);
+    }
     auto worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
 
     _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t, uint64_t, uint64_t>>(
@@ -94,7 +97,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             bClusters,
             functions,
             dataHandler,
-            classifier,
+            classifiers,
             worker
             );
 

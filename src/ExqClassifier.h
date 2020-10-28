@@ -22,7 +22,7 @@ namespace exq {
 
     class ExqClassifier {
     public:
-        ExqClassifier();
+        ExqClassifier(int totalFeats);
 
         ~ExqClassifier();
 
@@ -32,13 +32,17 @@ namespace exq {
 
         double getBias();
 
+        int getTotalFeats();
+
     protected:
+        int _totalFeats;
         Ptr<SVM> svm;
         TrainData trainData;
         vector<double> weights;
 
     }; //End of class ExqClassifier
 
+    inline int ExqClassifier::getTotalFeats() { return _totalFeats; }
 
 } //End of namespace exq
 

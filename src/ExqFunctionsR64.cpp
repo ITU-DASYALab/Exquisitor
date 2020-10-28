@@ -10,7 +10,7 @@ using namespace exq;
 
 
 template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, double topDivisor,
+ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor,
                                         double ratiosDivisor) {
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
@@ -22,6 +22,7 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShif
     this->ratiosMask = (uint64_t)(pow(2, this->ratiosFeatureShift)-1);
     this->ratiosDivisor = ratiosDivisor;
 
+    //TODO: Make use of iota to get correct values
     this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
     this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
@@ -31,7 +32,7 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShif
 }
 
 template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
+ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
                                         double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;

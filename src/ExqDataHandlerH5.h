@@ -37,7 +37,7 @@ namespace exq {
 
         int getTotalItemsCount(int mod) override;
 
-        void selectClusters(int b, vector<double>& model, double bias,
+        void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
                             ExqFunctions<ExqDescriptor<T,U,V>>& functions) override;
 
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,

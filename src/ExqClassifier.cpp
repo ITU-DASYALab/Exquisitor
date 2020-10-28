@@ -10,7 +10,7 @@ using namespace exq;
 using std::cout;
 using std::endl;
 
-ExqClassifier::ExqClassifier() {
+ExqClassifier::ExqClassifier(int totalFeats) {
     this->svm = SVM::create();
     this->svm->setType(SVM::C_SVC);
     this->svm->setKernel(SVM::POLY);
@@ -18,6 +18,7 @@ ExqClassifier::ExqClassifier() {
     this->svm->setCoef0(0);
     this->svm->setDegree(1.0);
     this->trainData = TrainData();
+    this->_totalFeats = totalFeats;
 }
 
 ExqClassifier::~ExqClassifier() {

@@ -49,7 +49,7 @@ int ExqDataHandlerH5<T,U,V>::getTotalItemsCount(int mod) {
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::selectClusters(int b, vector<double>& model, double bias,
+void ExqDataHandlerH5<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
                                              ExqFunctions<ExqDescriptor<T,U,V>>& functions) {}
 
 template <typename T, typename U, typename V>
