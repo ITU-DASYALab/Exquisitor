@@ -43,22 +43,26 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
         modFeatureDimensions.push_back((int)PyLong_AsLong(PyList_GetItem(modFeatureDimensionsPy,i)));
     }
 
+    //TODO: Need to be a list of function switch-case options
     int func = (int)PyLong_AsLong(PyTuple_GetItem(args,8));
     auto dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compCnfgFiles, numModalities);
-    ExqFunctions<ExqDescriptor<uint64_t, uint64_t, uint64_t>>* functions;
+    auto functions = vector<ExqFunctions<ExqDescriptor<uint64_t, uint64_t, uint64_t>>*>(numModalities);
     switch(func) {
         case 0: {
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16, 16, 1000, 1000);
+            for (int m = 0; m < numModalities; m++)
+                functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16, 16, 1000, 1000);
             break;
         }
         case 1: {
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16, 16, 281474976710655,
+            for (int m = 0; m < numModalities; m++)
+                functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16, 16, 281474976710655,
                                                                           200000000000000.0, 65535, 65535, 50000.0);
             break;
         }
         case 2: {
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, iota, 54, 10, 10, 18014398509481983,
-                                                                          10000000000000000.0, 1023, 1023, 1000.0);
+            for (int m = 0; m < numModalities; m++)
+                functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, iota, 54, 10, 10, 18014398509481983,
+                                                                                 10000000000000000.0, 1023, 1023, 1000.0);
             break;
         }
         case 3: {
@@ -71,10 +75,10 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             auto idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 15));
             auto ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 16));
             auto ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 17));
-            functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift, ratiosShift,
-                                                                          topMask,
-                                                                          topDivisor, idsMask, ratiosMask,
-                                                                          ratiosDivisor);
+            for (int m = 0; m < numModalities; m++)
+                functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift, ratiosShift,
+                                                                                 topMask, topDivisor, idsMask, ratiosMask,
+                                                                                 ratiosDivisor);
             break;
         }
         default: {

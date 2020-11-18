@@ -26,7 +26,7 @@ ExqController<T>::ExqController(
         //vector<vector<string>> compFiles,
         //vector<string> cnfgFiles,
         int bClusters,
-        ExqFunctions<T>* functions,
+        vector<ExqFunctions<T>*> functions,
         ExqDataHandler<T>* handler,
         vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker

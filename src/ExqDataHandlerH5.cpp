@@ -12,6 +12,7 @@ using namespace exq;
 
 template <typename T, typename U, typename V>
 ExqDataHandlerH5<T,U,V>::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities) {
+    this->_numModalities = modalities;
     for (int m = 0; m < modalities; m++) {
         this->_descriptors.push_back(vector<ExqDescriptor<T,U,V>*>());
         this->_topFeatPaths.push_back(compCnfgFiles[m][TOP_FEATURES_PATH]);
@@ -21,8 +22,8 @@ ExqDataHandlerH5<T,U,V>::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles,
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::loadData(int modalities, int workers) {
-    for (int m = 0; m < modalities; m++) {
+void ExqDataHandlerH5<T,U,V>::loadData(int workers) {
+    for (int m = 0; m < this->_numModalities; m++) {
         loadDescriptorsFromFiles(
                 this->_topFeatPaths[m],
                 this->_featIdsPaths[m],
@@ -50,7 +51,7 @@ int ExqDataHandlerH5<T,U,V>::getTotalItemsCount(int mod) {
 
 template <typename T, typename U, typename V>
 void ExqDataHandlerH5<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                                             ExqFunctions<ExqDescriptor<T,U,V>>& functions) {}
+                                             vector<ExqFunctions<ExqDescriptor<T,U,V>>>& functions) {}
 
 template <typename T, typename U, typename V>
 void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,

@@ -59,6 +59,15 @@ namespace exq {
             featureRatios = org->featureRatios;
         }
 
+        ExqDescriptor(FILE* file) {
+            size_t res;
+            res = fread(&this->id, sizeof(int), 1, file);
+            res = fread(&this->topFeature, sizeof(uint64_t), 1, file);
+            res = fread(&this->featureIds, sizeof(uint64_t), 1, file);
+            res = fread(&this->featureRatios, sizeof(uint64_t), 1, file);
+            if (res == 0) std::cout << "Error reading descriptor" << std::endl;
+        }
+
         /**
          * @brief destroys the descriptor object
          */

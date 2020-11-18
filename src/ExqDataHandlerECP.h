@@ -10,23 +10,24 @@
 #include <string>
 #include <ExqDataHandler.h>
 #include <ExqDescriptor.h>
+#include <eCP/ECPIndex.h>
 
 namespace exq {
 
     using std::string;
 
-    template<class T, class U, class V>
+    template<typename T, typename U, typename V>
     class ExqDataHandlerECP : public ExqDataHandler<ExqDescriptor<T,U,V>>{
     public:
         /**
          * Constructor for loading the eCP index
          * \param cnfgFile - Config file containing metadata information about the cluster index
          */
-        ExqDataHandlerECP(string cnfgFile, int modalities, int iota);
+        ExqDataHandlerECP(vector<string> cnfgFiles, int modalities);
 
         ~ExqDataHandlerECP();
 
-        void loadData(int modalities, int workers) override;
+        void loadData(int workers) override;
 
         ExqDescriptor<T,U,V>* getDescriptor(uint32_t i) override;
 
@@ -35,14 +36,16 @@ namespace exq {
         int getTotalItemsCount(int mod) override;
 
         void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                            ExqFunctions<ExqDescriptor<T,U,V>>& functions) override;
+                            vector<ExqFunctions<ExqDescriptor<T,U,V>>>& functions) override;
 
-        void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
+        void getSegmentDescriptors(int currentSegment, int totalSegments,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
                                    unordered_set<uint32_t>& seenItems) override;
 
     private:
-        string cnfgFile;
+        int _modalities;
+        vector<int> _b;
+        vector<ECPIndex<T,U,V>*> _indx;
         vector<vector<ExqDescriptor<T,U,V>*>> _descriptors;
         vector<string> _topFeatPaths;
         vector<string> _featIdsPaths;

@@ -22,7 +22,7 @@ namespace exq {
     public:
         ExqDataHandler() {}
 
-        virtual void loadData(int modalities, int workers) = 0;
+        virtual void loadData(int workers) = 0;
 
         /**
          * Returns descriptor for item i. Assumes modality is 0.
@@ -42,9 +42,9 @@ namespace exq {
         virtual int getTotalItemsCount(int mod) = 0;
 
         virtual void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                                    ExqFunctions<T>& functions) = 0;
+                                    vector<ExqFunctions<T>>& functions) = 0;
 
-        virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
+        virtual void getSegmentDescriptors(int currentSegment, int totalSegments,
                                            vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems) = 0;
     };
 

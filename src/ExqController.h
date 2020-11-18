@@ -53,7 +53,7 @@ namespace exq {
                 //vector<vector<string>> compFiles,
                 //vector<string> cnfgFiles,
                 int bClusters,
-                ExqFunctions<T>* functions,
+                vector<ExqFunctions<T>*> functions,
                 ExqDataHandler<T>* handler,
                 vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker
@@ -118,7 +118,7 @@ namespace exq {
         int _modalities;
         int _bClusters;
 
-        ExqFunctions<T>* _functions;
+        vector<ExqFunctions<T>*> _functions;
         ExqDataHandler<T>* _handler;
         vector<ExqClassifier*> _classifiers;
         ExqWorker<T>* _worker;
