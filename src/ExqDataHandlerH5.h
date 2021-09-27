@@ -13,10 +13,10 @@
 
 #include <hdf5.h>
 
-#include "ExqDataHandler.h"
-#include "ExqDescriptor.h"
-#include "ExqConstants.h"
-#include "ExqFunctions.h"
+#include "base/ExqDataHandler.h"
+#include "base/ExqDescriptor.h"
+#include "base/ExqConstants.h"
+#include "base/ExqFunctions.h"
 
 namespace exq {
 
@@ -37,8 +37,7 @@ namespace exq {
 
         int getTotalItemsCount(int mod) override;
 
-        void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                            vector<ExqFunctions<ExqDescriptor<T,U,V>>>& functions) override;
+        void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias) override;
 
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,

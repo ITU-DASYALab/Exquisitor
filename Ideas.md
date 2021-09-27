@@ -4,7 +4,7 @@ Dependencies
 ExqClassifier
 
 
-ExqDataHandler  ->  ExqDataHandlerH5
+ExqDataHandler  ->  ExqDataHandlerH5, ExqDataHandlerECP
 
 
 ExqFunctions    ->  ExqFunctionsR64
@@ -13,17 +13,17 @@ ExqFunctions    ->  ExqFunctionsR64
 ExqWorker
 
 
-ExqController   <-  ExqFunctions
-                <-  ExqDataHandler
-                <-  ExqClassifier
-                <-  ExqWorker
+ExqController   --  ExqFunctions per Modality
+                --  ExqDataHandler
+                --  ExqClassifier per Modality
+                --  ExqWorker
 
 
-ExqPyInterface  <-  ExqController
+ExqPyInterface  --  ExqController
 
 
 
-ExqMain         <-  ExqController (no priority)
+ExqMain         --  ExqController (no priority)
 
 
 

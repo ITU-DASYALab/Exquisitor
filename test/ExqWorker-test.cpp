@@ -3,11 +3,11 @@
 //
 
 #include "gtest/gtest.h"
-#include "ExqWorker.h"
+#include "base/ExqWorker.h"
 #include "ExqFunctionsR64.h"
 #include "ExqDataHandlerH5.h"
-#include "ExqClassifier.h"
-#include "ExqDescriptor.h"
+#include "base/ExqClassifier.h"
+#include "base/ExqDescriptor.h"
 
 using std::vector;
 using std::string;
@@ -16,8 +16,8 @@ using namespace exq;
 class SingleModalityWorker: public ::testing::Test {
 public:
     ExqDataHandler<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* _dataHandler;
-    ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* _functionsR64;
-    ExqClassifier* _classifier;
+    vector<ExqFunctions<ExqDescriptor<uint64_t,uint64_t,uint64_t>>*> _functionsR64 = {};
+    vector<ExqClassifier*> _classifier = {};
     ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* _worker;
     vector<double> _weights;
 
@@ -29,9 +29,9 @@ public:
         vector<bool> activeModalities {true};
 
         _dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compFiles, 1);
-        _dataHandler->loadData(activeModalities.size(), 1);
-        _functionsR64 = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 1000, 1000);
-        _classifier = new ExqClassifier();
+        _dataHandler->loadData(activeModalities.size());
+        _functionsR64.push_back(new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 1, 48, 16, 16, 1000, 1000));
+        _classifier.push_back(new ExqClassifier(12988));
         _worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
 
         //_weights = _classifier->train(trainingItems, trainingItemLabels);
@@ -42,7 +42,7 @@ public:
     void TearDown() {}
 
     ~SingleModalityWorker() {
-        delete _classifier;
+        delete _classifier[0];
     }
 };
 
@@ -50,6 +50,9 @@ TEST_F(SingleModalityWorker, get_k_stuff) {
     int k;
     vector<ExqItem> items;
     unordered_set<uint32_t> seenItems = unordered_set<uint32_t>();
-    _worker->suggest(k,items,_weights,_classifier->getBias(), 0, 2, 10, 1, _dataHandler, _functionsR64, seenItems);
+    vector<double> times;
+    vector<int> totalItemsConsidered;
+    _worker->suggest(k,items,_classifier, 0, 2, 10, 1,
+                     _dataHandler, _functionsR64, seenItems, times[0], totalItemsConsidered[0]);
     assert(items.size() == k);
 }

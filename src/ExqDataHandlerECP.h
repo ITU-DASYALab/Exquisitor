@@ -8,9 +8,9 @@
 #pragma once
 
 #include <string>
-#include <ExqDataHandler.h>
-#include <ExqDescriptor.h>
-#include <eCP/ECPIndex.h>
+#include <base/ExqDataHandler.h>
+#include <base/ExqDescriptor.h>
+#include <base/eCP/ECPIndex.h>
 
 namespace exq {
 
@@ -23,7 +23,8 @@ namespace exq {
          * Constructor for loading the eCP index
          * \param cnfgFile - Config file containing metadata information about the cluster index
          */
-        ExqDataHandlerECP(vector<string> cnfgFiles, int modalities);
+        ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
+                          vector<ExqFunctions<ExqDescriptor<T,U,V>*>*>& functions, vector<int>& featureDimensions);
 
         ~ExqDataHandlerECP();
 
@@ -35,10 +36,8 @@ namespace exq {
 
         int getTotalItemsCount(int mod) override;
 
-        void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                            vector<ExqFunctions<ExqDescriptor<T,U,V>>>& functions) override;
-
-        void getSegmentDescriptors(int currentSegment, int totalSegments,
+        void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias) override;
+        void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
                                    unordered_set<uint32_t>& seenItems) override;
 
@@ -50,7 +49,6 @@ namespace exq {
         vector<string> _topFeatPaths;
         vector<string> _featIdsPaths;
         vector<string> _ratiosPaths;
-
     }; //End of class ExqIndex
 
 } //End of namespace exq

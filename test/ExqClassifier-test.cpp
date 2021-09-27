@@ -3,10 +3,10 @@
 //
 
 #include "gtest/gtest.h"
-#include "ExqClassifier.h"
+#include "base/ExqClassifier.h"
 #include "ExqFunctionsR64.h"
-#include "ExqDescriptor.h"
-#include "ExqArray.h"
+#include "base/ExqDescriptor.h"
+#include "base/ExqArray.h"
 
 using exq::ExqClassifier;
 using exq::ExqFunctionsR64;
@@ -22,8 +22,8 @@ TEST (SvmModel, trainModel) {
     const short NEG_L = -1;
     vector<vector<double>> trainingItems;
     vector<short> trainingItemLabels;
-    auto classifier = new ExqClassifier();
-    auto functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 48, 16, 16, 281474976710655,
+    auto classifier = new ExqClassifier(12988);
+    auto functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 1, 48, 16, 16, 281474976710655,
                                                                        200000000000000.0, 65535, 65535, 50000.0);
 
     vector<ExqDescriptor<uint64_t, uint64_t, uint64_t>> pos = vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();

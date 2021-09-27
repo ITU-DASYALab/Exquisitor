@@ -59,6 +59,12 @@ ExqFunctionsR64<T,U,V>::~ExqFunctionsR64() {
 }
 
 template <typename T, typename U, typename V>
+int ExqFunctionsR64<T, U, V>::getDescFeatCount() {
+    return nDescFeatures;
+}
+
+template <typename T, typename U, typename V>
+/// Decompress item and return the results in an ExqArray
 inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformation(ExqDescriptor<T,U,V> &descriptor) {
     auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
 
@@ -75,15 +81,26 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
     return *exqArr;
 }
 
+///
+/// Calculate item score and return distance from Hyperplane
+/// \tparam T - Compressed Integer Type for Top Feature Id and Value
+/// \tparam U - Compressed Integer Type for Top 2..t Feature Ids
+/// \tparam V - Compressed Integer Type for Top 2..t Feature Values
+/// \param model - Hyperplane weights
+/// \param bias - Bias from SVM
+/// \param descriptor - Descriptor containing all feature information
+/// \return
 template <typename T, typename U, typename V>
-double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqDescriptor<T,U,V> &descriptor) {
-    double score = 0.0;
-    auto desc = getDescriptorInformation(descriptor);
+inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqDescriptor<T,U,V> &descriptor) {
+    double score = bias;
+    int featId = descriptor.getTop() >> this->topFeatureShift;
+    double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
 
-    score = bias;
-    for (int i = 0; i < this->nDescFeatures; i++) {
-        auto feature = desc.getItem(i);
-        score += model[feature.first] * feature.second;
+    score += model[featId] * featVal;
+    for (int i = 0; i < (this->nDescFeatures-1); i++) {
+        featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
+        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask)/this->ratiosDivisor;
+        score += model[featId] * featVal;
     }
 
     return score;
@@ -132,6 +149,11 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
             rank = i;
         }
     }
+}
+
+template<typename T, typename U, typename V>
+int ExqFunctionsR64<T, U, V>::getDescriptorSize() {
+    return sizeof(T) + iota * sizeof(U) * 2;
 }
 
 template class exq::ExqFunctionsR64<uint64_t,uint64_t,uint64_t>;

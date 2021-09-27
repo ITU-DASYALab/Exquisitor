@@ -3,7 +3,7 @@
 //
 
 #include "gtest/gtest.h"
-#include "ExqArray.h"
+#include "base/ExqArray.h"
 
 using exq::ExqArray;
 using std::cout;

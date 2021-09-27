@@ -7,11 +7,13 @@
 using namespace exq;
 
 template <typename T, typename U, typename V>
-ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modalities) {
+ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
+                                            vector<ExqFunctions<ExqDescriptor<T,U,V>*>*>& functions,
+                                            vector<int>& featureDimensions) {
     _indx = vector<ECPIndex<T,U,V>*>(modalities);
     _modalities = modalities;
     for (int m = 0; m < modalities; m++) {
-        _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]));
+        _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m]);
     }
 }
 
@@ -39,17 +41,16 @@ int ExqDataHandlerECP<T,U,V>::getTotalItemsCount(int mod) {
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                                              vector<ExqFunctions<ExqDescriptor<T,U,V>>>& functions) {
+void ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias) {
     _b = b;
     for (int m = 0; m < this->_modalities; m++) {
         _b[m] = b[m];
-        _indx[m]->set_b_clusters(model[m], bias[m], _b[m], functions[m]);
+        _indx[m]->set_b_clusters(model[m], bias[m], _b[m]);
     }
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments,
+void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                                      vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
                                                      unordered_set<uint32_t>& seenItems) {
     auto suggIdsPerMod = vector<vector<uint32_t>>(_modalities);

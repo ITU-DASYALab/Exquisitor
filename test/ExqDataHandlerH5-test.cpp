@@ -3,7 +3,7 @@
 //
 
 #include "gtest/gtest.h"
-#include "ExqDataHandler.h"
+#include "base/ExqDataHandler.h"
 #include "ExqDataHandlerH5.h"
 #include <vector>
 #include <string>
@@ -25,7 +25,7 @@ public:
         vector<bool> activeModalities {true};
 
         this->dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compFiles, 1);
-        this->dataHandler->loadData(activeModalities.size(), 1);
+        this->dataHandler->loadData(1);
     }
 
     void SetUp() {}
