@@ -10,30 +10,38 @@ using namespace exq;
 
 
 template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor,
-                                        double ratiosDivisor) {
+//ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor,
+//                                        double ratiosDivisor) {
+ExqFunctionsR64<T,U,V>::ExqFunctionsR64(vector<int> nDescFeat, vector<int> iota, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<double> topDivisor,
+                                        vector<double> ratiosDivisor) {
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
     this->idsFeatureShift = idsShift;
     this->ratiosFeatureShift = ratiosShift;
-    this->topMask = (uint64_t)(pow(2.0, this->topFeatureShift)-1);
+    for (int i = 0; i < this->topFeatureShift.size(); i++) {
+        this->topMask.push_back((uint64_t) (pow(2.0, this->topFeatureShift[i]) - 1));
+    }
     this->topDivisor = topDivisor;
-    this->idsMask = (uint64_t)(pow(2, this->idsFeatureShift)-1);
-    this->ratiosMask = (uint64_t)(pow(2, this->ratiosFeatureShift)-1);
+    for (int i = 0; i < this->idsFeatureShift.size(); i++) {
+        this->idsMask.push_back((uint64_t)(pow(2, this->idsFeatureShift[i])-1));
+        this->ratiosMask.push_back((uint64_t)(pow(2, this->ratiosFeatureShift[i])-1));
+    }
     this->ratiosDivisor = ratiosDivisor;
 
     //TODO: Make use of iota to get correct values
-    this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
-    this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
-    for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        this->idsBitShifts[i] = i * this->idsFeatureShift + remainder(64, this->idsFeatureShift);
-        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + remainder(64, this->ratiosFeatureShift);
+    for (int i = 0; i < this->nDescFeatures.size(); i++) {
+        this->idsBitShifts.push_back(new uint64_t[this->nDescFeatures[i] - 1]);
+        this->ratiosBitShifts.push_back(new uint64_t[this->nDescFeatures[i] - 1]);
+        for (int j = 0; j < (this->nDescFeatures[i] - 1); j++) {
+            this->idsBitShifts[i][j] = j * this->idsFeatureShift[i] + remainder(64, this->idsFeatureShift[i]);
+            this->ratiosBitShifts[i][j] = j * this->ratiosFeatureShift[i] + remainder(64, this->ratiosFeatureShift[i]);
+        }
     }
 }
 
 template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
-                                        double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
+ExqFunctionsR64<T,U,V>::ExqFunctionsR64(vector<int> nDescFeat, vector<int> iota, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<uint64_t> topMask,
+                                        vector<double> topDivisor, vector<uint64_t> idsMask, vector<uint64_t> ratiosMask, vector<double> ratiosDivisor) {
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
     this->idsFeatureShift = idsShift;
@@ -44,37 +52,42 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, i
     this->ratiosMask = ratiosMask;
     this->ratiosDivisor = ratiosDivisor;
 
-    this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
-    this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
-    for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        this->idsBitShifts[i] = i * this->idsFeatureShift + remainder(64, this->idsFeatureShift);
-        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + remainder(64, this->ratiosFeatureShift);
+    for (int i = 0; i < nDescFeat.size(); i++) {
+        this->idsBitShifts.push_back(new uint64_t[this->nDescFeatures[i] - 1]);
+        this->ratiosBitShifts.push_back(new uint64_t[this->nDescFeatures[i] - 1]);
+        for (int j = 0; j < (this->nDescFeatures[i]-1); j++) {
+            this->idsBitShifts[i][j] = j * this->idsFeatureShift[i] + remainder(64, this->idsFeatureShift[i]);
+            this->ratiosBitShifts[i][j] = j * this->ratiosFeatureShift[i] + remainder(64, this->ratiosFeatureShift[i]);
+        }
     }
+
 }
 
 template <typename T, typename U, typename V>
 ExqFunctionsR64<T,U,V>::~ExqFunctionsR64() {
-    delete this->idsBitShifts;
-    delete this->ratiosBitShifts;
+    for (int i = 0; i < this->idsBitShifts.size(); i++) {
+        delete this->idsBitShifts[i];
+        delete this->ratiosBitShifts[i];
+    }
 }
 
 template <typename T, typename U, typename V>
-int ExqFunctionsR64<T, U, V>::getDescFeatCount() {
-    return nDescFeatures;
+int ExqFunctionsR64<T, U, V>::getDescFeatCount(int modality) {
+    return nDescFeatures[modality];
 }
 
 template <typename T, typename U, typename V>
 /// Decompress item and return the results in an ExqArray
-inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformation(ExqDescriptor<T,U,V> &descriptor) {
-    auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
+inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformation(ExqDescriptor<T,U,V> &descriptor, int modality) {
+    auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures[modality]);
 
-    int featId = descriptor.getTop() >> this->topFeatureShift;
-    double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
+    int featId = descriptor.getTop() >> this->topFeatureShift[modality];
+    double featVal = (descriptor.getTop() & this->topMask[modality]) / this->topDivisor[modality];
     exqArr->setItem(std::make_pair(featId, featVal), 0);
 
-    for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
-        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask)/this->ratiosDivisor;
+    for (int i = 0; i < (this->nDescFeatures[modality]-1); i++) {
+        featId = (descriptor.getFeatureIds() >> this->idsBitShifts[modality][i]) & this->idsMask[modality];
+        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[modality][i]) & this->ratiosMask[modality])/this->ratiosDivisor[modality];
         exqArr->setItem(std::make_pair(featId, featVal), i+1);
     }
 
@@ -91,15 +104,15 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 /// \param descriptor - Descriptor containing all feature information
 /// \return
 template <typename T, typename U, typename V>
-inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqDescriptor<T,U,V> &descriptor) {
+inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqDescriptor<T,U,V> &descriptor, int modality) {
     double score = bias;
-    int featId = descriptor.getTop() >> this->topFeatureShift;
-    double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
+    int featId = descriptor.getTop() >> this->topFeatureShift[modality];
+    double featVal = (descriptor.getTop() & this->topMask[modality]) / this->topDivisor[modality];
 
     score += model[featId] * featVal;
-    for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
-        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask)/this->ratiosDivisor;
+    for (int i = 0; i < (this->nDescFeatures[modality]-1); i++) {
+        featId = (descriptor.getFeatureIds() >> this->idsBitShifts[modality][i]) & this->idsMask[modality];
+        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[modality][i]) & this->ratiosMask[modality])/this->ratiosDivisor[modality];
         score += model[featId] * featVal;
     }
 
