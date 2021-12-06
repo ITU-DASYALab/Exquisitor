@@ -23,30 +23,30 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ExqFunctionsR64 : public ExqFunctions<ExqDescriptor<T,U,V>> {
     public:
-        //ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
+        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
         //Constructor for different compression per modality
-        ExqFunctionsR64(vector<int> nDescFeat, vector<int> iota, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<double> topDivisor,
-                        vector<double> ratiosDivisor);
-        //ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
-        //                uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor);
+        //ExqFunctionsR64(vector<int> nFeat, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<double> topDivisor,
+        //                vector<double> ratiosDivisor);
+        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
+                        uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor);
         //Constructor for different compression per modality
-        ExqFunctionsR64(vector<int> nDescFeat, vector<int> iota, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<uint64_t> topMask, vector<double> topDivisor,
-                        vector<uint64_t> idsMask, vector<uint64_t> ratiosMask, vector<double> ratiosDivisor);
+        //ExqFunctionsR64(vector<int> nFeat, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<uint64_t> topMask, vector<double> topDivisor,
+        //                vector<uint64_t> idsMask, vector<uint64_t> ratiosMask, vector<double> ratiosDivisor);
 
         ~ExqFunctionsR64();
 
-        int getDescFeatCount(int modality) override;
+        int getDescFeatCount() override;
         int getDescriptorSize() override;
         /**
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return
          */
-        ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<T,U,V>& descriptor, int modality) override;
+        ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<T,U,V>& descriptor) override;
 
         /**
          * @brief calculates distance between hyperplane and item
          */
-        double distance(vector<double>& model, double bias, ExqDescriptor<T,U,V>& descriptor, int modality) override;
+        double distance(vector<double>& model, double bias, ExqDescriptor<T,U,V>& descriptor) override;
 
         /**
          * @brief rank aggregation using scores from each modality
@@ -59,20 +59,18 @@ namespace exq {
         void assignRanking(vector<ExqItem>& items, int mod) override;
 
     private:
-        // Each field is a vector to contain modality instructions.
-        // TODO: Consider making this into a struct, so only one vector is required.
-        vector<int> iota;
-        vector<int> nDescFeatures; // Number of total features in compressed representation
-        vector<int> topFeatureShift; // Bits to shift for the 64-bit integer representing the top
-        vector<int> idsFeatureShift; // Bits to shift for the 64-bit integer(s) representing the feature ids
-        vector<int> ratiosFeatureShift; // Bits to shift for the 64-bit integer(s) representing the feature ratios
-        vector<uint64_t*> idsBitShifts; // Array containing exact shifts for ids
-        vector<uint64_t*> ratiosBitShifts; // Array containing exact shifts for ratios
-        vector<uint64_t> topMask; // Mask used to get top feature value
-        vector<double> topDivisor; // Divisor to get the top feature value
-        vector<uint64_t> idsMask; // Mask used to get feature id
-        vector<uint64_t> ratiosMask; // Mask used to get feature value
-        vector<double> ratiosDivisor; // Divisor used to get feature value
+        int iota;
+        int nDescFeatures;
+        int topFeatureShift;
+        int idsFeatureShift;
+        int ratiosFeatureShift;
+        uint64_t* idsBitShifts;
+        uint64_t* ratiosBitShifts;
+        uint64_t topMask;
+        double topDivisor;
+        uint64_t idsMask;
+        uint64_t ratiosMask;
+        double ratiosDivisor;
     }; //End of class ExqFunctions
 
 } //End of namespace exq

@@ -31,18 +31,18 @@ namespace exq {
     public:
         ~ExqFunctions() {};
 
-        virtual int getDescFeatCount(int modality) = 0;
+        virtual int getDescFeatCount() = 0;
         virtual int getDescriptorSize() = 0;
         /**
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return
          */
-        virtual ExqArray<pair<int,float>> getDescriptorInformation(T& descriptor, int modality) = 0;
+        virtual ExqArray<pair<int,float>> getDescriptorInformation(T& descriptor) = 0;
 
         /**
          * @brief calculates distance between hyperplane and item
          */
-        virtual double distance(vector<double>& model, double bias, T& descriptor, int modality) = 0;
+        virtual double distance(vector<double>& model, double bias, T& descriptor) = 0;
 
         /**
          * @brief sort items using scores from each modality
