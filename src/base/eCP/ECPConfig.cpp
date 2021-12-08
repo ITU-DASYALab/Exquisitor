@@ -63,8 +63,7 @@ void ECPConfig::SanityCheck() {
     }
 }
 
-void ECPConfig::PrintConfig()
-{
+void ECPConfig::PrintConfig() {
     cout << "numDims: " << numDims << endl;
     cout << "numClst: " << numClst << endl;
     cout << "numLvls: " << numLvls << endl;

@@ -11,8 +11,7 @@
 using namespace exq;
 
 template <typename T, typename U, typename V>
-ECPCluster<T,U,V>::ECPCluster(ECPConfig *_cnfg, FILE *_indxfile, FILE *_datafile, size_t descSize)
-{
+ECPCluster<T,U,V>::ECPCluster(ECPConfig *_cnfg, FILE *_indxfile, FILE *_datafile, size_t descSize) {
     // Note the bookkeeping info for later
     cnfg = _cnfg;
     datafile = _datafile;
@@ -29,16 +28,14 @@ ECPCluster<T,U,V>::ECPCluster(ECPConfig *_cnfg, FILE *_indxfile, FILE *_datafile
 };
 
 template <typename T, typename U, typename V>
-ECPCluster<T,U,V>::~ECPCluster()
-{
+ECPCluster<T,U,V>::~ECPCluster() {
     for (int i = 0; i < this->descriptorList.size(); i++) {
         delete this->descriptorList[i];
     }
 };
 
 template <typename T, typename U, typename V>
-void ECPCluster<T,U,V>::open()
-{
+void ECPCluster<T,U,V>::open() {
     // Seek to the start of the cluster
     fseeko(datafile, ((off_t)offset) * cnfg->getPgeSize(), SEEK_SET);
 
@@ -47,19 +44,17 @@ void ECPCluster<T,U,V>::open()
 }
 
 template <typename T, typename U, typename V>
-void ECPCluster<T,U,V>::close()
-{
+inline void ECPCluster<T,U,V>::close() {
     nextDescriptor = 0;
 };
 
 template <typename T, typename U, typename V>
-void ECPCluster<T,U,V>::setDescriptorId(int i, uint32_t id) {
+inline void ECPCluster<T,U,V>::setDescriptorId(int i, uint32_t id) {
     this->descriptorIds[i] = id;
 }
 
 template <typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ECPCluster<T,U,V>::next()
-{
+ExqDescriptor<T,U,V>* ECPCluster<T,U,V>::next() {
     if (nextDescriptor == descriptors) 
         return NULL;
     nextDescriptor++;
@@ -67,8 +62,7 @@ ExqDescriptor<T,U,V>* ECPCluster<T,U,V>::next()
 };
 
 template <typename T, typename U, typename V>
-void ECPCluster<T,U,V>::PrintCluster(string indent)
-{
+inline void ECPCluster<T,U,V>::PrintCluster(string indent) {
     cout << indent << "Offset: " << offset << endl;
     cout << indent << "Pages:  " << pages << endl;
     cout << indent << "Descrs: " << descriptors << endl;

@@ -31,11 +31,13 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*&
     fstat(fileno(_indxFile), &filestat);
     _maxClusters = filestat.st_size / _indexEntrySize;
     if (_maxClusters != cnfg->getNumClst()) {
-        cout << "Index: Incorrect index file size " << filestat.st_size << " (does not contain  " << _cnfg->getNumClst() << " clusters)" << endl;
+        cout << "Index: Incorrect index file size " << filestat.st_size << \
+        " (does not contain  " << _cnfg->getNumClst() << " clusters)" << endl;
         exit(EXIT_FAILURE);
     }
     if (filestat.st_size % _indexEntrySize != 0 ) {
-        cout << "Index: Incorrect index file size " << filestat.st_size << " (not a multiple of " << _indexEntrySize << ")" << endl;
+        cout << "Index: Incorrect index file size " << filestat.st_size << \
+        " (not a multiple of " << _indexEntrySize << ")" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -124,19 +126,13 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
 
     //printf("(%d) INDEX(%d) - totalData(%d): %d\n", workerId, mod, run, totalData);
     suggIds = vector<uint32_t>(totalData);
-    //suggBs = (int*) malloc(totalData * sizeof(int)); //Only for understanding. Remove for optimal performance
     int j = 0;
     for (int cnt = start; cnt < end; cnt++) {
         //TODO: Create a clusters array to hold the clusterIds from the previous loop (memoization)
-        //printf("topDescIds[%d][%d]: %u\n", mod, cnt, topDescIds[mod][cnt]);
-        //printf("clusterID: %u\n", *clusterID);
         numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();
-        //printf("numDesc: %d\n", numDesc);
-        //clusters[*clusterID]->PrintCluster();
         for (int i = 0; i < numDesc; i++) {
             //Descriptor* descriptor = clusters[*clusterID]->descriptorList[i];
             suggIds[j] = _clusters[_bClusters[cnt]]->descriptorIds[i];
-            //suggBs[j] = cnt; //Only for understanding. Remove for optimal performance
             j++;
         }
     }

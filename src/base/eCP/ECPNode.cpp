@@ -4,8 +4,7 @@
 using namespace exq;
 
 template<typename T, typename U, typename V>
-ECPNode<T,U,V>::ECPNode(ExqDescriptor<T,U,V>* _centroid, bool _addChild)
-{
+ECPNode<T,U,V>::ECPNode(ExqDescriptor<T,U,V>* _centroid, bool _addChild) {
     // Note the centroid
     centroid = _centroid;
 
@@ -26,15 +25,13 @@ ECPNode<T,U,V>::~ECPNode() {
 }
 
 template<typename T, typename U, typename V>
-void ECPNode<T,U,V>::addChild(ExqDescriptor<T,U,V>* child)
-{
+inline void ECPNode<T,U,V>::addChild(ExqDescriptor<T,U,V>* child) {
     // Now there is enough space, so insert
     children.push_back(child);
 };
 
 template<typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ECPNode<T,U,V>::get(uint64_t i)
-{
+inline ExqDescriptor<T,U,V>* ECPNode<T,U,V>::get(uint64_t i) {
     if (i > children.size()) {
         return NULL;
     }
@@ -42,14 +39,12 @@ ExqDescriptor<T,U,V>* ECPNode<T,U,V>::get(uint64_t i)
 }
 
 template<typename T, typename U, typename V>
-void ECPNode<T,U,V>::open()
-{
+inline void ECPNode<T,U,V>::open() {
     currChild = 0;
 }
 
 template<typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ECPNode<T,U,V>::next()
-{
+inline ExqDescriptor<T,U,V>* ECPNode<T,U,V>::next() {
     if (currChild < children.size()) {
         return children[currChild++];
     }
@@ -57,14 +52,12 @@ ExqDescriptor<T,U,V>* ECPNode<T,U,V>::next()
 }
 
 template<typename T, typename U, typename V>
-void ECPNode<T,U,V>::close()
-{
+inline void ECPNode<T,U,V>::close() {
     currChild = -1;
 }
 
 template<typename T, typename U, typename V>
-void ECPNode<T,U,V>::PrintNode(string indent)
-{
+inline void ECPNode<T,U,V>::PrintNode(string indent) {
     cout << indent << "NODE: Centroid: ";
     //PrintDescriptor(centroid);
 
