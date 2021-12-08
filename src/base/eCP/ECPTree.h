@@ -34,11 +34,6 @@ namespace exq {
         ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t k,
                                             vector<ECPCluster<T,U,V>*>& clusters);
 
-        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k,
-                                           vector<ECPCluster<T,U,V>*>& clusters, int mod);
-
-        void printClusterItems(uint64_t clusterID);
-
         // Sanity checks
         void PrintTree();
     private:
@@ -50,6 +45,7 @@ namespace exq {
         vector<vector<ECPNode<T,U,V>*>> _nodes;
         int* _levelsizes;
         // pq for incremental retrieval
+        double _threshold = 0.0;
         int _expCounter = 0;
         int _skipCounter = 0;
         priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> pq;
@@ -66,9 +62,6 @@ namespace exq {
         // Used both for insertions and implementing the actual search
         ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t b, uint64_t level,
                                             vector<ECPCluster<T,U,V>*>& clusters);
-
-        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t level,
-                                           vector<ECPCluster<T,U,V>*>& clusters, int mod);
 
         ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t level);
 

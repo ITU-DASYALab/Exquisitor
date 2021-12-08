@@ -1,0 +1,14 @@
+//
+// Created by Omar Shahbaz Khan on 27/09/2021.
+//
+
+#ifndef EXQUISITOR_ECPQUERYOPTIMISATIONPOLICIES_H
+#define EXQUISITOR_ECPQUERYOPTIMISATIONPOLICIES_H
+
+
+class ECPQueryOptimisationPolicies {
+
+};
+
+
+#endif //EXQUISITOR_ECPQUERYOPTIMISATIONPOLICIES_H
