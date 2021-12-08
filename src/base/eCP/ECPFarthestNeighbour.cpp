@@ -47,28 +47,27 @@ void ECPFarthestNeighbour<T,U,V>::compareAndReplaceFarthest(ExqDescriptor<T,U,V>
     }
 };
 
+//simplified projection calculations from query vector (weight vector from SVM) and data vector
 template<typename T, typename U, typename V>
-inline double ECPFarthestNeighbour<T,U,V>::Distance(ExqDescriptor<T,U,V>* data) { //simplified projection calculations from query vector (weight vector from SVM) and data vector.
+inline double ECPFarthestNeighbour<T,U,V>::distance(ExqDescriptor<T,U,V>* data) {
     return _functions->distance(_query, _bias, data);
 };
 
 template<typename T, typename U, typename V>
-void ECPFarthestNeighbour<T,U,V>::printStuff() {
+inline void ECPFarthestNeighbour<T,U,V>::printStuff() {
     cout << "count_ids is: " << _countIds << endl;
     cout << "cound_zeros is: " << _countZeros << endl;
 }
 
 template<typename T, typename U, typename V>
-void ECPFarthestNeighbour<T,U,V>::ReplaceFarthest(uint64_t id, uint64_t clusterid, double dist)
-{
+inline void ECPFarthestNeighbour<T,U,V>::ReplaceFarthest(uint64_t id, uint64_t clusterid, double dist) {
     _descriptorIDs[_farthest] = id;
     _clusterIDs[_farthest]    = clusterid;
     _distances[_farthest]     = dist;
 }
 
 template<typename T, typename U, typename V>
-inline void ECPFarthestNeighbour<T,U,V>::FindFarthest()
-{
+inline void ECPFarthestNeighbour<T,U,V>::FindFarthest() {
     // The idea is to maintain the lists in order, so that the farthest is always at the end of the list
     // Step one: Deal with the case where we have not found k neighbors
     if (_neighbors < _k-1) {
@@ -111,18 +110,17 @@ inline void ECPFarthestNeighbour<T,U,V>::FindFarthest()
 }
 
 template<typename T, typename U, typename V>
-vector<double> ECPFarthestNeighbour<T,U,V>::getTopDistances() {
+inline vector<double> ECPFarthestNeighbour<T,U,V>::getTopDistances() {
     return _distances;
 }
 
 template<typename T, typename U, typename V>
-vector<uint64_t> ECPFarthestNeighbour<T,U,V>::getTopIds() {
+inline vector<uint64_t> ECPFarthestNeighbour<T,U,V>::getTopIds() {
     return _descriptorIDs;
 }
 
 template<typename T, typename U, typename V>
-void ECPFarthestNeighbour<T,U,V>::PrintAnswer()
-{
+inline void ECPFarthestNeighbour<T,U,V>::PrintAnswer() {
     cout << _neighbors << " : " << _neighbors << endl;
     for (uint64_t i = 0; i < _neighbors; i++) {
         cout << i << ":" << _descriptorIDs[i] << ":" << _distances[i] << endl;
@@ -130,14 +128,12 @@ void ECPFarthestNeighbour<T,U,V>::PrintAnswer()
 }
 
 template<typename T, typename U, typename V>
-void ECPFarthestNeighbour<T,U,V>::open()
-{
+inline void ECPFarthestNeighbour<T,U,V>::open() {
     _scanNext = 0;
 }
 
 template<typename T, typename U, typename V>
-uint64_t* ECPFarthestNeighbour<T,U,V>::nextClusterID()
-{
+inline uint64_t* ECPFarthestNeighbour<T,U,V>::nextClusterID() {
     if ((uint64_t)_scanNext < _neighbors) {
         return &(_clusterIDs[_scanNext]);
     }
@@ -147,8 +143,7 @@ uint64_t* ECPFarthestNeighbour<T,U,V>::nextClusterID()
 
 /* This is used for finding top clusters*/
 template<typename T, typename U, typename V>
-uint64_t* ECPFarthestNeighbour<T,U,V>::next()
-{
+uint64_t* ECPFarthestNeighbour<T,U,V>::next() {
     if ((uint64_t)_scanNext < _neighbors) {
         return &(_descriptorIDs[_scanNext++]);
     }
@@ -156,8 +151,7 @@ uint64_t* ECPFarthestNeighbour<T,U,V>::next()
 };
 
 template<typename T, typename U, typename V>
-void ECPFarthestNeighbour<T,U,V>::close()
-{
+inline void ECPFarthestNeighbour<T,U,V>::close() {
     _scanNext = -1;
 }
 

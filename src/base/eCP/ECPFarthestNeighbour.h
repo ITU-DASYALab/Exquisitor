@@ -23,6 +23,7 @@ namespace exq {
         vector<double> getQuery() { return _query; }
 
         uint64_t getK() { return _k; }
+        void setK(uint64_t k) { _k = k; }
 
         vector<double> getTopDistances();
 
@@ -33,6 +34,9 @@ namespace exq {
 
         // The query processing interface is very simple:
         void compareAndReplaceFarthest(ExqDescriptor<T,U,V>* data, uint64_t clusterid = -1);
+
+        // Find distance to a descriptor
+        double distance(ExqDescriptor<T,U,V>* data);
 
         void open();
 
@@ -60,8 +64,6 @@ namespace exq {
         // Index into the arrays where the farthest descriptor is found
         uint64_t _farthest;
 
-        // Find distance to a descriptor
-        double Distance(ExqDescriptor<T,U,V>* data);
 
         // Replace the farthest neighbor info with this info
         void ReplaceFarthest(uint64_t id, uint64_t clusterid, double dist);

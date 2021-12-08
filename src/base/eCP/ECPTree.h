@@ -6,8 +6,21 @@
 #include "ECPCluster.h"
 #include "base/ExqFunctions.h"
 
+#include <queue>
+#include <set>
+
 namespace exq {
+    using std::set;
     using std::vector;
+    using std::priority_queue;
+    using std::tuple;
+    using std::make_tuple;
+
+    struct PQ_Compare {
+        bool operator()(const tuple<int,int,double>& lhs, const tuple<int,int,double>& rhs) {
+            return std::get<2>(lhs) < std::get<2>(rhs);
+        }
+    };
 
     template<typename T, typename U, typename V>
     class ECPTree {
@@ -18,9 +31,11 @@ namespace exq {
         ~ECPTree();
 
         // Search the tree to find farthest clusters
-        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t k, vector<ECPCluster<T,U,V>*>& clusters);
+        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t k,
+                                            vector<ECPCluster<T,U,V>*>& clusters);
 
-        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k, vector<ECPCluster<T,U,V>*>& clusters, int mod);
+        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k,
+                                           vector<ECPCluster<T,U,V>*>& clusters, int mod);
 
         void printClusterItems(uint64_t clusterID);
 
@@ -34,6 +49,13 @@ namespace exq {
         // The two-dimensional array of nodes (level, node) and the size at each level
         vector<vector<ECPNode<T,U,V>*>> _nodes;
         int* _levelsizes;
+        // pq for incremental retrieval
+        int _expCounter = 0;
+        int _skipCounter = 0;
+        priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> pq;
+        set<uint32_t> bfs;
+        // limit for accepting clusters
+        int _clusterSizeLimit = 100000000;
 
         // Build the tree using the list of descriptors at the bottom
         void BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numClusters);
@@ -42,12 +64,17 @@ namespace exq {
 
         // Find the proper node for a particular descriptor at a particular level
         // Used both for insertions and implementing the actual search
-        // Answer *search(Descriptor *query, uint_t k, uint_t level);
-        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t k, uint64_t level, vector<ECPCluster<T,U,V>*>& clusters);
+        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t b, uint64_t level,
+                                            vector<ECPCluster<T,U,V>*>& clusters);
 
-        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t level, vector<ECPCluster<T,U,V>*>& clusters, int mod);
+        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t level,
+                                           vector<ECPCluster<T,U,V>*>& clusters, int mod);
 
         ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t level);
 
+        ECPFarthestNeighbour<T,U,V>* search_pq(vector<double>& query, double bias, uint32_t b,
+                                               vector<ECPCluster<T,U,V>*>& clusters);
+
+        int getClusterCount(uint64_t id, vector<ECPCluster<T,U,V>*>& clusters, bool check=false);
     };
 }

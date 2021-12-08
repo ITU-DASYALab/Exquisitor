@@ -19,8 +19,7 @@ ECPTree<T,U,V>::ECPTree(ECPConfig* cnfg, vector<ExqDescriptor<T,U,V>*> centroids
 }
 
 template<typename T, typename U, typename V>
-ECPTree<T,U,V>::~ECPTree()
-{
+ECPTree<T,U,V>::~ECPTree() {
     for (uint64_t l = 0; l < _cnfg->getNumLvls(); l++) {
         for (int i=0; i < _levelsizes[l]; i++) {
             delete _nodes[l][i];
@@ -32,8 +31,7 @@ ECPTree<T,U,V>::~ECPTree()
 }
 
 template<typename T, typename U, typename V>
-void ECPTree<T,U,V>::BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numClusters)
-{
+void ECPTree<T,U,V>::BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numClusters) {
     uint64_t fanout = (uint64_t) ceil(pow((double)numClusters, (1.0/(_cnfg->getNumLvls())) ) );
 
     // Allocate and set the level sizes
@@ -65,8 +63,7 @@ void ECPTree<T,U,V>::BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numC
 }
 
 template<typename T, typename U, typename V>
-void ECPTree<T,U,V>::addChildAtLevel(ExqDescriptor<T,U,V>* centroid, int level)
-{
+void ECPTree<T,U,V>::addChildAtLevel(ExqDescriptor<T,U,V>* centroid, int level) {
     uint64_t *clusterID;
     // Find the correct node to insert into
     ECPNearestNeighbour<T,U,V>* qa = search(centroid, 1, level);
@@ -82,8 +79,13 @@ void ECPTree<T,U,V>::addChildAtLevel(ExqDescriptor<T,U,V>* centroid, int level)
 }
 
 template<typename T, typename U, typename V>
-ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search(vector<double>& query, double bias, uint64_t k, uint64_t depth, vector<ECPCluster<T,U,V>*>& clusters)
-{
+int ECPTree<T,U,V>::getClusterCount(uint64_t id, vector<ECPCluster<T, U, V> *> &clusters, bool check) {
+    return 0;
+}
+
+template<typename T, typename U, typename V>
+ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search(vector<double>& query, double bias, uint64_t k, uint64_t depth,
+                                                    vector<ECPCluster<T,U,V>*>& clusters) {
     //printf("Training...\n");
     if (depth > _cnfg->getNumLvls())
         return NULL;
@@ -92,12 +94,15 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search(vector<double>& query, doubl
 
     //printf("(MAIN) Searching Tree\n");
     auto result = new ECPFarthestNeighbour<T,U,V>(query, bias, k, _functions);
-    //printf("(MAIN) AnswerMax initialized\n");
+    //printf("(MAIN) ECPFarthestNeighbour initialized\n");
+    bfs.clear();
+    pq = priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare>();
     for (int i = 0; i < _levelsizes[0]; i++) {
         if( clusters[_nodes[0][i]->get(0)->id]->getNumDescriptors() == 0) {
             continue;
         }
         result->compareAndReplaceFarthest(_nodes[0][i]->get(0));
+        pq.push(make_tuple(0,i,result->distance(_nodes[0][i]->get(0))));
     };
 
     //printf("(MAIN) Scanning Clusters in answer\n");
@@ -105,40 +110,19 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search(vector<double>& query, doubl
     for (uint64_t l = 1; l <= depth; l++) {
         // create a new result set for the current depth search.
         auto temp_result = new ECPFarthestNeighbour<T,U,V>(query, bias, k, _functions);
-
         // Open the current result and scan those clusters
         result->open();
-        //int x = 0;
         for (uint64_t i = 0; i < k; i++) {
             // sanity check, if the found neighbours are fewer than treeB.
             uint64_t *clusterID = result->next();
             if (clusterID == NULL)
                 break;
-
             // Loop through the cluster and insert into results
             for (int j = 0; j < _nodes[l-1][*clusterID]->getNumChildren(); j++) {
                 int numDescriptors = clusters[_nodes[l-1][*clusterID]->get(j)->id]->getNumDescriptors();
-                if(numDescriptors == 0) {
+                if(numDescriptors == 0 || numDescriptors > _clusterSizeLimit) {
                     continue;
                 }
-                //TODO: Make a global variable: clusterSizeLimit
-                //if(numDescriptors > 100) {
-                //  continue;
-                //}
-                //x++;
-
-                //TODO: Might be useful at some point
-                // Check if number of alreadySeen items makes this cluster useless
-                //int not_seen = 0;
-                //for (int p = 0; p < numDescriptors; p++) {
-                //    if (alreadySeen[descriptor->descriptorList[p]->id]) {
-                //        not_seen++;
-                //    }
-                //}
-                //if (not_seen == numDescriptors) {
-                //    continue;
-                //}
-
                 temp_result->compareAndReplaceFarthest(_nodes[l-1][*clusterID]->get(j), *clusterID);
             }
         }
@@ -155,8 +139,121 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search(vector<double>& query, doubl
 }
 
 template<typename T, typename U, typename V>
-ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t depth)
-{
+ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, double bias, uint32_t b,
+                                                       vector<ECPCluster<T,U,V>*>& clusters) {
+    ECPFarthestNeighbour<T,U,V>* res = new ECPFarthestNeighbour<T,U,V>(query, bias, b, _functions);
+
+    uint64_t k = 0;
+    uint64_t bx = b;
+    //double thresh = threshold;
+    double total_count = 0.0;
+    int exp = 0;
+
+    while (1) {
+        while (!pq.empty() && k != bx) {
+            // Level Id, Node Id, Distance Score
+            tuple<int, int, double> top = pq.top();
+            pq.pop();
+            if (std::get<0>(top) == (int) _cnfg->getNumLvls() - 1) { // If cluster, add to res
+                int numDescriptors = clusters[_nodes[std::get<0>(top)][std::get<1>(top)]->get(
+                        0)->id]->getNumDescriptors();
+                if (numDescriptors > _clusterSizeLimit || numDescriptors == 0) {
+                    continue;
+                }
+                //cout << "Cluster " << nodes[std::get<0>(top)][std::get<1>(top)]->get(0)->id << " " << std::get<2>(top) << endl;
+                double count = getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(0)->id, clusters);
+                if (count > 0.0) {
+                    total_count += count;
+                    res->compareAndReplaceFarthest(_nodes[std::get<0>(top)][std::get<1>(top)]->get(0));
+                    k++;
+                } else {
+                    _skipCounter++;
+                }
+            } else { // If Node, add children to priority queue
+                //cout << "Node " << nodes[std::get<0>(top)][std::get<1>(top)]->get(0)->id << " " << std::get<2>(top) << endl;
+                for (int i = 0; i < _nodes[std::get<0>(top)][std::get<1>(top)]->getNumChildren(); i++) {
+                    if (expandType == 3 || expandType == 7 || expandType == 4 || expandType == 8) {
+                        if (std::get<0>(top) + 1 == statLevel) {
+                            double cnt = getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id,
+                                                         clusters, true);
+                            //cout << nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id << " count: " << cnt << endl;
+                            if (cnt == 0.0) {
+                                _skipCounter++;
+                                continue;
+                            }
+                        }
+                    }
+                    // This cluster has already been processed
+                    if (std::get<0>(top) + 1 == (int) _cnfg->getNumLvls() - 1 &&
+                        bfs.find(_nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id) != bfs.end()) {
+                        continue;
+                    }
+                    pq.push(make_tuple(
+                            std::get<0>(top) + 1, // Next Level
+                            _nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id, // Node/Cluster Id on Next Level
+                            res->distance(_nodes[std::get<0>(top)][std::get<1>(top)]->get(i)) // Score of Node/Cluster
+                    ));
+                }
+            }
+        }
+        if (expandType > 4) {
+            if (exp > 0) {
+                if (total_count > 0.0 && bx*2 > 65536) break; //Break after 2^16
+                //if ((expandType == 7 || expandType == 8) && bx*2 > 65536) break; //Break after 2^16
+                thresh *= 0.5; // Half threshold each expansion
+                //cout << "threshold: " << thresh << " bx: " << bx*2 << endl;
+            }
+        }
+
+        if (pq.empty() || total_count >= ((int)thresh)) {
+            //cout << "Total Count " << total_count << endl;
+            if (pq.empty()) pq_empty = true;
+            break;
+        } else {
+            if ((bx*2) < (uint32_t)this->numClusters) {
+                //Expand b by power of 2
+                //cout << "Expanding b" << endl;
+                _expCounter++;
+                exp++;
+                bx *= 2;
+                res->setK(bx);
+            } else if (bx == (uint32_t)this->numClusters) {
+                //cout << "Can not expand further" << endl;
+                break;
+            } else {
+                _expCounter++;
+                exp++;
+                //cout << "Expanding b to max clusters " << this->numClusters << endl;
+                bx = this->numClusters;
+                res->setK(bx);
+            }
+        }
+    }
+    if (pq_empty && (expandType == 2 || expandType == 6 || expandType == 4 || expandType == 8) && k < bx) {
+        for (int i = 0; i < this->numClusters; i++) {
+            if (filterCacheEC[mod][i] != -1) {
+                if (filterCacheEC[mod][i] - filterCacheRC[mod][i] > 0) {
+                    //cout << "Remaining Cluster " << i << " with " << filterCacheEC[mod][i] - filterCacheRC[mod][i] << endl;
+                    //cout << nodes[(int)cnfg->getNumLvls()-1][i]->get(0)->id << endl;
+                    res->compareAndReplaceFarthest(_nodes[(int)_cnfg->getNumLvls()-1][i]->get(0));
+                    k++;
+                }
+                if (k == bx) {
+                    break;
+                }
+            }
+        }
+    }
+    if (k != bx) {
+        //cout << "k = " << k << endl;
+        res->setK(k);
+    }
+    //cout << "PQ(" << pq.size() << ") Searched!" << endl;
+    return res;
+}
+
+template<typename T, typename U, typename V>
+ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t depth) {
     if (depth > _cnfg->getNumLvls())
         return NULL;
 
@@ -196,7 +293,8 @@ ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, 
 }
 
 template<typename T, typename U, typename V>
-ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t depth, vector<ECPCluster<T,U,V>*>& clusters, int mod) {
+ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t depth,
+                                                   vector<ECPCluster<T,U,V>*>& clusters, int mod) {
     if (depth > _cnfg->getNumLvls())
         return NULL;
 
@@ -254,14 +352,19 @@ ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, 
 }
 
 template<typename T, typename U, typename V>
-ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search(vector<double>& query, double bias, uint64_t k, vector<ECPCluster<T,U,V>*>& clusters) { return search(query, bias, k, _cnfg->getNumLvls() - 1, clusters); }
+ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search(vector<double>& query, double bias, uint64_t k,
+                                                    vector<ECPCluster<T,U,V>*>& clusters) {
+    return search(query, bias, k, _cnfg->getNumLvls() - 1, clusters);
+}
 
 template<typename T, typename U, typename V>
-ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, uint64_t k, vector<ECPCluster<T,U,V>*>& clusters, int mod) { return search(query, k, _cnfg->getNumLvls() - 1, clusters, mod); }
+ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, uint64_t k,
+                                                   vector<ECPCluster<T,U,V>*>& clusters, int mod) {
+    return search(query, k, _cnfg->getNumLvls() - 1, clusters, mod);
+}
 
 template<typename T, typename U, typename V>
-void ECPTree<T,U,V>::PrintTree()
-{
+void ECPTree<T,U,V>::PrintTree() {
     // Print the level info, ignoring the lowest level
     cout << "Level Sizes:" ;
     for (uint64_t l = 0; l < _cnfg->getNumLvls()-1; l++) {
