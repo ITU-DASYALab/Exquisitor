@@ -5,6 +5,7 @@
 #include "ExqController.h"
 #include "ExqFunctionsR64.h"
 #include <future>
+#include <base/Metadata/ItemProperties.h>
 
 using namespace exq;
 using std::async;
@@ -27,10 +28,12 @@ ExqController<T>::ExqController(
         vector<ExqFunctions<T>*> functions,
         ExqDataHandler<T>* handler,
         vector<ExqClassifier*> classifiers,
-        ExqWorker<T>* worker
+        ExqWorker<T>* worker,
+        ExqArray<ItemProperties> itemProps,
+        map<uint8_t,ExqArray<Props>> vidProps
     ) {
 
-    //Set standard fields
+    // Set standard fields
     _iota = iota;
     _noms = noms;
     _numWorkers = workers;
@@ -39,13 +42,15 @@ ExqController<T>::ExqController(
     _bClusters = bClusters;
     _featureDimensions = modFeatureDimensions;
 
-    //Set exq class object fields
+    // Set exq class object fields
     _functions = functions;
     _handler = handler;
     _classifiers = classifiers;
     _worker = worker;
+    _itemProperties = itemProps;
+    _vidProperties = vidProps;
 
-    //Load data
+    // Load data
     _handler->loadData(_modalities);
 
     _threads.resize(_numWorkers);

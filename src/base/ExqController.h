@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <future>
+#include <base/Metadata/ItemProperties.h>
 
 #include "ExqConstants.h"
 #include "ExqClassifier.h"
@@ -57,7 +58,9 @@ namespace exq {
                 vector<ExqFunctions<T>*> functions,
                 ExqDataHandler<T>* handler,
                 vector<ExqClassifier*> classifiers,
-                ExqWorker<T>* worker
+                ExqWorker<T>* worker,
+                ExqArray<ItemProperties> itemProps,
+                map<uint8_t,ExqArray<Props>> vidProps
         );
 
 /**
@@ -123,6 +126,8 @@ namespace exq {
         ExqDataHandler<T>* _handler;
         vector<ExqClassifier*> _classifiers;
         ExqWorker<T>* _worker;
+        ExqArray<ItemProperties> _itemProperties;
+        map<uint8_t,ExqArray<Props>> _vidProperties;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;

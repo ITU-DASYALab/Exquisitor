@@ -8,25 +8,31 @@
 #include <cstdint>
 #include <set>
 #include <map>
+
 #include "../ExqArray.h"
 
 namespace exq {
     using std::set;
     using std::map;
 
-    struct CollProps {
+    // Container for properties
+    struct Props {
         ExqArray<ExqArray<uint16_t>> props;
     };
 
-    struct VidProps {
-        ExqArray<ExqArray<uint16_t>> props;
-    };
-
+    /**
+     * collectionId - id collection item originates from
+     * vid - is the item part of a video
+     * vidId - id of video the item belongs to
+     * std_props - standard Properties for all items (name, aspect ratio, time, etc.)
+     * coll_props - collection specific item properties, e.g. Location (LSC), Color (VBS)
+     */
     struct ItemProperties {
-        uint8_t collections;
+        uint8_t collectionId;
         bool vid=false;
-        VidProps vid_props;
-        CollProps coll_props;
+        int vidId;
+        Props std_props;
+        Props coll_props;
     };
 }
 
