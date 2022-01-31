@@ -1,4 +1,3 @@
-project(Exquisitor)
 cmake_minimum_required(VERSION 3.15)
 
 set(BINARY ${CMAKE_PROJECT_NAME})

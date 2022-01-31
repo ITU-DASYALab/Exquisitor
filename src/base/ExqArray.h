@@ -28,6 +28,12 @@ namespace exq {
             _arr = new T[n];
         };
 
+        /// Constructor. 0 size array.
+        ExqArray() {
+            _size = 0;
+            _arr = new T[0];
+        }
+
         ~ExqArray() {
             delete[] _arr;
         };

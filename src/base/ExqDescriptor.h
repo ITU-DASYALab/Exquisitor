@@ -12,7 +12,7 @@
 #include <tuple>
 #include <array>
 #include <cstdint>
-#include <inttypes.h>
+#include <cinttypes>
 
 #include "ExqArray.h"
 
@@ -25,7 +25,7 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ExqDescriptor {
     public:
-        uint id;
+        uint32_t id;
         T topFeature;
         U featureIds;
         V featureRatios;
@@ -34,7 +34,7 @@ namespace exq {
         /**
          * @brief constructs the Descriptor
          */
-        ExqDescriptor(uint itemId, T top, U featIds, V ratios) {
+        ExqDescriptor(uint32_t itemId, T top, U featIds, V ratios) {
             id = itemId;
             topFeature = top;
             featureIds = featIds;
@@ -54,7 +54,7 @@ namespace exq {
         /**
          * @brief copy a descriptor and set a new id
          */
-        ExqDescriptor(ExqDescriptor *org, id_t new_id) {
+        ExqDescriptor(ExqDescriptor *org, uint32_t new_id) {
             id = new_id;
             topFeature = org->topFeature;
             featureIds = org->featureIds;

@@ -68,8 +68,7 @@ vector<double> ExqController<T>::train(vector<uint> trainIds, vector<short> trai
         vector<vector<double>> trainingItems = vector<vector<double>>();
         for (int i = 0; i < trainIds.size(); i++) {
             T desc = _handler->getDescriptor(i);
-            //TODO: Fix _functions[0] to take modality?
-            ExqArray<pair<int, float>> descVals = _functions[0]->getDescriptorInformation(desc);
+            ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(desc);
             vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
             for (int j = 0; j < descVals.getSize(); j++) {
                 pair<int, float> item = descVals.getItem(i);
@@ -117,31 +116,29 @@ TopResults ExqController<T>::suggest(int k, vector<uint> seenItems) {
     }
     vector<ExqItem> items2Return;
 
-    //TODO: Fix _classifiers[] and _functions[] to take modality?
-    for (int m = 0; m < _modalities; m++) {
-        while (completedSegments < _segments) {
-            for (int w = 0; w < _numWorkers; w++) {
-                if (workerSegments[w] == -1 && runningSegments < _segments) {
-                    _threads[w] = async(std::launch::async, [&] {
-                        return _worker->suggest(k, items2Return,
-                                                _classifiers,
-                                                runningSegments, _segments,
-                                                _noms, _modalities, _handler, _functions, seenSet,
-                                                results.totalTimePerSegment[runningSegments],
-                                                results.totalItemsConsideredPerSegment[runningSegments]);
-                    });
-                    workerSegments[w] = runningSegments;
-                    runningSegments++;
-                } else if (workerSegments[w] != -1 &&
-                           _threads[w].wait_for(std::chrono::seconds(0)) == future_status::ready) {
-                    _threads[w].get();
-                    workerSegments[w] = -1;
-                    completedSegments++;
-                }
+    while (completedSegments < _segments) {
+        for (int w = 0; w < _numWorkers; w++) {
+            if (workerSegments[w] == -1 && runningSegments < _segments) {
+                _threads[w] = async(std::launch::async, [&] {
+                    return _worker->suggest(k, items2Return,
+                                            _classifiers,
+                                            runningSegments, _segments,
+                                            _noms, _modalities, _handler, _functions, seenSet,
+                                            results.totalTimePerSegment[runningSegments],
+                                            results.totalItemsConsideredPerSegment[runningSegments]);
+                });
+                workerSegments[w] = runningSegments;
+                runningSegments++;
+            } else if (workerSegments[w] != -1 &&
+                       _threads[w].wait_for(std::chrono::seconds(0)) == future_status::ready) {
+                _threads[w].get();
+                workerSegments[w] = -1;
+                completedSegments++;
             }
         }
-        completedSegments = 0;
     }
+    completedSegments = 0;
+
     //TODO: Duplicate check
     _functions[0]->sortItems(items2Return, _modalities);
 

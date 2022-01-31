@@ -17,7 +17,7 @@ namespace exq {
 
     // Container for properties
     struct Props {
-        ExqArray<ExqArray<uint16_t>> props;
+        ExqArray<ExqArray<uint16_t>> props = ExqArray<ExqArray<uint16_t>>();
     };
 
     /**
@@ -28,12 +28,12 @@ namespace exq {
      * coll_props - collection specific item properties, e.g. Location (LSC), Color (VBS)
      */
     struct ItemProperties {
-        uint8_t collectionId;
-        bool vid=false;
-        int vidId;
+        uint8_t collectionId = 0;
+        bool vid = false;
+        int vidId = 0;
         Props std_props;
         Props coll_props;
-    };
+    } ItemProperties;
 }
 
 #endif //EXQUISITOR_ITEMPROPERTIES_H
