@@ -22,6 +22,8 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     PyObject* compCnfgFilesPy;
     PyObject* modFeatureDimensionsPy;
     PyObject* modFunctionPy;
+    PyObject* itemMetadataPy;
+    PyObject* videoMetadataPy;
 
     // Arguments
     int iota = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
@@ -105,6 +107,14 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     }
     auto worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
 
+    int n_collections = PyLong_AsLong(PyTuple_GetItem(args, 9));
+    itemMetadataPy = PyTuple_GetItem(args, 10);
+    videoMetadataPy = PyTuple_GetItem(args, 11);
+    auto itemProps = ExqArray<ItemProperties>(PyList_Size(itemMetadataPy));
+    //TODO: for i->itemProps.size(); itemProps[i] = {...};
+    auto vidProps = map<uint8_t,ExqArray<Props>>();
+    //TODO: for i-> n_collections; vidProps.add(i, ExqArray<Props>(PyList_Size(PyList_GetItem(videoMetadataPy,i))));
+
     _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t, uint64_t, uint64_t>>(
             iota,
             noms,
@@ -116,7 +126,9 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             functions,
             dataHandler,
             classifiers,
-            worker
+            worker,
+            itemProps,
+            vidProps
             );
 
     Py_IncRef(Py_None);

@@ -33,7 +33,7 @@ namespace exq {
         int vidId = 0;
         Props std_props;
         Props coll_props;
-    } ItemProperties;
+    };
 }
 
 #endif //EXQUISITOR_ITEMPROPERTIES_H
