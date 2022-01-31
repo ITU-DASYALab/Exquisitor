@@ -5,7 +5,7 @@
 #ifndef EXQUISITOR_ITEMFILTER_H
 #define EXQUISITOR_ITEMFILTER_H
 
-#include "Metadata/ItemProperties.h"
+#include "ItemProperties.h"
 
 namespace exq {
     class ItemFilter {
