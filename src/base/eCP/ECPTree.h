@@ -4,10 +4,12 @@
 #include "ECPFarthestNeighbour.h"
 #include "ECPNearestNeighbour.h"
 #include "ECPCluster.h"
-#include "base/ExqFunctions.h"
+#include "../ExqFunctions.h"
+#include "ECPQueryOptimisationPolicies.h"
 
 #include <queue>
 #include <set>
+#include <tuple>
 
 namespace exq {
     using std::set;
@@ -26,7 +28,8 @@ namespace exq {
     class ECPTree {
     public:
         ECPTree(ECPConfig* _cnfg, vector<ExqDescriptor<T,U,V>*> centroids, int numClusters,
-                ExqFunctions<ExqDescriptor<T,U,V>*>*& func, int featureDimensions);
+                ExqFunctions<ExqDescriptor<T,U,V>*>*& func, int featureDimensions,
+                ECPQueryOptimisationPolicies<T,U,V>*& qop);
 
         ~ECPTree();
 
@@ -50,6 +53,8 @@ namespace exq {
         int _skipCounter = 0;
         priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> pq;
         set<uint32_t> bfs;
+        // query optimisation policies
+        ECPQueryOptimisationPolicies<T,U,V>* _qop;
         // limit for accepting clusters
         int _clusterSizeLimit = 100000000;
 

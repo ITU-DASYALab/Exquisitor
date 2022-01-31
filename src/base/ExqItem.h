@@ -19,14 +19,16 @@ namespace exq {
     struct ExqItem {
         uint32_t itemId;
         int fromModality;
+        uint64_t fromCluster;
         vector<double> distance;
         double aggScore;
         int segment;
 
         ExqItem() {
             itemId = UINT32_MAX;
-            int fromModality = VIS;
-            double aggScore = 0.0;
+            fromModality = VIS;
+            aggScore = 0.0;
+            fromCluster = UINT64_MAX;
             segment = -1;
         };
     }; //End of struct ExqItem

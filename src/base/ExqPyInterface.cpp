@@ -92,7 +92,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
                 break;
             }
             default: {
-                cout << "WRONG ExqFunctions SELECTION!" << endl;
+                cout << "UNKNOWN ExqFunctions CASE!" << endl;
                 exit(1);
             }
         }

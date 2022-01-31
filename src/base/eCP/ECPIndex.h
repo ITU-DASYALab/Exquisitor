@@ -4,9 +4,10 @@
 #include "ECPTree.h"
 #include "ECPCluster.h"
 #include "ECPFarthestNeighbour.h"
+#include "ECPQueryOptimisationPolicies.h"
 
-#include "base/ExqDescriptor.h"
-#include "base/ExqFunctions.h"
+#include "../ExqDescriptor.h"
+#include "../ExqFunctions.h"
 
 #include <string>
 #include <cstdio>
@@ -21,13 +22,14 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ECPIndex {
     public:
-        ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*& functions, int featureDimensions);
+        ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*& functions, int featureDimensions,
+                 ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
 
         ~ECPIndex();
 
         void loadDescriptors(vector<ExqDescriptor<T,U,V>*>*);
 
-        void search(int chnk, int& totalData, vector<uint32_t>& suggIds, int run, int segments);
+        void search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster, int run, int segments);
 
         void set_b_clusters(vector<double>& query, double bias, int b);
 
@@ -43,6 +45,9 @@ namespace exq {
         uint64_t _maxClusters;
         uint64_t _totalItems = 0;
         size_t _indexEntrySize;
+
+        // query optimisation policies
+        ECPQueryOptimisationPolicies<T,U,V>* _qop;
 
         // File and mapping info about the index file
         FILE* _indxFile;

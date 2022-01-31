@@ -54,11 +54,13 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
                                                      vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
                                                      unordered_set<uint32_t>& seenItems) {
     auto suggIdsPerMod = vector<vector<uint32_t>>(_modalities);
+    auto clusterIdsPerMod = vector<vector<uint32_t>>(_modalities);
     auto totalData = vector<int>(_modalities);
     for (int m = 0; m < _modalities; m++) {
         int chnk = _b[m]/ totalSegments;
         suggIdsPerMod[m] = vector<uint32_t>();
-        _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], currentSegment, totalSegments);
+        clusterIdsPerMod[m] = vector<uint32_t>();
+        _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], clusterIdsPerMod[m], currentSegment, totalSegments);
     }
 }
 

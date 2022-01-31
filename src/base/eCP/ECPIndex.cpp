@@ -6,7 +6,8 @@ using std::ios_base;
 using namespace exq;
 
 template <typename T, typename U, typename V>
-ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*& func, int featureDimensions) {
+ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*& func, int featureDimensions,
+                          ExpansionType expansionType, int statLevel) {
     _cnfg = cnfg;
     _indexEntrySize = (sizeof(int) * 3) + sizeof(uint64_t) + func->getDescriptorSize();
     // Open the indx file
@@ -52,9 +53,12 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*&
         centroids[i] = new ExqDescriptor<T,U,V>(_indxFile);
     }
 
+    _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters);
+
     cout << "Creating Tree object" << endl;
     // Create the tree from the cluster information
-    this->_tree = new ECPTree(cnfg, centroids, _maxClusters, func, featureDimensions);
+    this->_tree = new ECPTree(cnfg, centroids, _maxClusters, func, featureDimensions, _qop);
+
 
     for (uint64_t i = 0; i < _maxClusters; i++) {
         delete centroids[i];
@@ -114,7 +118,8 @@ void ECPIndex<T,U,V>::set_b_clusters(vector<double>& query, double bias, int b) 
 }
 
 template <typename T, typename U, typename V>
-void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds, int run, int segments) {
+void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster,
+                             int run, int segments) {
     int start = chnk * run;
     int end = start + chnk;
     int numDesc = 0;
@@ -123,16 +128,16 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
         numDesc = this->_clusters[_bClusters[cnt]]->getNumDescriptors();
         totalData += numDesc;
     }
-
     //printf("(%d) INDEX(%d) - totalData(%d): %d\n", workerId, mod, run, totalData);
     suggIds = vector<uint32_t>(totalData);
+    suggToCluster = vector<uint32_t>(totalData);
     int j = 0;
     for (int cnt = start; cnt < end; cnt++) {
-        //TODO: Create a clusters array to hold the clusterIds from the previous loop (memoization)
         numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();
         for (int i = 0; i < numDesc; i++) {
             //Descriptor* descriptor = clusters[*clusterID]->descriptorList[i];
             suggIds[j] = _clusters[_bClusters[cnt]]->descriptorIds[i];
+            suggToCluster[j] = _bClusters[cnt];
             j++;
         }
     }

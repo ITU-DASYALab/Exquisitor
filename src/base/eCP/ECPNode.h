@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ECPConfig.h"
-#include "base/ExqDescriptor.h"
+#include "../ExqDescriptor.h"
 
 #include <vector>
 
@@ -12,6 +12,7 @@ namespace exq {
     template<typename T, typename U, typename V>
     class ECPNode {
     public:
+        int parent = -1;
         ECPNode(ExqDescriptor<T,U,V>* _centroid, bool _addChild = 0);
 
         ~ECPNode();
