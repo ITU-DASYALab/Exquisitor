@@ -8,6 +8,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include "ExqDescriptor.h"
 #include "ExqDataHandler.h"
@@ -17,18 +18,21 @@
 namespace exq {
 
     using std::vector;
+    using std::string;
 
     template<typename T>
     class ExqWorker {
     public:
-        ExqWorker();
+        ExqWorker(int workerId);
 
         void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                      int currentSegment, int totalSegments, int noms, int modalities,
                      ExqDataHandler<T>*& handler, vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems,
                      double& times, int& totalItemsConsidered);
     private:
-
+        int _workerId;
+        string _fname;
+        void logInfo(string info);
     }; //End of class ExqWorker
 
 } //End of namespace exq

@@ -2,20 +2,34 @@
 // Created by Omar Shahbaz Khan on 13/03/2020.
 //
 
+#include <fstream>
+#include <iostream>
+
 #include "ExqWorker.h"
 
 using namespace exq;
+using namespace std::chrono;
 using std::make_pair;
+using std::to_string;
+using std::ofstream;
+using std::ifstream;
 using std::vector;
 using std::array;
 using std::milli;
-using std::chrono::duration;
-using std::chrono::high_resolution_clock;
-using std::chrono::time_point;
 
 
 template<typename T>
-ExqWorker<T>::ExqWorker() {}
+ExqWorker<T>::ExqWorker(int workerId) {
+    _workerId = workerId;
+
+    // Log Filename Format: ts_wId.log
+    _fname = "logs/workers/" +
+             to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()) + "_w" +
+             to_string(_workerId) + ".log";
+    ofstream log(_fname);
+    log << "Log file for worker " << workerId << "\n";
+    log.close();
+}
 
 template<typename T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
@@ -36,17 +50,15 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     for (int m = 0; m < modalities; m++) {
         pair<int,double> min = make_pair(-1, -DBL_MAX);
         modSize[m] = 0;
-        vector<double> model = classifiers[m]->getWeights();
-        double bias = classifiers[m]->getBias();
         for (int i = 0; i < descriptors[m].size(); i++) {
             ExqItem candItem = ExqItem();
             candItem.fromModality = m;
             candItem.segment = currentSegment;
             candItem.itemId = descriptors[m][i].id;
             candItem.distance.resize(modalities);
-            candItem.distance[m] = functions[m]->distance(model, bias, descriptors[m][i]);
             for (int mm = 0; mm < modalities; mm++) {
-                if (mm == m) continue;
+                vector<double> model = classifiers[mm]->getWeights();
+                double bias = classifiers[mm]->getBias();
                 candItem.distance[mm] = functions[m]->distance(model, bias, descriptors[mm][i]);
             }
 
@@ -89,6 +101,13 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     }
     finish = high_resolution_clock::now();
     time = duration<double, milli>(finish - beginOverall).count();
+}
+
+template<typename T>
+void ExqWorker<T>::logInfo(string info) {
+    ofstream log(_fname, std::ios_base::app);
+    log << info << "\n";
+    log.close();
 }
 
 template class exq::ExqWorker<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
