@@ -53,6 +53,6 @@ TEST_F(SingleModalityWorker, get_k_stuff) {
     vector<double> times;
     vector<int> totalItemsConsidered;
     _worker->suggest(k,items,_classifier, 0, 2, 10, 1,
-                     _dataHandler, _functionsR64, seenItems, times[0], totalItemsConsidered[0]);
+                     _dataHandler, _functionsR64, seenItems, times[0], totalItemsConsidered[0], 0);
     assert(items.size() == k);
 }

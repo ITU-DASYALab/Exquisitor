@@ -23,16 +23,14 @@ namespace exq {
     template<typename T>
     class ExqWorker {
     public:
-        ExqWorker(int workerId);
+        ExqWorker();
 
         void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                      int currentSegment, int totalSegments, int noms, int modalities,
                      ExqDataHandler<T>*& handler, vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems,
-                     double& times, int& totalItemsConsidered);
+                     double& times, int& totalItemsConsidered, int workerId);
     private:
-        int _workerId;
-        string _fname;
-        void logInfo(string info);
+        void logInfo(string info, int workerId);
     }; //End of class ExqWorker
 
 } //End of namespace exq

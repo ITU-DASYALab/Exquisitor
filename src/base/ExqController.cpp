@@ -125,7 +125,7 @@ TopResults ExqController<T>::suggest(int k, vector<uint> seenItems) {
                                             runningSegments, _segments,
                                             _noms, _modalities, _handler, _functions, seenSet,
                                             results.totalTimePerSegment[runningSegments],
-                                            results.totalItemsConsideredPerSegment[runningSegments]);
+                                            results.totalItemsConsideredPerSegment[runningSegments], w);
                 });
                 workerSegments[w] = runningSegments;
                 runningSegments++;

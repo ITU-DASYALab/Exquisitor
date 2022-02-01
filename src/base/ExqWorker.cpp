@@ -19,23 +19,15 @@ using std::milli;
 
 
 template<typename T>
-ExqWorker<T>::ExqWorker(int workerId) {
-    _workerId = workerId;
+ExqWorker<T>::ExqWorker() {
 
-    // Log Filename Format: ts_wId.log
-    _fname = "logs/workers/" +
-             to_string(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()) + "_w" +
-             to_string(_workerId) + ".log";
-    ofstream log(_fname);
-    log << "Log file for worker " << workerId << "\n";
-    log.close();
 }
 
 template<typename T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                            int currentSegment, int totalSegments, int noms, int modalities, ExqDataHandler<T>*& handler,
                            vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, double& time,
-                           int& totalItemsConsidered) {
+                           int& totalItemsConsidered, int workerId) {
 
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
@@ -104,8 +96,9 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 }
 
 template<typename T>
-void ExqWorker<T>::logInfo(string info) {
-    ofstream log(_fname, std::ios_base::app);
+void ExqWorker<T>::logInfo(string info, int workerId) {
+    string fname = "logs/workers/worker_" + to_string(workerId) + ".log";
+    ofstream log(fname, std::ios_base::out | std::ios_base::app);
     log << info << "\n";
     log.close();
 }
