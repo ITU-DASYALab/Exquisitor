@@ -148,7 +148,8 @@ inline int ECPQueryOptimisationPolicies<T,U,V>::getFilterRemainingCount(uint32_t
 
 template <typename T, typename U, typename V>
 double ECPQueryOptimisationPolicies<T,U,V>::getEstimatedRemainingCount(uint32_t clusterId) {
-
+    //TODO: Implement function
+    return 0.0;
 }
 
 template <typename T, typename U, typename V>

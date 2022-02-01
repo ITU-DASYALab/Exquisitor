@@ -182,7 +182,7 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
                 for (int i = 0; i < _nodes[std::get<0>(top)][std::get<1>(top)]->getNumChildren(); i++) {
                     if (expansionType == ESTIMATED_REMAINING_CNT || expansionType == ALL_REMAINING_CNT) {
                         if (std::get<0>(top) + 1 == statLevel) {
-                            double cnt = getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id);
+                            double cnt = _qop->getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id);
                             //cout << nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id << " count: " << cnt << endl;
                             if (cnt == 0.0) {
                                 _skipCounter++;

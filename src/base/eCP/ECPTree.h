@@ -73,6 +73,6 @@ namespace exq {
         ECPFarthestNeighbour<T,U,V>* search_pq(vector<double>& query, double bias, uint32_t b,
                                                vector<ECPCluster<T,U,V>*>& clusters);
 
-        int getClusterCount(uint64_t id, vector<ECPCluster<T,U,V>*>& clusters, bool check=false);
+        //int getClusterCount(uint64_t id, vector<ECPCluster<T,U,V>*>& clusters, bool check=false);
     };
 }
