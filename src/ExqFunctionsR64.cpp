@@ -108,30 +108,19 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
 
 template <typename T, typename U, typename V>
 void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality) {
-    double rank = 0.0;
-
-    //TODO: For more flexibility/adaptability for modalities implement own quicksort function
-    if (modality == 0) {
-        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
-            return lhs.distance[VIS] < rhs.distance[VIS];
-        });
-    } else if (modality == 1) {
-        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
-            return lhs.distance[TXT] < rhs.distance[TXT];
-        });
-    } else {
-        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
-            return lhs.distance[VIS] < rhs.distance[VIS];
-        });
-        assignRanking(items2Rank, VIS);
-
-        std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
-            return lhs.distance[TXT] < rhs.distance[TXT];
-        });
-        assignRanking(items2Rank, TXT);
-
+    if (items2Rank[0].distance.size() == modality) {
+        for (int m = 0; m < modality; m++) {
+            std::sort(items2Rank.begin(), items2Rank.end(), [m](const ExqItem& lhs, const ExqItem& rhs) {
+                return lhs.distance[m] < rhs.distance[m];
+            });
+            assignRanking(items2Rank, m);
+        }
         std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
             return lhs.aggScore > rhs.aggScore;
+        });
+    } else {
+        std::sort(items2Rank.begin(), items2Rank.end(), [modality](const ExqItem& lhs, const ExqItem& rhs) {
+            return lhs.distance[modality] < rhs.distance[modality];
         });
     }
 }
