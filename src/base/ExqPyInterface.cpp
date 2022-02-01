@@ -3,8 +3,8 @@
 //
 
 #include "ExqPyInterface.h"
-#include "ExqDataHandlerH5.h"
-#include "ExqFunctionsR64.h"
+#include "../ExqDataHandlerH5.h"
+#include "../ExqFunctionsR64.h"
 
 using namespace exq;
 using std::milli;

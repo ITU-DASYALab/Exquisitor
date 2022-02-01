@@ -3,9 +3,9 @@
 //
 
 #include "ExqController.h"
-#include "ExqFunctionsR64.h"
+//#include "../ExqFunctionsR64.h"
+
 #include <future>
-#include <base/Metadata/ItemProperties.h>
 
 using namespace exq;
 using std::async;

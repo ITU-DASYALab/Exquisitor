@@ -8,9 +8,10 @@
 #pragma once
 
 #include <string>
-#include <base/ExqDataHandler.h>
-#include <base/ExqDescriptor.h>
-#include <base/eCP/ECPIndex.h>
+
+#include "base/ExqDataHandler.h"
+#include "base/ExqDescriptor.h"
+#include "base/eCP/ECPIndex.h"
 
 namespace exq {
 

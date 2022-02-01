@@ -13,8 +13,8 @@
 #include <vector>
 #include <string>
 #include <future>
-#include <base/Metadata/ItemProperties.h>
 
+#include "Metadata/ItemProperties.h"
 #include "ExqConstants.h"
 #include "ExqClassifier.h"
 #include "ExqFunctions.h"

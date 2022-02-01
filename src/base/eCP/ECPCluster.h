@@ -2,7 +2,7 @@
 
 
 #include "ECPConfig.h"
-#include "base/ExqDescriptor.h"
+#include "../ExqDescriptor.h"
 
 #include <vector>
 

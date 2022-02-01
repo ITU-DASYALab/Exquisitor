@@ -4,9 +4,9 @@
 #include <fstream>
 #include <map>
 
-#include "base/ExqDescriptor.h"
-#include "base/ExqConstants.h"
-#include "base/ExqFunctions.h"
+#include "../ExqDescriptor.h"
+#include "../ExqConstants.h"
+#include "../ExqFunctions.h"
 
 namespace exq {
     template<typename T, typename U, typename V>

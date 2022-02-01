@@ -6,8 +6,8 @@
 #include <map>
 #include <vector>
 
-#include "base/ExqDescriptor.h"
-#include "base/ExqFunctions.h"
+#include "../ExqDescriptor.h"
+#include "../ExqFunctions.h"
 namespace exq {
     using std::vector;
 
