@@ -17,23 +17,16 @@ using std::endl;
 PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     _pyExqV1 = PyExquisitorV1();
     vector<vector<string>> compCnfgFiles = vector<vector<string>>();
-    vector<int> modFeatureDimensions;
 
-    PyObject* compCnfgFilesPy;
-    PyObject* modFeatureDimensionsPy;
-    PyObject* modFunctionPy;
-    PyObject* itemMetadataPy;
-    PyObject* videoMetadataPy;
-
-    // Arguments
     int iota = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
     int noms = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
     int numWorkers = (int)PyLong_AsLong(PyTuple_GetItem(args, 2));
     int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 3));
     int numModalities = (int)PyLong_AsLong(PyTuple_GetItem(args, 4));
-    modFeatureDimensions = vector<int>(numModalities);
+    vector<int> modFeatureDimensions = vector<int>(numModalities);
     int bClusters = (int)PyLong_AsLong(PyTuple_GetItem(args, 5));
-    compCnfgFilesPy = PyTuple_GetItem(args, 6);
+
+    PyObject* compCnfgFilesPy = PyTuple_GetItem(args, 6);
     for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
         PyObject* cnfgFilesPy = PyList_GetItem(compCnfgFilesPy, i);
         vector<string> cnfgFiles = vector<string>(PyList_Size(cnfgFilesPy));
@@ -42,63 +35,58 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
         }
         compCnfgFiles.push_back(cnfgFiles);
     }
-    modFeatureDimensionsPy = PyTuple_GetItem(args, 7);
+
+    PyObject* modFeatureDimensionsPy = PyTuple_GetItem(args, 7);
     for (int i = 0; i < PyList_Size(modFeatureDimensionsPy); i++) {
         modFeatureDimensions.push_back((int)PyLong_AsLong(PyList_GetItem(modFeatureDimensionsPy,i)));
     }
 
     // Sets the ExqFunctions for each modality
-    modFunctionPy = PyTuple_GetItem(args,8);
     auto functions = vector<ExqFunctions<ExqDescriptor<uint64_t, uint64_t, uint64_t>>*>(numModalities);
-    for (int i = 0; i < PyList_Size(modFunctionPy); i++) {
-        int func = (int) PyLong_AsLong(PyList_GetItem(modFunctionPy, i));
-        switch (func) {
-            case 0: {
-                for (int m = 0; m < numModalities; m++)
-                    functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16,
-                                                                                     16, 1000, 1000);
-                break;
-            }
-            case 1: {
-                for (int m = 0; m < numModalities; m++)
-                    functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16,
-                                                                                     16, 281474976710655,
-                                                                                     200000000000000.0, 65535,
-                                                                                     65535, 50000.0);
-                break;
-            }
-            case 2: {
-                for (int m = 0; m < numModalities; m++)
-                    functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, iota, 54, 10,
-                                                                                     10, 18014398509481983,
-                                                                                     10000000000000000.0, 1023,
-                                                                                     1023, 1000.0);
-                break;
-            }
-            case 3: {
-                int nFeat = (int) PyLong_AsLong(PyTuple_GetItem(args, 9));
-                int topShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 10));
-                int idsShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 11));
-                int ratiosShift = (int) PyLong_AsLong(PyTuple_GetItem(args, 12));
-                auto topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 13));
-                auto topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 14));
-                auto idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 15));
-                auto ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(args, 16));
-                auto ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(args, 17));
-                for (int m = 0; m < numModalities; m++)
-                    functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
-                                                                                     ratiosShift,
-                                                                                     topMask, topDivisor, idsMask,
-                                                                                     ratiosMask,
-                                                                                     ratiosDivisor);
-                break;
-            }
-            default: {
-                cout << "UNKNOWN ExqFunctions CASE!" << endl;
-                exit(1);
-            }
+    int funcType = (int) PyLong_AsLong(PyList_GetItem(args, 8));
+    //funcType: 0 = same; 1 = different;
+    PyObject* funcObjs = PyTuple_GetItem(args, 9);
+    //funcObj: 0 = nFeat, 1 = topShift, 2 = idsShift, 3 = ratiosShift, 4 = topMask,
+    //         5 = topDivisor, 6 = idsMask, 7 = ratiosMask, 8 = ratiosDivisor
+    int nFeat, topShift, idsShift, ratiosShift;
+    double topDivisor, ratiosDivisor;
+    uint64_t topMask, idsMask, ratiosMask;
+    if (funcType) {
+        nFeat = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 0));
+        topShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 1));
+        idsShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 2));
+        ratiosShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0),3));
+        topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 4));
+        topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 5));
+        idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 6));
+        ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 7));
+        ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 8));
+        for (int m = 0; m < numModalities; m++) {
+            functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
+                                                                             ratiosShift,
+                                                                             topMask, topDivisor, idsMask,
+                                                                             ratiosMask,
+                                                                             ratiosDivisor);
+        }
+    } else {
+        for (int m = 0; m < numModalities; m++) {
+            nFeat = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 0));
+            topShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 1));
+            idsShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 2));
+            ratiosShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m),3));
+            topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 4));
+            topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 5));
+            idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 6));
+            ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 7));
+            ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 8));
+            functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
+                                                                             ratiosShift,
+                                                                             topMask, topDivisor, idsMask,
+                                                                             ratiosMask,
+                                                                             ratiosDivisor);
         }
     }
+
     //TODO: Could also make this an argument choice per modality to select eCP or H5 or something different.
     auto dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compCnfgFiles, numModalities);
     vector<ExqClassifier*> classifiers = vector<ExqClassifier*>(numModalities);
@@ -107,13 +95,57 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     }
     auto worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
 
-    int n_collections = PyLong_AsLong(PyTuple_GetItem(args, 9));
-    itemMetadataPy = PyTuple_GetItem(args, 10);
-    videoMetadataPy = PyTuple_GetItem(args, 11);
-    auto itemProps = ExqArray<ItemProperties>(PyList_Size(itemMetadataPy));
-    //TODO: for i->itemProps.size(); itemProps[i] = {...};
-    auto vidProps = map<uint8_t,ExqArray<Props>>();
-    //TODO: for i-> n_collections; vidProps.add(i, ExqArray<Props>(PyList_Size(PyList_GetItem(videoMetadataPy,i))));
+    PyObject* itemMetadataPy = PyTuple_GetItem(args, 9);
+    PyObject* tmpPropsPy;
+    auto itemProps = ExqArray<ItemProperties>((int)PyList_Size(itemMetadataPy));
+    for (int i = 0; i < itemProps.getSize(); i++) {
+        ItemProperties it = ItemProperties();
+        it.collectionId = (uint8_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),0));
+        it.vid = (bool) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),1));
+        it.vidId = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),2));
+        PyObject* stdPropsPy = PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),3);
+        it.stdProps.props = ExqArray<ExqArray<uint16_t>>((int)PyList_Size(stdPropsPy));
+        for (int j = 0; j < PyList_Size(stdPropsPy); j++) {
+            tmpPropsPy = PyList_GetItem(stdPropsPy,j);
+            auto arr = ExqArray<uint16_t>((int)PyList_Size(tmpPropsPy));
+            for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
+               arr.setItem((uint16_t)PyLong_AsLong(PyTuple_GetItem(tmpPropsPy,k)), k);
+            }
+            it.stdProps.props.setItem(arr, j);
+        }
+        PyObject* collPropsPy = PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),3);
+        it.collProps.props = ExqArray<ExqArray<uint16_t>>((int)PyList_Size(collPropsPy));
+        for (int j = 0; j < PyList_Size(collPropsPy); j++) {
+            tmpPropsPy = PyList_GetItem(collPropsPy, j);
+            auto arr = ExqArray<uint16_t>((int)PyList_Size(tmpPropsPy));
+            for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
+                arr.setItem((uint16_t)PyLong_AsLong(PyTuple_GetItem(tmpPropsPy,k)), k);
+            }
+            it.collProps.props.setItem(arr, j);
+        }
+        itemProps.setItem(it,i);
+    }
+
+    PyObject* videoMetadataPy = PyTuple_GetItem(args, 10);
+    auto collVidProps = ExqArray<ExqArray<Props>>((int)PyList_Size(videoMetadataPy));
+    for (int c = 0; c < PyList_Size(videoMetadataPy); c++) {
+        auto cVids = ExqArray<Props>((int)PyList_Size(PyList_GetItem(videoMetadataPy,c)));
+        for (int v = 0; v < cVids.getSize(); v++) {
+            PyObject* vidPropsPy = PyList_GetItem(videoMetadataPy,c);
+            Props vp = Props();
+            vp.props = ExqArray<ExqArray<uint16_t>>((int)PyList_Size(vidPropsPy));
+            for (int p = 0; p < vp.props.getSize(); p++) {
+                tmpPropsPy = PyList_GetItem(PyList_GetItem(vidPropsPy, v), p);
+                auto arr = ExqArray<uint16_t>((int) PyList_Size(tmpPropsPy));
+                for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
+                    arr.setItem((uint16_t) PyLong_AsLong(PyTuple_GetItem(tmpPropsPy, k)), k);
+                }
+                vp.props.setItem(arr,p);
+            }
+            cVids.setItem(vp, v);
+        }
+        collVidProps.setItem(cVids,c);
+    }
 
     _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t, uint64_t, uint64_t>>(
             iota,
@@ -128,7 +160,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             classifiers,
             worker,
             itemProps,
-            vidProps
+            collVidProps
             );
 
     Py_IncRef(Py_None);
@@ -218,3 +250,26 @@ PyMODINIT_FUNC exq::PyInit_exq(void) {
     Py_Initialize();
     return PyModule_Create(&exquisitor_definition);
 }
+
+//case 0: {
+//for (int m = 0; m < numModalities; m++)
+//functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16,
+//                                                                 16, 1000, 1000);
+//break;
+//}
+//case 1: {
+//for (int m = 0; m < numModalities; m++)
+//functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16,
+//16, 281474976710655,
+//200000000000000.0, 65535,
+//65535, 50000.0);
+//break;
+//}
+//case 2: {
+//for (int m = 0; m < numModalities; m++)
+//functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, iota, 54, 10,
+//10, 18014398509481983,
+//10000000000000000.0, 1023,
+//1023, 1000.0);
+//break;
+//}

@@ -60,7 +60,7 @@ namespace exq {
                 vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker,
                 ExqArray<ItemProperties> itemProps,
-                map<uint8_t,ExqArray<Props>> vidProps
+                ExqArray<ExqArray<Props>> vidProps
         );
 
 /**
@@ -127,7 +127,7 @@ namespace exq {
         vector<ExqClassifier*> _classifiers;
         ExqWorker<T>* _worker;
         ExqArray<ItemProperties> _itemProperties;
-        map<uint8_t,ExqArray<Props>> _vidProperties;
+        ExqArray<ExqArray<Props>> _vidProperties;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;

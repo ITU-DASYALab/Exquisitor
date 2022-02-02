@@ -17,7 +17,7 @@ namespace exq {
 
     // Container for properties
     struct Props {
-        ExqArray<ExqArray<uint16_t>> props = ExqArray<ExqArray<uint16_t>>();
+        ExqArray<ExqArray<uint16_t>> props;
     };
 
     /**
@@ -31,8 +31,8 @@ namespace exq {
         uint8_t collectionId = 0;
         bool vid = false;
         int vidId = 0;
-        Props std_props;
-        Props coll_props;
+        Props stdProps;
+        Props collProps;
     };
 }
 

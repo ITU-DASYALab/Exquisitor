@@ -30,7 +30,7 @@ ExqController<T>::ExqController(
         vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker,
         ExqArray<ItemProperties> itemProps,
-        map<uint8_t,ExqArray<Props>> vidProps
+        ExqArray<ExqArray<Props>> vidProps
     ) {
 
     // Set standard fields
@@ -111,8 +111,8 @@ TopResults ExqController<T>::suggest(int k, vector<uint> seenItems) {
         workerSegments[i] = -1;
     }
     unordered_set<uint> seenSet;
-    for (int i = 0; i < seenItems.size(); i++) {
-        seenSet.insert(seenItems[i]);
+    for (unsigned int & seenItem : seenItems) {
+        seenSet.insert(seenItem);
     }
     vector<ExqItem> items2Return;
 
