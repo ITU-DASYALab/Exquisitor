@@ -22,7 +22,7 @@ namespace exq {
     template <typename T, typename U, typename V>
     class ECPIndex {
     public:
-        ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*& functions, int featureDimensions,
+        ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions,
                  ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
 
         ~ECPIndex();

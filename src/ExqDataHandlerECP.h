@@ -25,7 +25,7 @@ namespace exq {
          * \param cnfgFile - Config file containing metadata information about the cluster index
          */
         ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
-                          vector<ExqFunctions<ExqDescriptor<T,U,V>*>*>& functions, vector<int>& featureDimensions);
+                          vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions, vector<int>& featureDimensions);
 
         ~ExqDataHandlerECP();
 

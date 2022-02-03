@@ -58,6 +58,6 @@ namespace exq {
 
 } //End of namespace exq
 
-template class exq::ExqFunctions<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>*>;
+template class exq::ExqFunctions<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
 
 #endif //EXQUISITOR_EXQFUNCTIONS_H

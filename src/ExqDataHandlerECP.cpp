@@ -8,7 +8,7 @@ using namespace exq;
 
 template <typename T, typename U, typename V>
 ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
-                                            vector<ExqFunctions<ExqDescriptor<T,U,V>*>*>& functions,
+                                            vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions,
                                             vector<int>& featureDimensions) {
     _indx = vector<ECPIndex<T,U,V>*>(modalities);
     _modalities = modalities;

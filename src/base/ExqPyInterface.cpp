@@ -3,6 +3,7 @@
 //
 
 #include "ExqPyInterface.h"
+#include "../ExqDataHandlerECP.h"
 #include "../ExqDataHandlerH5.h"
 #include "../ExqFunctionsR64.h"
 
@@ -25,16 +26,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     int numModalities = (int)PyLong_AsLong(PyTuple_GetItem(args, 4));
     vector<int> modFeatureDimensions = vector<int>(numModalities);
     int bClusters = (int)PyLong_AsLong(PyTuple_GetItem(args, 5));
-
     PyObject* compCnfgFilesPy = PyTuple_GetItem(args, 6);
-    for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
-        PyObject* cnfgFilesPy = PyList_GetItem(compCnfgFilesPy, i);
-        vector<string> cnfgFiles = vector<string>(PyList_Size(cnfgFilesPy));
-        for (int j = 0; j < PyList_Size(cnfgFilesPy); j++) {
-             cnfgFiles.emplace_back(_PyUnicode_AsString(PyList_GetItem(cnfgFilesPy,j)));
-        }
-        compCnfgFiles.push_back(cnfgFiles);
-    }
 
     PyObject* modFeatureDimensionsPy = PyTuple_GetItem(args, 7);
     for (int i = 0; i < PyList_Size(modFeatureDimensionsPy); i++) {
@@ -88,14 +80,30 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     }
 
     //TODO: Could also make this an argument choice per modality to select eCP or H5 or something different.
-    auto dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compCnfgFiles, numModalities);
+    // Specific to ExqDataHandlerH5
+    //for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
+    //    PyObject* cnfgFilesPy = PyList_GetItem(compCnfgFilesPy, i);
+    //    vector<string> cnfgFiles = vector<string>(PyList_Size(cnfgFilesPy));
+    //    for (int j = 0; j < PyList_Size(cnfgFilesPy); j++) {
+    //         cnfgFiles.emplace_back(_PyUnicode_AsString(PyList_GetItem(cnfgFilesPy,j)));
+    //    }
+    //    compCnfgFiles.push_back(cnfgFiles);
+    //}
+    //auto dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compCnfgFiles, numModalities);
+    vector<string> cnfgFiles = vector<string>(PyList_Size(compCnfgFilesPy));
+    for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
+        cnfgFiles.emplace_back(_PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i)));
+    }
+    auto dataHandler =
+            new ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>(cnfgFiles, numModalities,
+                                                              functions, modFeatureDimensions);
     vector<ExqClassifier*> classifiers = vector<ExqClassifier*>(numModalities);
     for (int m = 0; m < numModalities; m++) {
         classifiers[m] = new ExqClassifier(modFeatureDimensions[m]);
     }
     auto worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
 
-    PyObject* itemMetadataPy = PyTuple_GetItem(args, 9);
+    PyObject* itemMetadataPy = PyTuple_GetItem(args, 10);
     PyObject* tmpPropsPy;
     auto itemProps = ExqArray<ItemProperties>((int)PyList_Size(itemMetadataPy));
     for (int i = 0; i < itemProps.getSize(); i++) {
@@ -126,7 +134,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
         itemProps.setItem(it,i);
     }
 
-    PyObject* videoMetadataPy = PyTuple_GetItem(args, 10);
+    PyObject* videoMetadataPy = PyTuple_GetItem(args, 11);
     auto collVidProps = ExqArray<ExqArray<Props>>((int)PyList_Size(videoMetadataPy));
     for (int c = 0; c < PyList_Size(videoMetadataPy); c++) {
         auto cVids = ExqArray<Props>((int)PyList_Size(PyList_GetItem(videoMetadataPy,c)));
@@ -147,7 +155,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
         collVidProps.setItem(cVids,c);
     }
 
-    _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t, uint64_t, uint64_t>>(
+    _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t,uint64_t,uint64_t>>(
             iota,
             noms,
             numWorkers,

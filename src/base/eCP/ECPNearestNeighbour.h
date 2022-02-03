@@ -13,10 +13,10 @@ namespace exq {
     class ECPNearestNeighbour {
     public:
         ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, uint64_t _k,
-                            ExqFunctions<ExqDescriptor<T,U,V>*>*& functions, int featureDimensions);
+                            ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions);
 
         ECPNearestNeighbour(uint64_t _k,
-                            ExqFunctions<ExqDescriptor<T,U,V>*>*& functions, int featureDimensions);
+                            ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions);
 
         ~ECPNearestNeighbour();
 
@@ -46,9 +46,9 @@ namespace exq {
     private:
         // Query information
         ExqDescriptor<T,U,V>* query;
-        int mod;
+        //int mod;
         uint64_t numdims{};
-        ExqFunctions<ExqDescriptor<T,U,V>*>* _functions;
+        ExqFunctions<ExqDescriptor<T,U,V>>* _functions;
         int _featureDimensions;
 
         // Query answer information

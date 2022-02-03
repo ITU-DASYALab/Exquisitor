@@ -6,7 +6,7 @@ using namespace exq;
 
 template <typename T, typename U, typename V>
 ECPFarthestNeighbour<T,U,V>::ECPFarthestNeighbour(vector<double>& query, double bias, uint64_t k,
-                                                  ExqFunctions<ExqDescriptor<T,U,V>*>*& functions) {
+                                                  ExqFunctions<ExqDescriptor<T,U,V>>*& functions) {
     // Copy the inputs
     _query           = query;
     _bias            = bias;
@@ -39,7 +39,7 @@ ECPFarthestNeighbour<T,U,V>::~ECPFarthestNeighbour() {
 template <typename T, typename U, typename V>
 void ECPFarthestNeighbour<T,U,V>::compareAndReplaceFarthest(ExqDescriptor<T,U,V>* data, uint64_t clusterid) {
     // Find the distance.  If new k-nn found, then replace the farthest one
-    double dist = _functions->distance(_query, _bias, data);
+    double dist = _functions->distance(_query, _bias, *data);
     //printf("(MAIN) Distance: %f\n", dist);
     if (dist > _distances[_farthest]) { //now we want to maximize distance
         ReplaceFarthest(data->id, clusterid, dist);
@@ -50,7 +50,7 @@ void ECPFarthestNeighbour<T,U,V>::compareAndReplaceFarthest(ExqDescriptor<T,U,V>
 //simplified projection calculations from query vector (weight vector from SVM) and data vector
 template<typename T, typename U, typename V>
 inline double ECPFarthestNeighbour<T,U,V>::distance(ExqDescriptor<T,U,V>* data) {
-    return _functions->distance(_query, _bias, data);
+    return _functions->distance(_query, _bias, *data);
 };
 
 template<typename T, typename U, typename V>

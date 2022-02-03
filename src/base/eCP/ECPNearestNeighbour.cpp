@@ -7,7 +7,7 @@ using std::endl;
 
 template<typename T, typename U, typename V>
 ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, uint64_t _k,
-                                                ExqFunctions<ExqDescriptor<T,U,V>*>*& functions,
+                                                ExqFunctions<ExqDescriptor<T,U,V>>*& functions,
                                                 int featureDimensions) {
     // Copy the inputs
     query           = _query;
@@ -45,7 +45,7 @@ ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, ui
 };
 
 template <typename T, typename U, typename V>
-ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(uint64_t _k, ExqFunctions<ExqDescriptor<T,U,V>*>*& functions,
+ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(uint64_t _k, ExqFunctions<ExqDescriptor<T,U,V>>*& functions,
                                                 int featureDimensions) {
     k               = _k;
     _functions      = functions;
@@ -92,7 +92,7 @@ void ECPNearestNeighbour<T,U,V>::compareAndReplaceFarthest(ExqDescriptor<T,U,V>*
 
 template <typename T, typename U, typename V>
 void ECPNearestNeighbour<T,U,V>::setHelperArrayForDistance() {
-    auto arr = _functions->getDescriptorInformation(query);
+    auto arr = _functions->getDescriptorInformation(*query);
 
     for (int i = 0; i < arr.getSize(); i++) {
         pair<int,float> feat = arr.getItem(i);
@@ -106,7 +106,7 @@ template <typename T, typename U, typename V>
 double ECPNearestNeighbour<T,U,V>::Distance(ExqDescriptor<T,U,V>* data) {
     double dist = 0.0;
 
-    auto arr = _functions->getDescriptorInformation(data);
+    auto arr = _functions->getDescriptorInformation(*data);
     double queryFeatVal = 0.0;
     for (int i = 0; i < arr.getSize(); i++) {
         pair<int,float> feat = arr.getItem(i);

@@ -5,7 +5,7 @@ using namespace exq;
 
 template<typename T, typename U, typename V>
 ECPTree<T,U,V>::ECPTree(ECPConfig* cnfg, vector<ExqDescriptor<T,U,V>*> centroids, int numClusters,
-                        ExqFunctions<ExqDescriptor<T,U,V>*>*& func, int featureDimensions,
+                        ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
                         ECPQueryOptimisationPolicies<T,U,V>*& qop) {
     _cnfg = cnfg;
     _functions = func;

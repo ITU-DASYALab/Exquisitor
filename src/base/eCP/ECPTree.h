@@ -28,7 +28,7 @@ namespace exq {
     class ECPTree {
     public:
         ECPTree(ECPConfig* _cnfg, vector<ExqDescriptor<T,U,V>*> centroids, int numClusters,
-                ExqFunctions<ExqDescriptor<T,U,V>*>*& func, int featureDimensions,
+                ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
                 ECPQueryOptimisationPolicies<T,U,V>*& qop);
 
         ~ECPTree();
@@ -42,7 +42,7 @@ namespace exq {
     private:
         // The configuration of the tree
         ECPConfig* _cnfg;
-        ExqFunctions<ExqDescriptor<T,U,V>*>* _functions;
+        ExqFunctions<ExqDescriptor<T,U,V>>* _functions;
         int _featureDimensions;
         // The two-dimensional array of nodes (level, node) and the size at each level
         vector<vector<ECPNode<T,U,V>*>> _nodes;

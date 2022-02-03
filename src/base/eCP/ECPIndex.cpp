@@ -6,7 +6,7 @@ using std::ios_base;
 using namespace exq;
 
 template <typename T, typename U, typename V>
-ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>*>*& func, int featureDimensions,
+ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
                           ExpansionType expansionType, int statLevel) {
     _cnfg = cnfg;
     _indexEntrySize = (sizeof(int) * 3) + sizeof(uint64_t) + func->getDescriptorSize();
