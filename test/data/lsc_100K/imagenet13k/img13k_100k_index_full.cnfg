@@ -1,0 +1,11 @@
+type: byte
+clst: 1000
+indx: img13k_100k_index_full.indx
+data: img13k_100k_index_full.data
+page: 4096
+imgs: 0
+lvls: 3
+TreA: 1
+TreB: 1
+LfsA: 1
+LfsB: 1
