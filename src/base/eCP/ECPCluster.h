@@ -14,20 +14,20 @@ namespace exq {
     class ECPCluster {
     private:
         // Bookkeeping info
-        ECPConfig* cnfg;
-        FILE* datafile;       // File must be (and remain) open
+        ECPConfig* _cnfg;
+        FILE* _datafile;       // File must be (and remain) open
         int descriptorSize;
 
         // Info about the index entry
-        uint64_t offset;      // The page at which the cluster starts
-        int pages;            // The number of pages in the cluster
-        int descriptors;      // The number of descriptors in the cluster
+        uint64_t _offset;      // The page at which the cluster starts
+        int _pages;            // The number of pages in the cluster
+        int _descriptors;      // The number of descriptors in the cluster
 
         // Support for scanning an associated cluster or sub-entry
-        int nextDescriptor;
+        int _nextDescriptor;
 
     public:
-        ECPCluster(ECPConfig *_cnfg, FILE *_indxfile, FILE *_datafile, size_t descSize);
+        ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize);
 
         ~ECPCluster();
 
@@ -43,7 +43,7 @@ namespace exq {
 
         void close();
 
-        int getNumDescriptors() { return descriptors; }
+        int getNumDescriptors() { return _descriptors; }
 
         // Debugging
         void PrintCluster(string indent = "");

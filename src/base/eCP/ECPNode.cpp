@@ -31,7 +31,7 @@ inline void ECPNode<T,U,V>::addChild(ExqDescriptor<T,U,V>* child) {
 };
 
 template<typename T, typename U, typename V>
-inline ExqDescriptor<T,U,V>* ECPNode<T,U,V>::get(uint64_t i) {
+inline ExqDescriptor<T,U,V>* ECPNode<T,U,V>::get(uint32_t i) {
     if (i > children.size()) {
         return NULL;
     }

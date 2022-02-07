@@ -42,8 +42,8 @@ namespace exq {
     private:
         // Bookkeeping info
         ECPConfig* _cnfg;
-        uint64_t _maxClusters;
-        uint64_t _totalItems = 0;
+        uint32_t _maxClusters;
+        uint32_t _totalItems = 0;
         size_t _indexEntrySize;
 
         // query optimisation policies

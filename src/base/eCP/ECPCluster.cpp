@@ -11,20 +11,20 @@
 using namespace exq;
 
 template <typename T, typename U, typename V>
-ECPCluster<T,U,V>::ECPCluster(ECPConfig *_cnfg, FILE *_indxfile, FILE *_datafile, size_t descSize) {
+ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize) {
     // Note the bookkeeping info for later
-    cnfg = _cnfg;
-    datafile = _datafile;
+    _cnfg = cnfg;
+    _datafile = datafile;
     descriptorSize = descSize; //ATH breyta
     // Read the index entry info from the indx file
     size_t res;
-    res = fread(&offset, sizeof(uint64_t), 1, _indxfile);
-    res = fread(&pages, sizeof(int), 1, _indxfile);
-    res = fread(&descriptors, sizeof(int), 1, _indxfile);
+    res = fread(&_offset, sizeof(uint32_t), 1, indxfile);
+    res = fread(&_pages, sizeof(int), 1, indxfile);
+    res = fread(&_descriptors, sizeof(int), 1, indxfile);
     if (res == 0) cout << "Error reading cluster" << endl;
-    descriptorIds = vector<uint32_t>(descriptors);
+    descriptorIds = vector<uint32_t>(_descriptors);
     // Prepare for scans
-    nextDescriptor = -1;
+    _nextDescriptor = -1;
 };
 
 template <typename T, typename U, typename V>
@@ -37,15 +37,15 @@ ECPCluster<T,U,V>::~ECPCluster() {
 template <typename T, typename U, typename V>
 void ECPCluster<T,U,V>::open() {
     // Seek to the start of the cluster
-    fseeko(datafile, ((off_t)offset) * cnfg->getPgeSize(), SEEK_SET);
+    fseeko(_datafile, ((off_t)_offset) * _cnfg->getPgeSize(), SEEK_SET);
 
     // Note that status of the scan
-    nextDescriptor = 0;
+    _nextDescriptor = 0;
 }
 
 template <typename T, typename U, typename V>
 inline void ECPCluster<T,U,V>::close() {
-    nextDescriptor = 0;
+    _nextDescriptor = 0;
 };
 
 template <typename T, typename U, typename V>
@@ -55,17 +55,17 @@ inline void ECPCluster<T,U,V>::setDescriptorId(int i, uint32_t id) {
 
 template <typename T, typename U, typename V>
 ExqDescriptor<T,U,V>* ECPCluster<T,U,V>::next() {
-    if (nextDescriptor == descriptors) 
+    if (_nextDescriptor == _descriptors)
         return NULL;
-    nextDescriptor++;
-    return new ExqDescriptor<T,U,V>(datafile);
+    _nextDescriptor++;
+    return new ExqDescriptor<T,U,V>(_datafile);
 };
 
 template <typename T, typename U, typename V>
 inline void ECPCluster<T,U,V>::PrintCluster(string indent) {
-    cout << indent << "Offset: " << offset << endl;
-    cout << indent << "Pages:  " << pages << endl;
-    cout << indent << "Descrs: " << descriptors << endl;
+    cout << indent << "Offset: " << _offset << endl;
+    cout << indent << "Pages:  " << _pages << endl;
+    cout << indent << "Descrs: " << _descriptors << endl;
     //for (int i = 0; i < descriptors; i++) {
     //    PrintDescriptor(descriptorList[i]);
     //}

@@ -24,7 +24,7 @@ namespace exq {
 
         int getNumChildren() { return numChildren; };
 
-        ExqDescriptor<T,U,V>* get(uint64_t i);
+        ExqDescriptor<T,U,V>* get(uint32_t i);
 
         // Support for scanning
         void open();

@@ -34,7 +34,7 @@ namespace exq {
         ~ECPTree();
 
         // Search the tree to find farthest clusters
-        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t k,
+        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint32_t k,
                                             vector<ECPCluster<T,U,V>*>& clusters);
 
         // Sanity checks
@@ -65,10 +65,10 @@ namespace exq {
 
         // Find the proper node for a particular descriptor at a particular level
         // Used both for insertions and implementing the actual search
-        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint64_t b, uint64_t level,
+        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint32_t b, uint32_t level,
                                             vector<ECPCluster<T,U,V>*>& clusters);
 
-        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint64_t k, uint64_t level);
+        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint32_t k, uint32_t level);
 
         ECPFarthestNeighbour<T,U,V>* search_pq(vector<double>& query, double bias, uint32_t b,
                                                vector<ECPCluster<T,U,V>*>& clusters);

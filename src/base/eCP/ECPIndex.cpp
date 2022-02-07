@@ -9,7 +9,9 @@ template <typename T, typename U, typename V>
 ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
                           ExpansionType expansionType, int statLevel) {
     _cnfg = cnfg;
-    _indexEntrySize = (sizeof(int) * 3) + sizeof(uint64_t) + func->getDescriptorSize();
+    cout << "Descriptor size: " << func->getDescriptorSize() << endl;
+    _indexEntrySize = (sizeof(int) * 3) + sizeof(uint32_t) + func->getDescriptorSize();
+    cout << "Index Entry Size: " << _indexEntrySize << endl;
     // Open the indx file
     string indxPath = cnfg->getPathIdx();
     _indxFile = fopen(indxPath.c_str(), "rb");
@@ -42,17 +44,21 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
         exit(EXIT_FAILURE);
     }
 
+    cout << "Initializing index data structure" << endl;
     // Initialize the data structure for the index file
     vector<ExqDescriptor<T,U,V>*> centroids = vector<ExqDescriptor<T,U,V>*>(_maxClusters);
     _clusters = vector<ECPCluster<T,U,V>*>(_maxClusters);
 
+    cout << "Reading cluster info and centroids" << endl;
     // Read the cluster info and centroids from the indx file
-    for (uint64_t i = 0; i < _maxClusters; i++) {
+    for (uint32_t i = 0; i < _maxClusters; i++) {
         _clusters[i] = new ECPCluster<T,U,V>(cnfg, _indxFile, _dataFile, _indexEntrySize);
         _totalItems += _clusters[i]->getNumDescriptors();
         centroids[i] = new ExqDescriptor<T,U,V>(_indxFile);
+        cout << "Cluster " << i << " loaded" << endl;
     }
 
+    cout << "Initializing QOP object" << endl;
     _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters);
 
     cout << "Creating Tree object" << endl;
@@ -60,7 +66,7 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     this->_tree = new ECPTree(cnfg, centroids, _maxClusters, func, featureDimensions, _qop);
 
 
-    for (uint64_t i = 0; i < _maxClusters; i++) {
+    for (uint32_t i = 0; i < _maxClusters; i++) {
         delete centroids[i];
     }
 };
@@ -73,7 +79,7 @@ ECPIndex<T,U,V>::~ECPIndex() {
 
     // Clean up memory
     delete _tree;
-    for (uint64_t i = 0; i < _maxClusters; i++) {
+    for (uint32_t i = 0; i < _maxClusters; i++) {
         delete _clusters[i];
     }
 }
@@ -85,7 +91,7 @@ void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>* descs) {
 
     *descs = vector<ExqDescriptor<T,U,V>*>(_totalItems);
     //printf("maxClusters: %u\n", maxClusters);
-    for (uint64_t i = 0; i < _maxClusters; i++) {
+    for (uint32_t i = 0; i < _maxClusters; i++) {
         //printf("Open cluster %u\n", i);
         this->_clusters[i]->open();
         ExqDescriptor<T,U,V>* descriptor;
@@ -111,7 +117,7 @@ void ECPIndex<T,U,V>::set_b_clusters(vector<double>& query, double bias, int b) 
     ECPFarthestNeighbour<T,U,V>* clusters = _tree->search(query, bias, b, _clusters);
     _bClusters.clear();
     clusters->open();
-    uint64_t* clusterId;
+    uint32_t* clusterId;
     while((clusterId = clusters->next()) != NULL) {
         _bClusters.push_back(*clusterId);
     }
