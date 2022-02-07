@@ -7,11 +7,14 @@
 #include <cmath>
 
 using namespace exq;
+using std::cout;
+using std::endl;
 
 
 template <typename T, typename U, typename V>
 ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor,
                                         double ratiosDivisor) {
+    this->iota = iota;
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
     this->idsFeatureShift = idsShift;
@@ -34,6 +37,7 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, i
 template <typename T, typename U, typename V>
 ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
                                         double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
+    this->iota = iota;
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
     this->idsFeatureShift = idsShift;
@@ -142,7 +146,7 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
 
 template<typename T, typename U, typename V>
 int ExqFunctionsR64<T, U, V>::getDescriptorSize() {
-    return sizeof(T) + iota * sizeof(U) * 2;
+    return sizeof(T) + (iota * sizeof(U)) + (iota * sizeof(V));
 }
 
 template class exq::ExqFunctionsR64<uint64_t,uint64_t,uint64_t>;

@@ -17,42 +17,68 @@ using std::endl;
 
 PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     _pyExqV1 = PyExquisitorV1();
+
+    cout << "Initializing Exquisitor... " << endl;
+
     vector<vector<string>> compCnfgFiles = vector<vector<string>>();
 
+    cout << "Getting Arguments... " << endl;
     int iota = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
+    cout << "iota: " << iota << endl;
     int noms = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
+    cout << "noms: " << noms << endl;
     int numWorkers = (int)PyLong_AsLong(PyTuple_GetItem(args, 2));
+    cout << "numWorkers: " << numWorkers << endl;
     int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 3));
+    cout << "segments: " << segments << endl;
     int numModalities = (int)PyLong_AsLong(PyTuple_GetItem(args, 4));
+    cout << "numModalities: " << numModalities << endl;
     vector<int> modFeatureDimensions = vector<int>(numModalities);
     int bClusters = (int)PyLong_AsLong(PyTuple_GetItem(args, 5));
+    cout << "bClusters: " << bClusters << endl;
     PyObject* compCnfgFilesPy = PyTuple_GetItem(args, 6);
 
+    cout << "Reading modality feature dimensions" << endl;
     PyObject* modFeatureDimensionsPy = PyTuple_GetItem(args, 7);
     for (int i = 0; i < PyList_Size(modFeatureDimensionsPy); i++) {
-        modFeatureDimensions.push_back((int)PyLong_AsLong(PyList_GetItem(modFeatureDimensionsPy,i)));
+        modFeatureDimensions[i] = (int) PyLong_AsLong(PyList_GetItem(modFeatureDimensionsPy,i));
+        cout << "modFeatureDimensions[" << i << "]: " << modFeatureDimensions[i] << endl;
     }
 
     // Sets the ExqFunctions for each modality
     auto functions = vector<ExqFunctions<ExqDescriptor<uint64_t, uint64_t, uint64_t>>*>(numModalities);
-    int funcType = (int) PyLong_AsLong(PyList_GetItem(args, 8));
+    int funcType = (int) PyLong_AsLong(PyTuple_GetItem(args, 8));
+    cout << "funcType: " << funcType << endl;
     //funcType: 0 = same; 1 = different;
-    PyObject* funcObjs = PyTuple_GetItem(args, 9);
+    PyObject* funcObjsPy = PyTuple_GetItem(args, 9);
     //funcObj: 0 = nFeat, 1 = topShift, 2 = idsShift, 3 = ratiosShift, 4 = topMask,
     //         5 = topDivisor, 6 = idsMask, 7 = ratiosMask, 8 = ratiosDivisor
     int nFeat, topShift, idsShift, ratiosShift;
     double topDivisor, ratiosDivisor;
     uint64_t topMask, idsMask, ratiosMask;
+    cout << "Creating functions object" << endl;
+    PyObject* funcObjPy;
     if (funcType) {
-        nFeat = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 0));
-        topShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 1));
-        idsShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 2));
-        ratiosShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0),3));
-        topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 4));
-        topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 5));
-        idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 6));
-        ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 7));
-        ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, 0), 8));
+        funcObjPy = PyList_GetItem(funcObjsPy,0);
+        cout << "Same modality settings" << endl;
+        nFeat = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 0));
+        cout << "nFeat: " << nFeat << endl;
+        topShift = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 1));
+        cout << "topShift: " << topShift << endl;
+        idsShift = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 2));
+        cout << "idsShift: " << idsShift << endl;
+        ratiosShift = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 3));
+        cout << "ratiosShift: " << ratiosShift << endl;
+        topMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 4));
+        cout << "topMask: " << topMask << endl;
+        topDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 5));
+        cout << "topDivisor: " << topDivisor << endl;
+        idsMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 6));
+        cout << "idsMask: " << idsMask << endl;
+        ratiosMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 7));
+        cout << "ratiosMask: " << ratiosMask << endl;
+        ratiosDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
+        cout << "ratiosDivisor: " << ratiosDivisor << endl;
         for (int m = 0; m < numModalities; m++) {
             functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
                                                                              ratiosShift,
@@ -61,16 +87,27 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
                                                                              ratiosDivisor);
         }
     } else {
+        cout << "Different modality settings" << endl;
         for (int m = 0; m < numModalities; m++) {
-            nFeat = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 0));
-            topShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 1));
-            idsShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 2));
-            ratiosShift = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m),3));
-            topMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 4));
-            topDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 5));
-            idsMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 6));
-            ratiosMask = (uint64_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 7));
-            ratiosDivisor = (double) PyFloat_AsDouble(PyTuple_GetItem(PyList_GetItem(funcObjs, m), 8));
+            funcObjPy = PyList_GetItem(funcObjsPy, m);
+            nFeat = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 0));
+            cout << "nFeat: " << nFeat << endl;
+            topShift = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 1));
+            cout << "topShift: " << topShift << endl;
+            idsShift = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 2));
+            cout << "idsShift: " << idsShift << endl;
+            ratiosShift = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 3));
+            cout << "ratiosShift: " << ratiosShift << endl;
+            topMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 4));
+            cout << "topMask: " << topMask << endl;
+            topDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 5));
+            cout << "topDivisor: " << topDivisor << endl;
+            idsMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 6));
+            cout << "idsMask: " << idsMask << endl;
+            ratiosMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 7));
+            cout << "ratiosMask: " << ratiosMask << endl;
+            ratiosDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
+            cout << "ratiosDivisor: " << ratiosDivisor << endl;
             functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
                                                                              ratiosShift,
                                                                              topMask, topDivisor, idsMask,
@@ -78,7 +115,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
                                                                              ratiosDivisor);
         }
     }
-
+    cout << "Loaded functions" << endl;
     //TODO: Could also make this an argument choice per modality to select eCP or H5 or something different.
     // Specific to ExqDataHandlerH5
     //for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
@@ -92,16 +129,21 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     //auto dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compCnfgFiles, numModalities);
     vector<string> cnfgFiles = vector<string>(PyList_Size(compCnfgFilesPy));
     for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
-        cnfgFiles.emplace_back(_PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i)));
+        cnfgFiles[i] = _PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i));
+        cout << "Config[" << i << "]: " << cnfgFiles[i] << endl;
     }
+    cout << "Loading Data" << endl;
     auto dataHandler =
             new ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>(cnfgFiles, numModalities,
                                                               functions, modFeatureDimensions);
+    cout << "Data Loaded" << endl;
     vector<ExqClassifier*> classifiers = vector<ExqClassifier*>(numModalities);
     for (int m = 0; m < numModalities; m++) {
         classifiers[m] = new ExqClassifier(modFeatureDimensions[m]);
     }
+    cout << "Classifier(s) initialized" << endl;
     auto worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
+    cout << "Worker(s) initialized" << endl;
 
     PyObject* itemMetadataPy = PyTuple_GetItem(args, 10);
     PyObject* tmpPropsPy;
