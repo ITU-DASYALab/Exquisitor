@@ -160,6 +160,16 @@ template <typename T>
 void ExqController<T>::reset_model() {
 
 }
+
+template <typename T>
+vector<ExqArray<pair<int, float>>> ExqController<T>::get_descriptors(vector<int> ids, int mod) {
+    auto res = vector<ExqArray<pair<int,float>>>(ids.size());
+    for (int i = 0; i < ids.size(); i++) {
+        res[i] = _functions[mod]->getDescriptorInformation(*_handler->getDescriptor(ids[i],mod));
+    }
+    return res;
+}
+
 template class exq::ExqController<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
 
 

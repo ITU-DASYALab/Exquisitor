@@ -114,6 +114,8 @@ namespace exq {
          */
         void reset_model();
 
+        vector<ExqArray<pair<int,float>>> get_descriptors(vector<int> ids, int mod);
+
     private:
         int _iota;
         int _noms;

@@ -22,13 +22,16 @@ namespace exq {
     static PyObject* suggest_py(PyObject* self, PyObject* args);
     static PyObject* reset_model_py(PyObject* self, PyObject* args);
     static PyObject* safe_exit_py(PyObject* self, PyObject* args);
+    static PyObject* get_descriptors_info_py(PyObject* self, PyObject* args);
 
     static PyMethodDef exquisitor_methods[] = {
             {"initialize", initialize_py, METH_VARARGS, "Initialize exquisitor"},
             {"train", train_py, METH_VARARGS, "Train the classifier (linear SVM)"},
             {"suggest", suggest_py, METH_VARARGS, "Get suggestions from current model"},
             {"reset_model", reset_model_py, METH_VARARGS, "Reset the model"},
-            {"safe_close", safe_exit_py, METH_NOARGS, "Safely free up memory"}
+            {"safe_close", safe_exit_py, METH_NOARGS, "Safely free up memory"},
+            {"get_descriptors_info", get_descriptors_info_py, METH_VARARGS, "Get descriptor information from item ids list for a"
+                                                                 "specific modality"}
     };
 
     static struct PyModuleDef exquisitor_definition = {

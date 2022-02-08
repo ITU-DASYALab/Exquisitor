@@ -300,6 +300,34 @@ PyObject* exq::safe_exit_py(PyObject* self, PyObject* args) {
     return Py_None;
 }
 
+PyObject* exq::get_descriptors_info_py(PyObject *self, PyObject *args) {
+    PyObject* descIdsPy;
+    descIdsPy = PyTuple_GetItem(args,0);
+    vector<int> ids = vector<int>(PyList_Size(descIdsPy));
+    for (int i = 0; i < PyList_Size(descIdsPy); i++) {
+        ids[i] = (int) PyLong_AsLong(PyList_GetItem(descIdsPy,i));
+    }
+    int modality = (int) PyLong_AsLong(PyTuple_GetItem(args,1));
+    auto res = _pyExqV1._controller->get_descriptors(ids, modality);
+
+    //TODO: Fix the return object, leads to the following error atm.:
+    // malloc: *** error for object 0x600001d983c0: pointer being freed was not allocated
+    PyObject* descListPy;
+    descListPy = PyList_New(ids.size());
+    for (int i = 0; i < ids.size(); i++) {
+        PyObject* descInfo = PyList_New(res[i].getSize());
+        for (int j = 0; j < res[i].getSize(); j++) {
+            PyObject* pair = PyTuple_New(2);
+            PyTuple_SetItem(pair, 0, PyLong_FromUnsignedLong((unsigned long) res[i].getItem(j).first));
+            PyTuple_SetItem(pair, 1, PyFloat_FromDouble((double) res[i].getItem(j).second));
+            PyList_SetItem(descInfo, j, pair);
+        }
+        PyList_SetItem(descListPy, i, descInfo);
+    }
+
+    return descListPy;
+}
+
 PyMODINIT_FUNC exq::PyInit_exq(void) {
     Py_Initialize();
     return PyModule_Create(&exquisitor_definition);
