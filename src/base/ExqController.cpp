@@ -6,6 +6,7 @@
 //#include "../ExqFunctionsR64.h"
 
 #include <future>
+#include <utility>
 
 using namespace exq;
 using std::async;
@@ -14,6 +15,8 @@ using std::milli;
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
 using std::chrono::time_point;
+using std::cout;
+using std::endl;
 
 
 template <typename T>
@@ -29,10 +32,10 @@ ExqController<T>::ExqController(
         ExqDataHandler<T>* handler,
         vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker,
-        ExqArray<ItemProperties> itemProps,
-        ExqArray<ExqArray<Props>> vidProps
+        const ExqArray<ItemProperties>& itemProps,
+        const ExqArray<ExqArray<Props>>& vidProps
     ) {
-
+    cout << "(CTRL) Setting parameters" << endl;
     // Set standard fields
     _iota = iota;
     _noms = noms;
@@ -40,18 +43,20 @@ ExqController<T>::ExqController(
     _segments = segments;
     _modalities = numberModalities;
     _bClusters = bClusters;
-    _featureDimensions = modFeatureDimensions;
+    _featureDimensions = std::move(modFeatureDimensions);
 
     // Set exq class object fields
     _functions = functions;
     _handler = handler;
-    _classifiers = classifiers;
+    _classifiers = std::move(classifiers);
     _worker = worker;
     _itemProperties = itemProps;
     _vidProperties = vidProps;
 
+    cout << "(CTRL) Loading data..." << endl;
     // Load data
     _handler->loadData(_modalities);
+    cout << "(CTRL) Data loaded" << endl;
 
     _threads.resize(_numWorkers);
 }

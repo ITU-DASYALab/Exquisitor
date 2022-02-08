@@ -70,15 +70,21 @@ int ExqFunctionsR64<T, U, V>::getDescFeatCount() {
 template <typename T, typename U, typename V>
 /// Decompress item and return the results in an ExqArray
 inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformation(ExqDescriptor<T,U,V> &descriptor) {
+    cout << "(ExqFncR64)" << endl;
+    cout << "(ExqFncR64) Getting descriptor information for descriptor " << descriptor.id << endl;
     auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
 
     int featId = descriptor.getTop() >> this->topFeatureShift;
+    cout << "(ExqFncR64) Top Feature ID: " << featId << endl;
     double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
+    cout << "(ExqFncR64) Top Feature Value: " << featVal << endl;
     exqArr->setItem(std::make_pair(featId, featVal), 0);
 
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
         featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
+        cout << "(ExqFncR64) Feature ID: " << featId << endl;
         featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask)/this->ratiosDivisor;
+        cout << "(ExqFncR64) Feature Val: " << featVal << endl;
         exqArr->setItem(std::make_pair(featId, featVal), i+1);
     }
 

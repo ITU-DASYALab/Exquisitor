@@ -59,8 +59,8 @@ namespace exq {
                 ExqDataHandler<T>* handler,
                 vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker,
-                ExqArray<ItemProperties> itemProps,
-                ExqArray<ExqArray<Props>> vidProps
+                const ExqArray<ItemProperties>& itemProps,
+                const ExqArray<ExqArray<Props>>& vidProps
         );
 
 /**

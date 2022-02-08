@@ -16,10 +16,10 @@ namespace exq {
         // Bookkeeping info
         ECPConfig* _cnfg;
         FILE* _datafile;       // File must be (and remain) open
-        int descriptorSize;
+        int _descriptorSize;
 
         // Info about the index entry
-        uint64_t _offset;      // The page at which the cluster starts
+        uint32_t _offset;      // The page at which the cluster starts
         int _pages;            // The number of pages in the cluster
         int _descriptors;      // The number of descriptors in the cluster
 

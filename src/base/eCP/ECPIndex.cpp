@@ -85,26 +85,27 @@ ECPIndex<T,U,V>::~ECPIndex() {
 }
 
 template <typename T, typename U, typename V>
-void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>* descs) {
+void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>& descs) {
     int indx = 0;
     int maxClusterSize = 100000000; //can be adjusted, this was to get rid of the huge clusters that were actually full of crap
 
-    *descs = vector<ExqDescriptor<T,U,V>*>(_totalItems);
-    //printf("maxClusters: %u\n", maxClusters);
+    cout << "(ECPIndx) Loading descriptors" << endl;
+    descs = vector<ExqDescriptor<T,U,V>*>(_totalItems);
+    printf("(ECPIndx) maxClusters: %u\n", _maxClusters);
     for (uint32_t i = 0; i < _maxClusters; i++) {
-        //printf("Open cluster %u\n", i);
+        printf("(ECPIndx) Open cluster %u\n", i);
         this->_clusters[i]->open();
         ExqDescriptor<T,U,V>* descriptor;
-        //skip clusters that are larger than maxClusterSixe
+        //skip clusters that are larger than maxClusterSize
         if (this->_clusters[i]->getNumDescriptors() > maxClusterSize) {
             //printf("Cluster %u skipped\n", i);
             continue;
         }
         while ((descriptor = _clusters[i]->next()) != NULL) {
-            //printf("Cluster %u indx %d\n", i, indx);
+            printf("(ECPIndx) Cluster %u indx %d descriptor id %u\n", i, indx, descriptor->id);
             uint32_t id = descriptor->id;
             _clusters[i]->setDescriptorId(indx, id);
-            *descs->at(id) = new ExqDescriptor<T,U,V>(descriptor);
+            descs[id] = new ExqDescriptor<T,U,V>(descriptor);
             delete descriptor;
             indx++;
         }

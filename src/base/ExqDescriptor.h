@@ -61,9 +61,12 @@ namespace exq {
             featureRatios = org->featureRatios;
         }
 
-        ExqDescriptor(FILE* file) {
+        ExqDescriptor(FILE* file, bool gobbleDist = 0) {
             size_t res;
             res = fread(&this->id, sizeof(int), 1, file);
+            if (gobbleDist) {
+                res = fread(&this->topFeature, sizeof(int), 1, file);
+            }
             res = fread(&this->topFeature, sizeof(uint64_t), 1, file);
             res = fread(&this->featureIds, sizeof(uint64_t), 1, file);
             res = fread(&this->featureRatios, sizeof(uint64_t), 1, file);

@@ -11,7 +11,8 @@ ECPNode<T,U,V>::ECPNode(ExqDescriptor<T,U,V>* _centroid, bool _addChild) {
     // Allocate space for children
     maxChildren = 200;
     numChildren = 0;
-    children = vector<ExqDescriptor<T,U,V>*>(maxChildren);
+    children = vector<ExqDescriptor<T,U,V>*>();
+    children.reserve(maxChildren);
 
     if (_addChild)
         addChild(new ExqDescriptor<T,U,V>(_centroid));

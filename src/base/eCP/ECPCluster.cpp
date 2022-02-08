@@ -15,7 +15,7 @@ ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, s
     // Note the bookkeeping info for later
     _cnfg = cnfg;
     _datafile = datafile;
-    descriptorSize = descSize; //ATH breyta
+    _descriptorSize = descSize;
     // Read the index entry info from the indx file
     size_t res;
     res = fread(&_offset, sizeof(uint32_t), 1, indxfile);
@@ -55,10 +55,11 @@ inline void ECPCluster<T,U,V>::setDescriptorId(int i, uint32_t id) {
 
 template <typename T, typename U, typename V>
 ExqDescriptor<T,U,V>* ECPCluster<T,U,V>::next() {
+    //cout << "(ECPClst) _descriptors: " << _descriptors << endl;
     if (_nextDescriptor == _descriptors)
         return NULL;
     _nextDescriptor++;
-    return new ExqDescriptor<T,U,V>(_datafile);
+    return new ExqDescriptor<T,U,V>(_datafile, 1);
 };
 
 template <typename T, typename U, typename V>

@@ -27,7 +27,7 @@ namespace exq {
 
         ~ECPIndex();
 
-        void loadDescriptors(vector<ExqDescriptor<T,U,V>*>*);
+        void loadDescriptors(vector<ExqDescriptor<T,U,V>*>& desc);
 
         void search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster, int run, int segments);
 

@@ -9,19 +9,21 @@ template<typename T, typename U, typename V>
 ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, uint32_t _k,
                                                 ExqFunctions<ExqDescriptor<T,U,V>>*& functions,
                                                 int featureDimensions) {
+    cout << "(ECPNN) Copy input" << endl;
     // Copy the inputs
     query           = _query;
     k               = _k;
     _functions = functions;
     _featureDimensions = featureDimensions;
 
+    cout << "(ECPNN) Allocate space" << endl;
     // Allocate space for the nearest neighbors
     descriptorIDs   = new uint32_t[k];
     clusterIDs      = new uint32_t[k];
     distances       = new double[k];
 
     // Set the distances once to max distance
-    for (uint64_t i = 0; i < k; i++) {
+    for (uint32_t i = 0; i < k; i++) {
         distances[i] = FLT_MAX;
     }
 
@@ -29,19 +31,22 @@ ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, ui
     neighbors   = 0;
     farthest    = 0;
 
+    cout << "(ECPNN) Allocate helper arrays" << endl;
     extendedValueArr = vector<double>(_featureDimensions);
-    for(uint64_t i = 0; i < _featureDimensions; i++) {
+    for(uint32_t i = 0; i < _featureDimensions; i++) {
         extendedValueArr[i] = 0;
     }
 
     indexQueryArr = vector<vector<double>>();
-    for(uint64_t y = 0; y < QUERY_Y; y++) {
+    for(uint32_t y = 0; y < QUERY_Y; y++) {
         indexQueryArr.push_back(vector<double>(_functions->getDescFeatCount()));
-        for(uint64_t x = 0; x < _functions->getDescFeatCount(); x++) {
+        for(uint32_t x = 0; x < _functions->getDescFeatCount(); x++) {
             indexQueryArr[y][x] = 0;
         }
     }
+    cout << "(ECPNN) Set helper array distance" << endl;
     setHelperArrayForDistance();
+    cout << "(ECPNN) Initialized" << endl;
 };
 
 template <typename T, typename U, typename V>
@@ -106,6 +111,7 @@ template <typename T, typename U, typename V>
 double ECPNearestNeighbour<T,U,V>::Distance(ExqDescriptor<T,U,V>* data) {
     double dist = 0.0;
 
+    cout << "(ECPNN) Calculating nn distance from desc " << query->id << " to " << data->id << endl;
     auto arr = _functions->getDescriptorInformation(*data);
     double queryFeatVal = 0.0;
     for (int i = 0; i < arr.getSize(); i++) {

@@ -12,7 +12,7 @@ ECPTree<T,U,V>::ECPTree(ECPConfig* cnfg, vector<ExqDescriptor<T,U,V>*> centroids
     _featureDimensions = featureDimensions;
 
     if (_cnfg->getNumLvls() < 2) {
-        cout << "Tree: Level 2 index is the mininum for the Tree (level = " << _cnfg->getNumLvls() << ")" << endl;
+        cout << "(ECPTree) Level 2 index is the mininum for the Tree (level = " << _cnfg->getNumLvls() << ")" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -56,22 +56,24 @@ void ECPTree<T,U,V>::BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numC
             }
         }
     }
-    cout << "Loading child nodes" << endl;
+    cout << "(ECPTree) Loading child nodes" << endl;
     // Then we take the extra centroids on each level L and insert into a node on level L-1
     for (uint32_t l = 1; l < _cnfg->getNumLvls(); l++) {
         for (int i = _levelsizes[l - 1]; i < _levelsizes[l]; i++)
             addChildAtLevel(new ExqDescriptor<T, U, V>(_nodes[l][i]->getCentroid()), l - 1);
     }
-    cout << "Done" << endl;
+    cout << "(ECPTree) Done" << endl;
     _qop->gatherInformation(_levelsizes, _cnfg, _nodes, numClusters);
 }
 
 template<typename T, typename U, typename V>
 void ECPTree<T,U,V>::addChildAtLevel(ExqDescriptor<T,U,V>* centroid, int level) {
     uint32_t *clusterID;
+    cout << "(ECPTree) Search for nn to place child" << endl;
     // Find the correct node to insert into
     ECPNearestNeighbour<T, U, V> *qa = search(centroid, 1, level);
 
+    cout << "Add children" << endl;
     // Get the result and insert
     qa->open();
     while ((clusterID = qa->next()) != NULL) {
@@ -265,7 +267,9 @@ ECPNearestNeighbour<T,U,V>* ECPTree<T,U,V>::search(ExqDescriptor<T,U,V>* query, 
         return NULL;
     // Need to find up to k neighbors from the tree
     // Start at the root, scan the children to find the best k sub-trees
+    cout << "(ECPTree) Init nn object" << endl;
     auto result = new ECPNearestNeighbour<T,U,V>(query, k, _functions, _featureDimensions);
+    cout << "(ECPTree) Compare and replace farthest" << endl;
     for (int i = 0; i < _levelsizes[0]; i++) {
         result->compareAndReplaceFarthest(_nodes[0][i]->get(0));
     };

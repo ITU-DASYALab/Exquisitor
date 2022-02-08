@@ -150,16 +150,16 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     auto itemProps = ExqArray<ItemProperties>((int)PyList_Size(itemMetadataPy));
     for (int i = 0; i < itemProps.getSize(); i++) {
         ItemProperties it = ItemProperties();
-        it.collectionId = (uint8_t) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),0));
-        it.vid = (bool) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),1));
-        it.vidId = (int) PyLong_AsLong(PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),2));
-        PyObject* stdPropsPy = PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),3);
+        it.collectionId = (uint8_t) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),0));
+        it.vid = (bool) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),1));
+        it.vidId = (int) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),2));
+        PyObject* stdPropsPy = PyList_GetItem(PyList_GetItem(itemMetadataPy,i),3);
         it.stdProps.props = ExqArray<ExqArray<uint16_t>>((int)PyList_Size(stdPropsPy));
         for (int j = 0; j < PyList_Size(stdPropsPy); j++) {
             tmpPropsPy = PyList_GetItem(stdPropsPy,j);
             auto arr = ExqArray<uint16_t>((int)PyList_Size(tmpPropsPy));
             for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
-               arr.setItem((uint16_t)PyLong_AsLong(PyTuple_GetItem(tmpPropsPy,k)), k);
+               arr.setItem((uint16_t)PyLong_AsLong(PyList_GetItem(tmpPropsPy,k)), k);
             }
             it.stdProps.props.setItem(arr, j);
         }
@@ -169,12 +169,13 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             tmpPropsPy = PyList_GetItem(collPropsPy, j);
             auto arr = ExqArray<uint16_t>((int)PyList_Size(tmpPropsPy));
             for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
-                arr.setItem((uint16_t)PyLong_AsLong(PyTuple_GetItem(tmpPropsPy,k)), k);
+                arr.setItem((uint16_t)PyLong_AsLong(PyList_GetItem(tmpPropsPy,k)), k);
             }
             it.collProps.props.setItem(arr, j);
         }
         itemProps.setItem(it,i);
     }
+    cout << "Item metadata filled" << endl;
 
     PyObject* videoMetadataPy = PyTuple_GetItem(args, 11);
     auto collVidProps = ExqArray<ExqArray<Props>>((int)PyList_Size(videoMetadataPy));
@@ -188,7 +189,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
                 tmpPropsPy = PyList_GetItem(PyList_GetItem(vidPropsPy, v), p);
                 auto arr = ExqArray<uint16_t>((int) PyList_Size(tmpPropsPy));
                 for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
-                    arr.setItem((uint16_t) PyLong_AsLong(PyTuple_GetItem(tmpPropsPy, k)), k);
+                    arr.setItem((uint16_t) PyLong_AsLong(PyList_GetItem(tmpPropsPy, k)), k);
                 }
                 vp.props.setItem(arr,p);
             }
@@ -196,7 +197,9 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
         }
         collVidProps.setItem(cVids,c);
     }
+    cout << "Video metadata filled" << endl;
 
+    cout << "Initializing Controller" << endl;
     _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t,uint64_t,uint64_t>>(
             iota,
             noms,
@@ -213,6 +216,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             collVidProps
             );
 
+    cout << "Controller initialized. Exquisitor is ready!" << endl;
     Py_IncRef(Py_None);
     return Py_None;
 }
