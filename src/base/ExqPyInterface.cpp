@@ -223,13 +223,30 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
 
 PyObject* exq::train_py(PyObject* self, PyObject* args) {
     vector<uint32_t> trainIds = vector<uint32_t>();
-    vector<short> trainLabels = vector<short>();
+    vector<float> trainLabels = vector<float>();
 
     PyObject* trainIdsPy = PyTuple_GetItem(args, 0);
     PyObject* trainLabelsPy = PyTuple_GetItem(args, 1);
     for (int i = 0; i < PyList_Size(trainIdsPy); i++) {
         trainIds.push_back((int)PyLong_AsLong(PyList_GetItem(trainIdsPy,i)));
-        trainLabels.push_back((short)PyLong_AsLong(PyList_GetItem(trainLabelsPy,i)));
+        trainLabels.push_back((float)PyFloat_AsDouble(PyList_GetItem(trainLabelsPy,i)));
+    }
+
+    // Input Check
+    if (trainIds.empty()) {
+        cout << "No train items provided!" << endl;
+        Py_IncRef(Py_None);
+        return Py_None;
+    }
+    if (trainLabels.empty()) {
+        cout << "No train labels provided!" << endl;
+        Py_IncRef(Py_None);
+        return Py_None;
+    }
+    if (trainLabels.size() != trainIds.size()) {
+        cout << "Train items and labels mismatch!" << endl;
+        Py_IncRef(Py_None);
+        return Py_None;
     }
 
     auto times = _pyExqV1._controller->train(trainIds, trainLabels);

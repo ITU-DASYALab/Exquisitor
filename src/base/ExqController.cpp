@@ -63,7 +63,7 @@ ExqController<T>::ExqController(
 
 
 template <typename T>
-vector<double> ExqController<T>::train(vector<uint> trainIds, vector<short> trainLabels) {
+vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels) {
     vector<double> times = vector<double>();
     vector<vector<double>> weights = vector<vector<double>>(_modalities, vector<double>());
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
@@ -72,21 +72,20 @@ vector<double> ExqController<T>::train(vector<uint> trainIds, vector<short> trai
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
         for (int i = 0; i < trainIds.size(); i++) {
-            T desc = _handler->getDescriptor(i);
+            T desc = _handler->getDescriptor(trainIds[i]);
             ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(desc);
             vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
             for (int j = 0; j < descVals.getSize(); j++) {
-                pair<int, float> item = descVals.getItem(i);
+                pair<int, float> item = descVals.getItem(j);
                 featVals[item.first] = item.second;
             }
             trainingItems.push_back(featVals);
         }
-
         finish = high_resolution_clock::now();
         times.push_back(duration<double, milli>(finish - begin).count());
         begin = high_resolution_clock::now();
-        _classifiers[m]->train(trainingItems, trainLabels);
-        weights[m] = _classifiers[m]->getWeights();
+        weights[m] = _classifiers[m]->train(trainingItems, trainLabels);
+        //weights[m] = _classifiers[m]->getWeights();
         finish = high_resolution_clock::now();
         times.push_back(duration<double, milli>(finish - begin).count());
     }

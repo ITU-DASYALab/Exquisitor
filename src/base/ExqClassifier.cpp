@@ -5,18 +5,28 @@
 #include "ExqClassifier.h"
 
 #include <opencv2/ml.hpp>
+#include <utility>
 
 using namespace exq;
 using std::cout;
 using std::endl;
 
+#include <vector>
+#include <algorithm>
+#include <numeric>
+
 ExqClassifier::ExqClassifier(int totalFeats) {
-    _svm = SVM::create();
-    _svm->setType(SVM::C_SVC);
-    _svm->setKernel(SVM::POLY);
-    _svm->setGamma(1);
-    _svm->setCoef0(0);
-    _svm->setDegree(1.0);
+    _svm = SVMSGD::create();
+    _svm->setOptimalParameters();
+    //_svm->setMarginType(SVMSGD::SOFT_MARGIN);
+    //_svm->setMarginRegularization(0.0001);
+    //_svm->setType(SVM::C_SVC);
+    //_svm->setKernel(SVM::LINEAR);
+    //_svm->setKernel(SVM::POLY);
+    //_svm->setGamma(1);
+    //_svm->setCoef0(0);
+    //_svm->setDegree(1.0);
+    //_svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 100, 0.01));
     _trainData = TrainData();
     _totalFeats = totalFeats;
 }
@@ -25,35 +35,68 @@ ExqClassifier::~ExqClassifier() {
     delete _svm;
 }
 
-std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<short> labels) {
+std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {
+    for (int i = 0; i < data.size(); i++) {
+        for (int j = 0; j < data[i].size(); j++) {
+            if (data[i][j] > 0.0) {
+                cout << "Item " << i << " Feature (" << j << "," << data[i][j] << ")" << endl;
+            }
+        }
+        cout << "Label " << labels[i] << endl;
+    }
     //Controller calculates scores and creates the 2D data vector
-    _trainData.data = data;
-    _trainData.labels = labels;
+    _trainData.data = std::move(data);
+    _trainData.labels = std::move(labels);
     int rows = _trainData.data.size();
     int cols = _trainData.data[0].size();
-    //cv::Mat labelsMat(rows, 1, CV_32F);
-    cv::Mat labelsMat(rows, 1, CV_32S);
+    cv::Mat labelsMat(rows, 1, CV_32FC1);
     cv::Mat dataMat(rows, cols, CV_32F);
     for (int i = 0; i < rows; i++) {
         //labelsMat.at<float>(i,0) = labels[i];
-        labelsMat.at<short>(i,0) = _trainData.labels[i];
+        labelsMat.at<float>(i,0) = _trainData.labels[i];
         for (int j = 0; j < cols; j++) {
             dataMat.at<float>(i,j) = _trainData.data[i][j];
         }
     }
 
-    _svm->train(dataMat, cv::ml::ROW_SAMPLE, labelsMat);
-    cv::Mat weights = _svm->getSupportVectors();
-    rows = weights.rows;
-    cols = weights.cols;
+#ifdef DEBUG_TRAIN_EXTRA
+    for (int i = 0; i < rows; i++) {
+        cout << "Item " << i << endl;
+        for (int j = 0; j < cols; j++) {
+            cout << dataMat.at<float>(i,j) << ",";
+        }
+        cout << endl;
+    }
+#endif
+
+    cv::Ptr<cv::ml::TrainData> td = cv::ml::TrainData::create(dataMat, cv::ml::ROW_SAMPLE, labelsMat);
+    _svm->train(td);
+    //cv::Mat sv = _svm->getSupportVectors();//SupportVectors();
+    cv::Mat sv = _svm->getWeights();//SupportVectors();
+    rows = sv.rows;
+    cout << "Number of support vectors: " << rows << endl;
+    cols = sv.cols;
+    cout << "Number of features in support vectors: " << cols << endl;
+    //cv::Mat alpha, svidx;
+    //_svm->getDecisionFunction(0, alpha, svidx);
     _weights.resize(cols);
-    if (weights.isContinuous()) {
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                _weights[c] += weights.at<float>(r,c);
-            }
+    for (int r = 0; r < rows; r++) {
+        //cout << "Alpha(" << r << "): " << alpha.at<float>(r) << endl;
+        for (int c = 0; c < cols; c++) {
+            _weights[c] += sv.at<float>(r,c);
+            //_weights[c] += sv.ptr<float>(r)[c];
         }
     }
+
+#ifdef DEBUG_TRAIN
+    cout << "(ExqClassifier) Non zero weights: " << endl;
+    for (int i = 0; i < _weights.size(); i++) {
+        if (_weights[i] != 0.0) {
+            cout << i << " " << _weights[i] << endl;
+        }
+    }
+    cout << "bias: " << _svm->getShift() << endl;
+#endif
 
     return _weights;
 }
@@ -63,6 +106,6 @@ vector<double> ExqClassifier::getWeights() {
 }
 
 double ExqClassifier::getBias() {
-    cv::Mat alpha, svidx;
-    return _svm->getDecisionFunction(0, alpha, svidx);
+    //cv::Mat alpha, svidx;
+    return _svm->getShift();//_svm->getDecisionFunction(0, alpha, svidx);
 }

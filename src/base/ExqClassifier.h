@@ -17,7 +17,7 @@ namespace exq {
 
     struct TrainData {
         vector<vector<double>> data; //Item->Feature
-        vector<short> labels; //POS/NEG aka. 1.0/-1.0
+        vector<float> labels; //POS/NEG aka. 1.0/-1.0
     };
 
     class ExqClassifier {
@@ -26,7 +26,7 @@ namespace exq {
 
         ~ExqClassifier();
 
-        vector<double> train(vector<vector<double>> data, vector<short> labels);
+        vector<double> train(vector<vector<double>> data, vector<float> labels);
 
         vector<double> getWeights();
 
@@ -36,7 +36,8 @@ namespace exq {
 
     protected:
         int _totalFeats;
-        Ptr<SVM> _svm;
+        //Ptr<SVM> _svm;
+        Ptr<SVMSGD> _svm;
         TrainData _trainData;
         vector<double> _weights;
 
