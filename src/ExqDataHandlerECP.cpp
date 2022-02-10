@@ -48,6 +48,9 @@ template <typename T, typename U, typename V>
 void ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias) {
     _b = b;
     for (int m = 0; m < this->_modalities; m++) {
+#if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
+        cout << "(ExqHandler) Selecting " << b[m] << " clusters from mod " << m << endl;
+#endif
         _b[m] = b[m];
         _indx[m]->set_b_clusters(model[m], bias[m], _b[m]);
     }

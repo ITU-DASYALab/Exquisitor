@@ -20,9 +20,9 @@ namespace exq {
         void addChild(ExqDescriptor<T,U,V>* child);
 
         // Support for direct access
-        ExqDescriptor<T,U,V>* getCentroid() { return centroid; };
+        ExqDescriptor<T,U,V>* getCentroid() { return _centroid; };
 
-        int getNumChildren() { return numChildren; };
+        int getNumChildren() { return _children.size(); };
 
         ExqDescriptor<T,U,V>* get(uint32_t i);
 
@@ -38,15 +38,14 @@ namespace exq {
 
     private:
         // The structure of the node
-        ExqDescriptor <T, U, V> *centroid;
-        vector<ExqDescriptor < T, U, V>*> children;
-        int numChildren;
+        ExqDescriptor<T,U,V>* _centroid;
+        vector<ExqDescriptor<T,U,V>*> _children;
 
         // Space is allocated up to maxChildren
         // If more space is needed, it must be reallocated
-        int maxChildren;
+        int _maxChildren;
 
         // Support for scanning the node
-        int currChild;
+        int _currChild;
     };
 }

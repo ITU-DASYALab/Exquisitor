@@ -9,14 +9,18 @@ template<typename T, typename U, typename V>
 ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, uint32_t _k,
                                                 ExqFunctions<ExqDescriptor<T,U,V>>*& functions,
                                                 int featureDimensions) {
+#if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPNN) Copy input" << endl;
+#endif
     // Copy the inputs
     query           = _query;
     k               = _k;
     _functions = functions;
     _featureDimensions = featureDimensions;
 
+#if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPNN) Allocate space" << endl;
+#endif
     // Allocate space for the nearest neighbors
     descriptorIDs   = new uint32_t[k];
     clusterIDs      = new uint32_t[k];
@@ -31,7 +35,9 @@ ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, ui
     neighbors   = 0;
     farthest    = 0;
 
+#if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPNN) Allocate helper arrays" << endl;
+#endif
     extendedValueArr = vector<double>(_featureDimensions);
     for(uint32_t i = 0; i < _featureDimensions; i++) {
         extendedValueArr[i] = 0;
@@ -44,9 +50,14 @@ ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, ui
             indexQueryArr[y][x] = 0;
         }
     }
+
+#if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPNN) Set helper array distance" << endl;
+#endif
     setHelperArrayForDistance();
+#if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPNN) Initialized" << endl;
+#endif
 };
 
 template <typename T, typename U, typename V>
@@ -111,7 +122,9 @@ template <typename T, typename U, typename V>
 double ECPNearestNeighbour<T,U,V>::Distance(ExqDescriptor<T,U,V>* data) {
     double dist = 0.0;
 
+#if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPNN) Calculating nn distance from desc " << query->id << " to " << data->id << endl;
+#endif
     auto arr = _functions->getDescriptorInformation(*data);
     double queryFeatVal = 0.0;
     for (int i = 0; i < arr.getSize(); i++) {

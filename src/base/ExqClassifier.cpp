@@ -15,9 +15,11 @@ using cv::ml::TrainData;
 
 ExqClassifier::ExqClassifier(int totalFeats) {
     _svm = SVMSGD::create();
+    _svm->setSvmsgdType(SVMSGD::ASGD);
     _svm->setOptimalParameters();
     _svm->setMarginType(SVMSGD::HARD_MARGIN);
-    _svm->setMarginRegularization(0.01);
+    _svm->setMarginRegularization(0.0001);
+    _svm->setInitialStepSize(0.0001);
     _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 100, 0.01));
     _totalFeats = totalFeats;
 }
@@ -63,9 +65,11 @@ std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<flo
     _svm->train(_trainData);
     cv::Mat sv = _svm->getWeights();
     rows = sv.rows;
-    cout << "Number of support vectors: " << rows << endl;
     cols = sv.cols;
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    cout << "Number of support vectors: " << rows << endl;
     cout << "Number of features in support vectors: " << cols << endl;
+#endif
     _weights.resize(cols);
     for (int r = 0; r < rows; r++) {
         for (int c = 0; c < cols; c++) {

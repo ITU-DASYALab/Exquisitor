@@ -44,21 +44,23 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
         exit(EXIT_FAILURE);
     }
 
-    cout << "Initializing index data structure" << endl;
+    cout << "(ECPIndx) Initializing index data structure" << endl;
     // Initialize the data structure for the index file
     vector<ExqDescriptor<T,U,V>*> centroids = vector<ExqDescriptor<T,U,V>*>(_maxClusters);
     _clusters = vector<ECPCluster<T,U,V>*>(_maxClusters);
 
-    cout << "Reading cluster info and centroids" << endl;
+    cout << "(ECPIndx) Reading cluster info and centroids" << endl;
     // Read the cluster info and centroids from the indx file
     for (uint32_t i = 0; i < _maxClusters; i++) {
         _clusters[i] = new ECPCluster<T,U,V>(cnfg, _indxFile, _dataFile, _indexEntrySize);
         _totalItems += _clusters[i]->getNumDescriptors();
         centroids[i] = new ExqDescriptor<T,U,V>(_indxFile);
-        cout << "Cluster " << i << " loaded" << endl;
+#if defined(DEBUG) || defined(DEBUG_INIT)
+        cout << "(ECPIndx) Cluster " << i << " loaded" << endl;
+#endif
     }
 
-    cout << "Initializing QOP object" << endl;
+    cout << "(ECPIndx) Initializing QOP object" << endl;
     _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters);
 
     cout << "Creating Tree object" << endl;
@@ -123,7 +125,13 @@ void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>& descs) {
 
 template <typename T, typename U, typename V>
 void ECPIndex<T,U,V>::set_b_clusters(vector<double>& query, double bias, int b) {
+#if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
+    cout << "(ECPIndx) Searching for farthest neighbor" << endl;
+#endif
     ECPFarthestNeighbour<T,U,V>* clusters = _tree->search(query, bias, b, _clusters);
+#if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
+    cout << "(ECPIndx) Got clusters" << endl;
+#endif
     _bClusters.clear();
     clusters->open();
     uint32_t* clusterId;

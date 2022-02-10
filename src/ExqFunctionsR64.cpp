@@ -114,7 +114,6 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
     double score = bias;
     int featId = descriptor.getTop() >> this->topFeatureShift;
     double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
-
     score += model[featId] * featVal;
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
         featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
@@ -122,6 +121,9 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
         score += model[featId] * featVal;
     }
 
+#if defined(DEBUG_EXTRA) || defined(DEBUG_TRAIN_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
+    cout << "Descriptor " << descriptor.id << ": " << score << endl;
+#endif
     return score;
 }
 

@@ -48,9 +48,9 @@ namespace exq {
         vector<vector<ECPNode<T,U,V>*>> _nodes;
         int* _levelsizes;
         // pq for incremental retrieval
-        double _threshold = 0.0;
         int _expCounter = 0;
         int _skipCounter = 0;
+        int _numClusters = 0;
         priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> pq;
         set<uint32_t> bfs;
         // query optimisation policies
