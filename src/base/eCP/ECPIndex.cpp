@@ -148,22 +148,33 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
     int numDesc = 0;
     totalData = 0;
     for (int cnt = start; cnt < end; cnt++) {
-        numDesc = this->_clusters[_bClusters[cnt]]->getNumDescriptors();
+        numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();
         totalData += numDesc;
     }
-    //printf("(%d) INDEX(%d) - totalData(%d): %d\n", workerId, mod, run, totalData);
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ECPIndx) Segment " << run << ", Total data: " << totalData << endl;
+#endif
     suggIds = vector<uint32_t>(totalData);
     suggToCluster = vector<uint32_t>(totalData);
     int j = 0;
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ECPIndx) Segment " << run << " suggestions: ";
+#endif
     for (int cnt = start; cnt < end; cnt++) {
         numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();
         for (int i = 0; i < numDesc; i++) {
             //Descriptor* descriptor = clusters[*clusterID]->descriptorList[i];
             suggIds[j] = _clusters[_bClusters[cnt]]->descriptorIds[i];
             suggToCluster[j] = _bClusters[cnt];
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+            cout << suggIds[j] << ", ";
+#endif
             j++;
         }
     }
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << endl;
+#endif
 }
 
 template <typename T, typename U, typename V>

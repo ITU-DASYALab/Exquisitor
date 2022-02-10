@@ -129,7 +129,7 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
 
 template <typename T, typename U, typename V>
 void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality) {
-    if (items2Rank[0].distance.size() == modality) {
+    if ((int)items2Rank[0].distance.size() == modality) {
         for (int m = 0; m < modality; m++) {
             std::sort(items2Rank.begin(), items2Rank.end(), [m](const ExqItem& lhs, const ExqItem& rhs) {
                 return lhs.distance[m] < rhs.distance[m];
@@ -151,7 +151,7 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
     double rank = 0.0;
     items[0].aggScore += 0.0;
 
-    for (int i = 1; i < items.size(); i++) {
+    for (int i = 1; i < (int) items.size(); i++) {
         if (items[i].distance[mod] == items[i-1].distance[mod]) {
             items[i].aggScore += rank;
         } else {

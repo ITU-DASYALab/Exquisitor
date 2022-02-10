@@ -26,8 +26,8 @@ class ECPConfig
         string pathIdx;  // path to index file
         string pathDat;  // data file path
 
-        uint32_t k;        // neighbors to retrieve
-        uint32_t b;        // clusters to search in
+        //uint32_t k;        // neighbors to retrieve
+        //uint32_t b;        // clusters to search in
 
     public:
         ECPConfig(string filename);

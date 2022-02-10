@@ -16,6 +16,8 @@ using std::ifstream;
 using std::vector;
 using std::array;
 using std::milli;
+using std::cout;
+using std::endl;
 
 
 template<typename T>
@@ -30,19 +32,30 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
                            int& totalItemsConsidered, int workerId) {
 
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
-    time_point<high_resolution_clock> begin = high_resolution_clock::now();
+    //time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
     vector<ExqItem> candidateItems = vector<ExqItem>();
-    vector<vector<T>> descriptors = vector<vector<T>>();
+    vector<vector<T>> descriptors = vector<vector<T>>(modalities);
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " descriptors" << endl;
+#endif
     handler->getSegmentDescriptors(currentSegment, totalSegments, modalities, descriptors, seenItems);
-    totalItemsConsidered = descriptors.size();
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ExqWorker[" << workerId << "]) Got segment " << currentSegment << " descriptors" << endl;
+#endif
     int modSize[modalities];
-    //void (*descInfo)(T&) = functions.getDescriptorInformation;
-    //void (*dist)(vector<double>&, double, T&) = functions.distance;
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " noms" << endl;
+#endif
     for (int m = 0; m < modalities; m++) {
+        totalItemsConsidered += descriptors[m].size();
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        cout << "(ExqWorker[" << workerId << "]) Total items considered for segment " << currentSegment << ": "
+        << totalItemsConsidered << endl;
+#endif
         pair<int,double> min = make_pair(-1, -DBL_MAX);
         modSize[m] = 0;
-        for (int i = 0; i < descriptors[m].size(); i++) {
+        for (int i = 0; i < (int)descriptors[m].size(); i++) {
             ExqItem candItem = ExqItem();
             candItem.fromModality = m;
             candItem.segment = currentSegment;
@@ -54,7 +67,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
                 candItem.distance[mm] = functions[m]->distance(model, bias, descriptors[mm][i]);
             }
 
-            if (candidateItems.size() == noms * (modalities+1)) {
+            if ((int)candidateItems.size() == noms * (modalities+1)) {
                 if (candItem.distance[m] > min.second) {
                     candidateItems[min.first] = candItem;
                     min.first = candItem.itemId;
@@ -72,16 +85,22 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     }
     finish = high_resolution_clock::now();
 
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ExqWorker[" << workerId << "]) Ranking segment " << currentSegment << endl;
+#endif
     functions[0]->assignRanking(candidateItems, modalities);
 
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ExqWorker[" << workerId << "]) Removing duplicates in segment " << currentSegment << endl;
+#endif
     int cnt = 0;
-    for (int i = 0; i < candidateItems.size(); i++) {
+    for (int i = 0; i < (int)candidateItems.size(); i++) {
         if (candidateItems[i].aggScore != -1) {
             candidateItems[i].segment = currentSegment;
 
             itemsToReturn[cnt++] = candidateItems[i];
 
-            for (int j = i; j < candidateItems.size(); j++) {
+            for (int j = i; j < (int)candidateItems.size(); j++) {
                 if (candidateItems[i].itemId == candidateItems[j].itemId) {
                     candidateItems[j].aggScore = -1.0;
                 }
@@ -93,6 +112,10 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     }
     finish = high_resolution_clock::now();
     time = duration<double, milli>(finish - beginOverall).count();
+
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " finished" << endl;
+#endif
 }
 
 template<typename T>

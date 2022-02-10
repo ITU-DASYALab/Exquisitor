@@ -252,7 +252,7 @@ PyObject* exq::train_py(PyObject* self, PyObject* args) {
     auto times = _pyExqV1._controller->train(trainIds, trainLabels);
 
     PyObject* timeList = PyList_New(times.size());
-    for (int i = 0; i < times.size(); i++) {
+    for (int i = 0; i < (int)times.size(); i++) {
         PyList_SET_ITEM(timeList, i, PyFloat_FromDouble(times[i]));
     }
 
@@ -268,6 +268,7 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     PyObject* totalTimePy;
     PyObject* overheadTimePy;
 
+    cout << "Getting suggestions" << endl;
     vector<uint32_t> seen = vector<uint32_t>();
     int r = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
     int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
@@ -276,8 +277,11 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     for (int i = 0; i < PyList_Size(alreadySeenPy); i++) {
         seen.push_back((uint32_t)PyLong_AsLong(PyList_GetItem(alreadySeenPy,i)));
     }
+
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
+    cout << "Calling suggest" << endl;
     top = _pyExqV1._controller->suggest(r, seen);
+    cout << "Suggestions retrieved" << endl;
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
     suggsPy = PyList_New(top.suggs.size());
@@ -287,7 +291,7 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     totalTimePy = PyFloat_FromDouble(duration<double, milli>(finish-begin).count());
     overheadTimePy = PyFloat_FromDouble(top.overheadTime);
 
-    for (int i = 0; i < top.suggs.size(); i++) {
+    for (int i = 0; i < (int)top.suggs.size(); i++) {
         PyList_SetItem(suggsPy, i, PyLong_FromUnsignedLong((unsigned long)(top.suggs[i])));
     }
     for (int i = 0; i < segments; i++) {
@@ -331,7 +335,7 @@ PyObject* exq::get_descriptors_info_py(PyObject *self, PyObject *args) {
     // malloc: *** error for object 0x600001d983c0: pointer being freed was not allocated
     PyObject* descListPy;
     descListPy = PyList_New(ids.size());
-    for (int i = 0; i < ids.size(); i++) {
+    for (int i = 0; i < (int)ids.size(); i++) {
         PyObject* descInfo = PyList_New(res[i].getSize());
         for (int j = 0; j < res[i].getSize(); j++) {
             PyObject* pair = PyTuple_New(2);

@@ -68,6 +68,10 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
         suggIdsPerMod[m] = vector<uint32_t>();
         clusterIdsPerMod[m] = vector<uint32_t>();
         _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], clusterIdsPerMod[m], currentSegment, totalSegments);
+        descriptors[m] = vector<ExqDescriptor<T,U,V>>();
+        for (uint32_t i = 0; i < suggIdsPerMod[m].size(); i++) {
+            descriptors[m].push_back(getDescriptor(suggIdsPerMod[m][i], m));
+        }
     }
 }
 

@@ -20,7 +20,7 @@ ECPNode<T,U,V>::ECPNode(ExqDescriptor<T,U,V>* centroid, bool _addChild) {
 template<typename T, typename U, typename V>
 ECPNode<T,U,V>::~ECPNode() {
     delete _centroid;
-    for (int i = 0; i < _children.size(); i++)
+    for (int i = 0; i < (int)_children.size(); i++)
         delete _children[i];
 }
 
@@ -45,7 +45,7 @@ inline void ECPNode<T,U,V>::open() {
 
 template<typename T, typename U, typename V>
 inline ExqDescriptor<T,U,V>* ECPNode<T,U,V>::next() {
-    if (_currChild < _children.size()) {
+    if (_currChild < (int)_children.size()) {
         return _children[_currChild++];
     }
     return NULL;
@@ -62,7 +62,7 @@ inline void ECPNode<T,U,V>::PrintNode(string indent) {
     //PrintDescriptor(centroid);
 
     cout << indent << "NODE: numChildren = " << _children.size() << " (maxChildren = " << _maxChildren << ")" << endl;
-    for (int i=0; i < _children.size(); i++) {
+    for (int i = 0; i < (int)_children.size(); i++) {
         cout << indent << "NODE: Child " << i << ": ";
         //PrintDescriptor(children[i]);
     }

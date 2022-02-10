@@ -74,7 +74,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
-        for (int i = 0; i < trainIds.size(); i++) {
+        for (int i = 0; i < (int)trainIds.size(); i++) {
             T desc = _handler->getDescriptor(trainIds[i]);
             ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(desc);
             vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
@@ -116,7 +116,10 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
 
 template <typename T>
-TopResults ExqController<T>::suggest(int k, vector<uint> seenItems) {
+TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems) {
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(CTRL) Setting suggest parameters" << endl;
+#endif
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
     TopResults results = TopResults();
     int completedSegments = 0;
@@ -126,11 +129,14 @@ TopResults ExqController<T>::suggest(int k, vector<uint> seenItems) {
         workerSegments[i] = -1;
     }
     unordered_set<uint> seenSet;
-    for (unsigned int & seenItem : seenItems) {
+    for (const uint32_t& seenItem : seenItems) {
         seenSet.insert(seenItem);
     }
     vector<ExqItem> items2Return;
 
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(CTRL) Starting workers" << endl;
+#endif
     while (completedSegments < _segments) {
         for (int w = 0; w < _numWorkers; w++) {
             if (workerSegments[w] == -1 && runningSegments < _segments) {
@@ -152,7 +158,10 @@ TopResults ExqController<T>::suggest(int k, vector<uint> seenItems) {
             }
         }
     }
-    completedSegments = 0;
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(CTRL) Workers done" << endl;
+#endif
+    //completedSegments = 0;
 
     //TODO: Duplicate check
     _functions[0]->sortItems(items2Return, _modalities);
@@ -174,7 +183,7 @@ void ExqController<T>::reset_model() {
 template <typename T>
 vector<ExqArray<pair<int, float>>> ExqController<T>::get_descriptors(vector<int> ids, int mod) {
     auto res = vector<ExqArray<pair<int,float>>>(ids.size());
-    for (int i = 0; i < ids.size(); i++) {
+    for (int i = 0; i < (int)ids.size(); i++) {
         res[i] = _functions[mod]->getDescriptorInformation(*_handler->getDescriptor(ids[i],mod));
     }
     return res;

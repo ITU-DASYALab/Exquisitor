@@ -39,14 +39,14 @@ ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, ui
     cout << "(ECPNN) Allocate helper arrays" << endl;
 #endif
     extendedValueArr = vector<double>(_featureDimensions);
-    for(uint32_t i = 0; i < _featureDimensions; i++) {
+    for(uint32_t i = 0; i < (uint32_t)_featureDimensions; i++) {
         extendedValueArr[i] = 0;
     }
 
     indexQueryArr = vector<vector<double>>();
     for(uint32_t y = 0; y < QUERY_Y; y++) {
         indexQueryArr.push_back(vector<double>(_functions->getDescFeatCount()));
-        for(uint32_t x = 0; x < _functions->getDescFeatCount(); x++) {
+        for(uint32_t x = 0; x < (uint32_t)_functions->getDescFeatCount(); x++) {
             indexQueryArr[y][x] = 0;
         }
     }

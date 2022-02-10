@@ -29,8 +29,8 @@ ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, s
 
 template <typename T, typename U, typename V>
 ECPCluster<T,U,V>::~ECPCluster() {
-    for (int i = 0; i < this->descriptorList.size(); i++) {
-        delete this->descriptorList[i];
+    for (int i = 0; i < (int)descriptorList.size(); i++) {
+        delete descriptorList[i];
     }
 };
 

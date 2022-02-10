@@ -102,7 +102,7 @@ namespace exq {
         /**
          * @brief get \a k suggestions from the latest generated SVM model
          */
-        TopResults suggest(int k, vector<uint> seen);
+        TopResults suggest(int k, const vector<uint>& seen);
 
         /**
          * @brief create a new SVM model
