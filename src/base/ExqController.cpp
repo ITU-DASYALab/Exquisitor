@@ -64,6 +64,9 @@ ExqController<T>::ExqController(
 
 template <typename T>
 vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels) {
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    cout << "(CTRL) In train" << endl;
+#endif
     vector<double> times = vector<double>();
     vector<vector<double>> weights = vector<vector<double>>(_modalities, vector<double>());
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
@@ -89,6 +92,9 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
         finish = high_resolution_clock::now();
         times.push_back(duration<double, milli>(finish - begin).count());
     }
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    cout << "(CTRL) Classifier trained" << endl;
+#endif
     begin = high_resolution_clock::now();
     vector<int> bPerMod;
     vector<double> bias;
@@ -96,10 +102,15 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
         bPerMod.push_back(_bClusters);
         bias.push_back(_classifiers[m]->getBias());
     }
-
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    cout << "(CTRL) Selecting clusters" << endl;
+#endif
     _handler->selectClusters(bPerMod, weights, bias);
     finish = high_resolution_clock::now();
     times.push_back(duration<double, milli>(finish - begin).count());
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    cout << "(CTRL) Training done" << endl;
+#endif
     return times;
 }
 

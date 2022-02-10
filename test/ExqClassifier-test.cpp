@@ -18,10 +18,10 @@ using std::vector;
 using std::pair;
 
 TEST (SvmModel, trainModel) {
-    const short POS_L = 1;
-    const short NEG_L = -1;
+    const float POS_L = 1.0;
+    const float NEG_L = -1.0;
     vector<vector<double>> trainingItems;
-    vector<short> trainingItemLabels;
+    vector<float> trainingItemLabels;
     auto classifier = new ExqClassifier(12988);
     auto functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 1, 48, 16, 16, 281474976710655,
                                                                        200000000000000.0, 65535, 65535, 50000.0);

@@ -13,12 +13,7 @@ namespace exq {
     using std::vector;
     using cv::Ptr;
     using cv::ml::SVMSGD;
-    using cv::ml::SVM;
-
-    struct TrainData {
-        vector<vector<double>> data; //Item->Feature
-        vector<float> labels; //POS/NEG aka. 1.0/-1.0
-    };
+    using cv::ml::TrainData;
 
     class ExqClassifier {
     public:
@@ -36,9 +31,8 @@ namespace exq {
 
     protected:
         int _totalFeats;
-        //Ptr<SVM> _svm;
         Ptr<SVMSGD> _svm;
-        TrainData _trainData;
+        Ptr<cv::ml::TrainData> _trainData;
         vector<double> _weights;
 
     }; //End of class ExqClassifier

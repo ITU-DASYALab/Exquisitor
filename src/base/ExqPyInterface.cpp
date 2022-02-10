@@ -132,11 +132,11 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
         cnfgFiles[i] = _PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i));
         cout << "Config[" << i << "]: " << cnfgFiles[i] << endl;
     }
-    cout << "Loading Data" << endl;
+    cout << "Initializing DataHandler" << endl;
     auto dataHandler =
             new ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>(cnfgFiles, numModalities,
                                                               functions, modFeatureDimensions);
-    cout << "Data Loaded" << endl;
+    cout << "DataHandler ready" << endl;
     vector<ExqClassifier*> classifiers = vector<ExqClassifier*>(numModalities);
     for (int m = 0; m < numModalities; m++) {
         classifiers[m] = new ExqClassifier(modFeatureDimensions[m]);
