@@ -260,7 +260,6 @@ PyObject* exq::train_py(PyObject* self, PyObject* args) {
 }
 
 PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
-    TopResults top;
     PyObject* suggsPy;
     PyObject* totalPy;
     PyObject* workerTimesPy;
@@ -272,6 +271,7 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     vector<uint32_t> seen = vector<uint32_t>();
     int r = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
     int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));
+    TopResults top = TopResults(segments);
     PyObject* alreadySeenPy = PyTuple_GetItem(args, 2);
 
     for (int i = 0; i < PyList_Size(alreadySeenPy); i++) {

@@ -36,6 +36,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
     vector<ExqItem> candidateItems = vector<ExqItem>();
     vector<vector<T>> descriptors = vector<vector<T>>(modalities);
+    totalItemsConsidered = 0;
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " descriptors" << endl;
 #endif
@@ -98,7 +99,8 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
         if (candidateItems[i].aggScore != -1) {
             candidateItems[i].segment = currentSegment;
 
-            itemsToReturn[cnt++] = candidateItems[i];
+            itemsToReturn.push_back(candidateItems[i]);
+            cnt++;
 
             for (int j = i; j < (int)candidateItems.size(); j++) {
                 if (candidateItems[i].itemId == candidateItems[j].itemId) {

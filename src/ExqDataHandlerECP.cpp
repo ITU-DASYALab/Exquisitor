@@ -68,10 +68,23 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
         suggIdsPerMod[m] = vector<uint32_t>();
         clusterIdsPerMod[m] = vector<uint32_t>();
         _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], clusterIdsPerMod[m], currentSegment, totalSegments);
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        cout << "(ExqHandler) totalData[" << m << "]: " << totalData[m] << endl;
+        cout << "(ExqHandler) suggIdsPerMod[" << m << "].size(): " << suggIdsPerMod[m].size() << endl;
+        cout << "(ExqHandler) clusterIdsPerMod[" << m << "].size(): " << clusterIdsPerMod[m].size() << endl;
+#endif
         descriptors[m] = vector<ExqDescriptor<T,U,V>>();
-        for (uint32_t i = 0; i < suggIdsPerMod[m].size(); i++) {
-            descriptors[m].push_back(getDescriptor(suggIdsPerMod[m][i], m));
+        for (int i = 0; i < (int)suggIdsPerMod[m].size(); i++) {
+            descriptors[m].push_back(_descriptors[m][suggIdsPerMod[m][i]]);
         }
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        cout << "(ExqHandler) descriptors[" << m << "].size(): " << descriptors[m].size() << endl;
+        cout << "(ExqHandler) descriptorIds: ";
+        for (int i = 0; i < (int)suggIdsPerMod[m].size(); i++) {
+            cout << descriptors[m][i].id << ", ";
+        }
+        cout << endl;
+#endif
     }
 }
 

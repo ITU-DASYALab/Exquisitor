@@ -30,10 +30,15 @@ namespace exq {
     using std::future;
 
     struct TopResults {
-        vector<uint> suggs;
+        vector<uint32_t> suggs;
         vector<int> totalItemsConsideredPerSegment;
         vector<double> totalTimePerSegment;
         double overheadTime;
+        TopResults(int segments) {
+            suggs = vector<uint32_t>();
+            totalItemsConsideredPerSegment = vector<int>(segments);
+            totalTimePerSegment = vector<double>(segments);
+        }
     };
     /**
      * @class ExqController
