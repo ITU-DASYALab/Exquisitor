@@ -125,8 +125,8 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems) {
     int completedSegments = 0;
     int runningSegments = 0;
     int workerSegments[_numWorkers];
-    for (int i = 0; i < _numWorkers; i++) {
-        workerSegments[i] = -1;
+    for (int w = 0; w < _numWorkers; w++) {
+        workerSegments[w] = -1;
     }
     auto seenSet = unordered_set<uint32_t>();
     for (const uint32_t& seenItem : seenItems) {
@@ -141,20 +141,26 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems) {
     while (completedSegments < _segments) {
         for (int w = 0; w < _numWorkers; w++) {
             if (workerSegments[w] == -1 && runningSegments < _segments) {
-                itemsFromSegments[runningSegments] = vector<ExqItem>();
-                _threads[w] = async(std::launch::async, [&] {
-                    return _worker->suggest(k, itemsFromSegments[runningSegments],
-                                            _classifiers,
-                                            runningSegments, _segments,
-                                            _noms, _modalities, _handler, _functions, seenSet,
-                                            results.totalTimePerSegment[runningSegments],
-                                            results.totalItemsConsideredPerSegment[runningSegments], w);
-                });
                 workerSegments[w] = runningSegments;
+                itemsFromSegments[workerSegments[w]] = vector<ExqItem>();
+                _threads[w] = async(std::launch::async, [&] {
+                    return _worker->suggest(k, itemsFromSegments[workerSegments[w]],
+                                            _classifiers,
+                                            workerSegments[w], _segments,
+                                            _noms, _modalities, _handler, _functions, seenSet,
+                                            results.totalTimePerSegment[workerSegments[w]],
+                                            results.totalItemsConsideredPerSegment[workerSegments[w]], w);
+                });
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+                cout << "(CTRL) Running segment " << workerSegments[w] << endl;
+#endif
                 runningSegments++;
             } else if (workerSegments[w] != -1 &&
                        _threads[w].wait_for(std::chrono::seconds(0)) == future_status::ready) {
                 _threads[w].get();
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+                cout << "(CTRL) Worker " << w << " done with segment " << workerSegments[w] << endl;
+#endif
                 totalItemsReturned += itemsFromSegments[workerSegments[w]].size();
                 workerSegments[w] = -1;
                 completedSegments++;
@@ -163,17 +169,25 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems) {
     }
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Workers done" << endl;
+    cout << "(CTRL) Sanity check: " << itemsFromSegments[0][0].itemId << " " << itemsFromSegments[0][0].distance[0] << endl;
 #endif
     auto items2Return = vector<ExqItem>();
     items2Return.reserve(totalItemsReturned);
+    int totalReturnedItems = 0;
     for (int s = 0; s < _segments; s++) {
         items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
+        totalReturnedItems += itemsFromSegments[s].size();
         itemsFromSegments[s].clear();
     }
+    assert(items2Return.size() == totalReturnedItems);
     //TODO: Duplicate check
     _functions[0]->sortItems(items2Return, _modalities);
 
     for (int i = 0; i < k; i++) {
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
+        << items2Return[i].distance[0] << endl;
+#endif
         results.suggs.push_back(items2Return[i].itemId);
     }
 

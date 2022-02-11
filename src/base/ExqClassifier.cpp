@@ -30,8 +30,8 @@ ExqClassifier::~ExqClassifier() {
 
 std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
-    for (int i = 0; i < data.size(); i++) {
-        for (int j = 0; j < data[i].size(); j++) {
+    for (int i = 0; i < (int)data.size(); i++) {
+        for (int j = 0; j < (int)data[i].size(); j++) {
             if (data[i][j] > 0.0) {
                 cout << "Item " << i << " Feature (" << j << "," << data[i][j] << ")" << endl;
             }
@@ -79,7 +79,7 @@ std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<flo
 
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(ExqClassifier) Non zero weights: " << endl;
-    for (int i = 0; i < _weights.size(); i++) {
+    for (int i = 0; i < (int)_weights.size(); i++) {
         if (_weights[i] != 0.0) {
             cout << i << " " << _weights[i] << endl;
         }

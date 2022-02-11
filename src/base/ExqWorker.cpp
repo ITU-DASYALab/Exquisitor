@@ -34,7 +34,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
     //time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
-    vector<ExqItem> candidateItems = vector<ExqItem>();
+    vector<vector<ExqItem>> candidateItems = vector<vector<ExqItem>>(modalities);
     vector<vector<T>> descriptors = vector<vector<T>>(modalities);
     totalItemsConsidered = 0;
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
@@ -54,34 +54,56 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
         cout << "(ExqWorker[" << workerId << "]) Total items considered for segment " << currentSegment << ": "
         << totalItemsConsidered << endl;
 #endif
-        pair<int,double> min = make_pair(-1, -DBL_MAX);
+        //(position,score)
+        pair<int,double> min = make_pair(-1, DBL_MAX);
         modSize[m] = 0;
+        candidateItems[m] = vector<ExqItem>();
+        candidateItems[m].reserve(noms);
         for (int i = 0; i < (int)descriptors[m].size(); i++) {
             ExqItem candItem = ExqItem();
             candItem.fromModality = m;
             candItem.segment = currentSegment;
             candItem.itemId = descriptors[m][i].id;
-            candItem.distance.resize(modalities);
+            candItem.distance = vector<double>(modalities);
+#if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
+            cout << "(ExqWorker[" << workerId << "]) Getting distance for candidate item " << i << endl;
+#endif
             for (int mm = 0; mm < modalities; mm++) {
                 vector<double> model = classifiers[mm]->getWeights();
                 double bias = classifiers[mm]->getBias();
                 candItem.distance[mm] = functions[m]->distance(model, bias, descriptors[mm][i]);
             }
 
-            if ((int)candidateItems.size() == noms * (modalities+1)) {
+            if ((int)candidateItems[m].size() == noms) {
+#if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
+                cout << "(ExqWorker[" << workerId << "]) Checking if candidate is better than (" << min.first
+                << "," << min.second << ")" << endl;
+#endif
                 if (candItem.distance[m] > min.second) {
-                    candidateItems[min.first] = candItem;
-                    min.first = candItem.itemId;
-                    min.second = candItem.distance[m];
+                    candidateItems[m][min.first] = candItem;
+                    double newMin = DBL_MAX;
+                    for (int j = 0; j < (int)candidateItems[m].size(); j++) {
+                        if (candidateItems[m][j].distance[m] < newMin) {
+                            min.first = j;
+                            min.second = candidateItems[m][j].distance[m];
+                            newMin = min.second;
+                        }
+                    }
                 }
             } else {
-                candidateItems.push_back(candItem);
-                if (candItem.distance[m] > min.second) {
-                    min.first = candItem.itemId;
+#if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
+                cout << "(ExqWorker[" << workerId << "]) Adding candidate" << endl;
+#endif
+                candidateItems[m].push_back(candItem);
+                if (candItem.distance[m] < min.second) {
+                    min.first = (int)candidateItems[m].size()-1;
                     min.second = candItem.distance[m];
                 }
                 modSize[m]++;
             }
+#if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
+            cout << "(ExqWorker[" << workerId << "]) Checked candidate item " << i << endl;
+#endif
         }
     }
     finish = high_resolution_clock::now();
@@ -89,22 +111,27 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Ranking segment " << currentSegment << endl;
 #endif
-    functions[0]->assignRanking(candidateItems, modalities);
+    vector<ExqItem> sortedCandidates = vector<ExqItem>();
+    for (int m = 0; m < modalities; m++) {
+        sortedCandidates.insert(sortedCandidates.end(), candidateItems[m].begin(), candidateItems[m].end());
+        candidateItems[m].clear();
+    }
+    functions[0]->sortItems(sortedCandidates, modalities);
 
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Removing duplicates in segment " << currentSegment << endl;
 #endif
     int cnt = 0;
-    for (int i = 0; i < (int)candidateItems.size(); i++) {
-        if (candidateItems[i].aggScore != -1) {
-            candidateItems[i].segment = currentSegment;
+    for (int i = 0; i < (int)sortedCandidates.size(); i++) {
+        if (sortedCandidates[i].aggScore != -1) {
+            sortedCandidates[i].segment = currentSegment;
 
-            itemsToReturn.push_back(candidateItems[i]);
+            itemsToReturn.push_back(sortedCandidates[i]);
             cnt++;
 
             for (int j = i; j < (int)candidateItems.size(); j++) {
-                if (candidateItems[i].itemId == candidateItems[j].itemId) {
-                    candidateItems[j].aggScore = -1.0;
+                if (sortedCandidates[i].itemId == sortedCandidates[j].itemId) {
+                    sortedCandidates[j].aggScore = -1.0;
                 }
             }
         }
@@ -116,6 +143,8 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     time = duration<double, milli>(finish - beginOverall).count();
 
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
+    cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " Sanity check: " << itemsToReturn[0].itemId
+    << " " << itemsToReturn[0].distance[0] << endl;
     cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " finished" << endl;
 #endif
 }

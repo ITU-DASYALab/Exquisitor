@@ -129,10 +129,10 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
 
 template <typename T, typename U, typename V>
 void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality) {
-    if ((int)items2Rank[0].distance.size() == modality) {
+    if (modality > 1) {
         for (int m = 0; m < modality; m++) {
             std::sort(items2Rank.begin(), items2Rank.end(), [m](const ExqItem& lhs, const ExqItem& rhs) {
-                return lhs.distance[m] < rhs.distance[m];
+                return lhs.distance[m] > rhs.distance[m];
             });
             assignRanking(items2Rank, m);
         }
@@ -140,9 +140,23 @@ void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality
             return lhs.aggScore > rhs.aggScore;
         });
     } else {
-        std::sort(items2Rank.begin(), items2Rank.end(), [modality](const ExqItem& lhs, const ExqItem& rhs) {
-            return lhs.distance[modality] < rhs.distance[modality];
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        cout << "(ExqFunc) Single modality ranking" << endl;
+        for (int i = 0; i < (int)items2Rank.size(); i++) {
+            cout << "(" << i << "," << items2Rank[i].itemId << "," << items2Rank[i].distance[0] << "), ";
+        }
+        cout << endl;
+#endif
+        int mod = 0;
+        std::sort(items2Rank.begin(), items2Rank.end(), [mod](const ExqItem& lhs, const ExqItem& rhs) {
+            return lhs.distance[mod] > rhs.distance[mod];
         });
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        for (int i = 0; i < (int)items2Rank.size(); i++) {
+            cout << "(" << i << "," << items2Rank[i].itemId << "," << items2Rank[i].distance[0] << "), ";
+        }
+        cout << endl;
+#endif
     }
 }
 
@@ -158,6 +172,9 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
             items[i].aggScore += i;
             rank = i;
         }
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        cout << "(ExqFunc) Item " << items[i].itemId << " aggScore: " << items[i].aggScore << endl;
+#endif
     }
 }
 

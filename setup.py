@@ -28,9 +28,14 @@ exquisitor = Extension('exq',
                                      '/usr/local/Cellar/hdf5/1.10.5_1/lib',
                                      '/usr/local/Cellar/opencv/4.2.0_1/lib'],
                        libraries=['python3.10', 'hdf5', 'opencv_core', 'opencv_ml'],
-                       extra_compile_args=['-O3', '-Wall', '-std=c++17',  # ])
-                                           #'-DDEBUG_TRAIN', '-DDEBUG_TRAIN_EXTRA'])
-                                           '-DDEBUG_SUGGEST'])
+                       extra_compile_args=['-O3', '-Wall', '-std=c++17',
+                                           # '-DDEBUG',
+                                           # '-DDEBUG_EXTRA',
+                                           '-DDEBUG_TRAIN',
+                                           # '-DDEBUG_TRAIN_EXTRA',
+                                           '-DDEBUG_SUGGEST',
+                                           # '-DDEBUG_SUGGEST_EXTRA',
+                                           ])
 
 setup(name='exq',
       version='1.0',
