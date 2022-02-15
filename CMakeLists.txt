@@ -2,7 +2,7 @@ cmake_policy(SET CMP0048 NEW)
 project(Exquisitor VERSION 1.0)
 cmake_minimum_required(VERSION 3.15)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -O3")
 
 # Python3

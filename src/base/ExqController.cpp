@@ -52,33 +52,31 @@ ExqController<T>::ExqController(
     _worker = worker;
     _itemProperties = itemProps;
 #if defined(DEBUG) || defined(DEBUG_INIT_META)
-    cout << "Checking item metadata" << endl;
-    for(int i = 0; i < 3; i++) {
-        cout <<"Item: " << i << " | ";
-        cout <<"Collection Id: " << _itemProperties[i].collectionId << " | ";
-        cout <<"Video Id: " << _itemProperties[i].vidId << " | ";
-        cout << "Standard Props: ";
-        for (int j = 0; j < (int)_itemProperties[i].stdProps.props.size(); j++) {
-            cout << i << "." << j << " = [";
-            std::set<uint16_t>::iterator it = _itemProperties[i].stdProps.props[j].begin();
-            while (it != _itemProperties[i].stdProps.props[j].end()) {
-                cout <<  (*it) << ", ";
-                it++;
+    if (_itemProperties.size() != 0) {
+        cout << "Checking item metadata" << endl;
+        for(int i = 0; i < 3; i++) {
+            cout <<"Item: " << i << " | ";
+            cout <<"Collection Id: " << _itemProperties[i].collectionId << " | ";
+            cout <<"Video Id: " << _itemProperties[i].vidId << " | ";
+            cout << "Standard Props: ";
+            for (int j = 0; j < (int)_itemProperties[i].stdProps.props.size(); j++) {
+                cout << i << "." << j << " = [";
+                for (auto elem : _itemProperties[i].stdProps.props[j]) {
+                    cout << elem << ", ";
+                }
+                cout << "] ";
             }
-            cout << "] ";
-        }
-        cout << "| ";
-        cout << "Collection Props: ";
-        for (int j = 0; j < (int)_itemProperties[i].collProps.props.size(); j++) {
-            cout << i << "." << j << " = [";
-            std::set<uint16_t>::iterator it = _itemProperties[i].collProps.props[j].begin();
-            while (it != _itemProperties[i].collProps.props[j].end()) {
-                cout << (*it) << ", ";
-                it++;
+            cout << "| ";
+            cout << "Collection Props: ";
+            for (int j = 0; j < (int)_itemProperties[i].collProps.props.size(); j++) {
+                cout << i << "." << j << " = [";
+                for (auto elem : _itemProperties[i].collProps.props[j]) {
+                    cout << elem << ", ";
+                }
+                cout << "] ";
             }
-            cout << "] ";
+            cout << endl;
         }
-        cout << endl;
     }
 #endif
     _vidProperties = vidProps;
@@ -93,7 +91,8 @@ ExqController<T>::ExqController(
 
 
 template <typename T>
-vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels) {
+vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels,
+                                       ItemFilter filters) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) In train" << endl;
 #endif

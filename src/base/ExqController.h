@@ -15,6 +15,7 @@
 #include <future>
 
 #include "Metadata/ItemProperties.h"
+#include "Metadata/ItemFilter.h"
 #include "ExqConstants.h"
 #include "ExqClassifier.h"
 #include "ExqFunctions.h"
@@ -102,7 +103,7 @@ namespace exq {
         /**
          * @brief train the Linear SVM model
          */
-        vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels);
+        vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels, ItemFilter filters);
 
         /**
          * @brief get \a k suggestions from the latest generated SVM model

@@ -26,6 +26,8 @@ namespace exq {
     };
 
     /**
+     * TODO: Currently supporting items belonging to one collection. Future plan is to support items belonging to
+     *       multiple collections.
      * collectionId - id collection item originates from
      * vid - is the item part of a video
      * vidId - id of video the item belongs to
@@ -33,7 +35,7 @@ namespace exq {
      * coll_props - collection specific item properties, e.g. Location (LSC), Color (VBS)
      */
     struct ItemProperties {
-        uint8_t collectionId = 0;
+        uint16_t collectionId = 0;
         bool vid = false;
         int vidId = 0;
         Props stdProps;

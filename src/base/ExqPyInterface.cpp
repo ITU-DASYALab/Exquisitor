@@ -155,7 +155,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
         cout << "Item: " << i << endl;
 #endif
         ItemProperties it = ItemProperties();
-        it.collectionId = (uint8_t) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),0));
+        it.collectionId = (uint16_t) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),0));
         it.vid = (bool) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),1));
         it.vidId = (int) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),2));
         PyObject* stdPropsPy = PyList_GetItem(PyList_GetItem(itemMetadataPy,i),3);
@@ -244,6 +244,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
 PyObject* exq::train_py(PyObject* self, PyObject* args) {
     vector<uint32_t> trainIds = vector<uint32_t>();
     vector<float> trainLabels = vector<float>();
+    Filters filters = Filters();
 
     PyObject* trainIdsPy = PyTuple_GetItem(args, 0);
     PyObject* trainLabelsPy = PyTuple_GetItem(args, 1);
@@ -269,7 +270,8 @@ PyObject* exq::train_py(PyObject* self, PyObject* args) {
         return Py_None;
     }
 
-    auto times = _pyExqV1._controller->train(trainIds, trainLabels);
+    ItemFilter itemFilters = ItemFilter(filters);
+    auto times = _pyExqV1._controller->train(trainIds, trainLabels, filters);
 
     PyObject* timeList = PyList_New(times.size());
     for (int i = 0; i < (int)times.size(); i++) {
