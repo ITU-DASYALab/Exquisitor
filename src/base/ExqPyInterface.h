@@ -15,14 +15,14 @@ namespace exq {
     };
     PyExquisitorV1 _pyExqV1;
 
-    PyMODINIT_FUNC PyInit_exq(void);
+    [[maybe_unused]] PyMODINIT_FUNC PyInit_exq(void);
 
-    static PyObject* initialize_py(PyObject* self, PyObject* args);
-    static PyObject* train_py(PyObject* self, PyObject* args);
-    static PyObject* suggest_py(PyObject* self, PyObject* args);
-    static PyObject* reset_model_py(PyObject* self, PyObject* args);
-    static PyObject* safe_exit_py(PyObject* self, PyObject* args);
-    static PyObject* get_descriptors_info_py(PyObject* self, PyObject* args);
+    static PyObject* initialize_py([[maybe_unused]] PyObject* self, PyObject* args);
+    static PyObject* train_py([[maybe_unused]] PyObject* self, PyObject* args);
+    static PyObject* suggest_py([[maybe_unused]] PyObject* self, PyObject* args);
+    static PyObject* reset_model_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args);
+    static PyObject* safe_exit_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args);
+    static PyObject* get_descriptors_info_py([[maybe_unused]] PyObject* self, PyObject* args);
 
     static PyMethodDef exquisitor_methods[] = {
             {"initialize", initialize_py, METH_VARARGS, "Initialize exquisitor"},

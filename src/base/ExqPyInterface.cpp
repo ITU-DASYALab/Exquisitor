@@ -4,7 +4,6 @@
 
 #include "ExqPyInterface.h"
 #include "../ExqDataHandlerECP.h"
-#include "../ExqDataHandlerH5.h"
 #include "../ExqFunctionsR64.h"
 
 using namespace exq;
@@ -16,7 +15,7 @@ using std::cout;
 using std::endl;
 using std::unordered_set;
 
-PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
+PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     _pyExqV1 = PyExquisitorV1();
 
     cout << "Initializing Exquisitor... " << endl;
@@ -241,10 +240,9 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     return Py_None;
 }
 
-PyObject* exq::train_py(PyObject* self, PyObject* args) {
+PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
     vector<uint32_t> trainIds = vector<uint32_t>();
     vector<float> trainLabels = vector<float>();
-    bool changeFilters = true;
     Filters filters = Filters();
 
     PyObject* trainIdsPy = PyTuple_GetItem(args, 0);
@@ -271,9 +269,23 @@ PyObject* exq::train_py(PyObject* self, PyObject* args) {
         return Py_None;
     }
 
+    //Change filters?
+    bool changeFilters = (bool) PyBool_FromLong(PyLong_AsLong(PyTuple_GetItem(args,3)));
+    // Set filters
+    if (changeFilters) {
+        PyObject* filtersPy = PyTuple_GetItem(args,4);
+        filters.collection = set<uint16_t>();
+        filters.stdFilters = vector<pair<int,set<uint16_t>>>();
+        filters.collFilters = vector<pair<int,vector<pair<int,set<uint16_t>>>>>();
+        filters.vidFilters = vector<pair<int,vector<pair<int,set<uint16_t>>>>>();
+        for (int i = 0; i < (int) PyList_Size(PyList_GetItem(filtersPy,0)); i++) {
+
+        }
+    }
+
     auto times = _pyExqV1._controller->train(trainIds, trainLabels, filters, changeFilters);
 
-    PyObject* timeList = PyList_New(times.size());
+    PyObject* timeList = PyList_New((int)times.size());
     for (int i = 0; i < (int)times.size(); i++) {
         PyList_SET_ITEM(timeList, i, PyFloat_FromDouble(times[i]));
     }
@@ -281,7 +293,7 @@ PyObject* exq::train_py(PyObject* self, PyObject* args) {
     return timeList;
 }
 
-PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
+PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
     PyObject* suggsPy;
     PyObject* totalPy;
     PyObject* workerTimesPy;
@@ -306,7 +318,7 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     cout << "Suggestions retrieved" << endl;
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
-    suggsPy = PyList_New(top.suggs.size());
+    suggsPy = PyList_New((int)top.suggs.size());
     totalPy = PyList_New(segments);
     workerTimesPy = PyList_New(segments);
     finalPy = PyTuple_New(5);
@@ -318,7 +330,7 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     }
     for (int i = 0; i < segments; i++) {
         PyList_SetItem(totalPy, i, PyLong_FromUnsignedLong(top.totalItemsConsideredPerSegment[i]));
-        PyList_SetItem(workerTimesPy, i, PyLong_FromUnsignedLong(top.totalTimePerSegment[i]));
+        PyList_SetItem(workerTimesPy, i, PyFloat_FromDouble(top.totalTimePerSegment[i]));
     }
 
     PyTuple_SetItem(finalPy, 0, suggsPy);
@@ -330,20 +342,20 @@ PyObject* exq::suggest_py(PyObject* self, PyObject* args) {
     return finalPy;
 }
 
-PyObject* exq::reset_model_py(PyObject* self, PyObject* args) {
+PyObject* exq::reset_model_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args) {
     _pyExqV1._controller->reset_model();
 
     Py_IncRef(Py_None);
     return Py_None;
 }
 
-PyObject* exq::safe_exit_py(PyObject* self, PyObject* args) {
+PyObject* exq::safe_exit_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args) {
     //TODO: Call terminate function
     Py_IncRef(Py_None);
     return Py_None;
 }
 
-PyObject* exq::get_descriptors_info_py(PyObject *self, PyObject *args) {
+PyObject* exq::get_descriptors_info_py([[maybe_unused]] PyObject *self, PyObject *args) {
     PyObject* descIdsPy;
     descIdsPy = PyTuple_GetItem(args,0);
     vector<int> ids = vector<int>(PyList_Size(descIdsPy));
@@ -353,10 +365,8 @@ PyObject* exq::get_descriptors_info_py(PyObject *self, PyObject *args) {
     int modality = (int) PyLong_AsLong(PyTuple_GetItem(args,1));
     auto res = _pyExqV1._controller->get_descriptors(ids, modality);
 
-    //TODO: Fix the return object, leads to the following error atm.:
-    // malloc: *** error for object 0x600001d983c0: pointer being freed was not allocated
     PyObject* descListPy;
-    descListPy = PyList_New(ids.size());
+    descListPy = PyList_New((int)ids.size());
     for (int i = 0; i < (int)ids.size(); i++) {
         PyObject* descInfo = PyList_New(res[i].getSize());
         for (int j = 0; j < res[i].getSize(); j++) {
@@ -371,7 +381,7 @@ PyObject* exq::get_descriptors_info_py(PyObject *self, PyObject *args) {
     return descListPy;
 }
 
-PyMODINIT_FUNC exq::PyInit_exq(void) {
+[[maybe_unused]] PyMODINIT_FUNC exq::PyInit_exq(void) {
     Py_Initialize();
     return PyModule_Create(&exquisitor_definition);
 }
