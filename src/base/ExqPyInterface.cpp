@@ -244,6 +244,7 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
 PyObject* exq::train_py(PyObject* self, PyObject* args) {
     vector<uint32_t> trainIds = vector<uint32_t>();
     vector<float> trainLabels = vector<float>();
+    bool changeFilters = true;
     Filters filters = Filters();
 
     PyObject* trainIdsPy = PyTuple_GetItem(args, 0);
@@ -270,8 +271,7 @@ PyObject* exq::train_py(PyObject* self, PyObject* args) {
         return Py_None;
     }
 
-    ItemFilter itemFilters = ItemFilter(filters);
-    auto times = _pyExqV1._controller->train(trainIds, trainLabels, filters);
+    auto times = _pyExqV1._controller->train(trainIds, trainLabels, filters, changeFilters);
 
     PyObject* timeList = PyList_New(times.size());
     for (int i = 0; i < (int)times.size(); i++) {

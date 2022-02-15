@@ -28,8 +28,10 @@ namespace exq {
     };
     class ItemFilter {
     public:
-        ItemFilter(Filters filters);
+        explicit ItemFilter(Filters filters);
+        ItemFilter() { _filters = Filters(); };
         bool compare(ItemProperties item, Props& vidProps);
+        inline void setFilters(Filters filters) { _filters = filters; };
 
     private:
         Filters _filters;

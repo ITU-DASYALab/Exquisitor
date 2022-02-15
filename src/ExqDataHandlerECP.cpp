@@ -45,7 +45,8 @@ int ExqDataHandlerECP<T,U,V>::getTotalItemsCount(int mod) {
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias) {
+void ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
+                                              ItemFilter& filters) {
     _b = b;
     for (int m = 0; m < this->_modalities; m++) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)

@@ -50,7 +50,8 @@ int ExqDataHandlerH5<T,U,V>::getTotalItemsCount(int mod) {
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias) {}
+void ExqDataHandlerH5<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
+                                             ItemFilter& filters) {}
 
 template <typename T, typename U, typename V>
 void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,

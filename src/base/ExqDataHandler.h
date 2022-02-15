@@ -10,6 +10,7 @@
 
 #include "ExqDescriptor.h"
 #include "ExqFunctions.h"
+#include "Metadata/ItemFilter.h"
 #include "ExqItem.h"
 
 namespace exq {
@@ -41,7 +42,8 @@ namespace exq {
 
         virtual int getTotalItemsCount(int mod) = 0;
 
-        virtual void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias) = 0;
+        virtual void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
+                                    ItemFilter& filters) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                            vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems) = 0;

@@ -44,6 +44,8 @@ ExqController<T>::ExqController(
     _modalities = numberModalities;
     _bClusters = bClusters;
     _featureDimensions = std::move(modFeatureDimensions);
+    Filters filters = Filters();
+    _activeFilters = ItemFilter(filters);
 
     // Set exq class object fields
     _functions = functions;
@@ -92,7 +94,7 @@ ExqController<T>::ExqController(
 
 template <typename T>
 vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels,
-                                       ItemFilter filters) {
+                                       const Filters& filters, bool changeFilters) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) In train" << endl;
 #endif
@@ -101,6 +103,8 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
+    if (changeFilters)
+        _activeFilters.setFilters(filters);
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
         for (int i = 0; i < (int)trainIds.size(); i++) {
@@ -134,7 +138,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) Selecting clusters" << endl;
 #endif
-    _handler->selectClusters(bPerMod, weights, bias);
+    _handler->selectClusters(bPerMod, weights, bias, _activeFilters);
     finish = high_resolution_clock::now();
     times.push_back(duration<double, milli>(finish - begin).count());
 #if defined(DEBUG) || defined(DEBUG_TRAIN)

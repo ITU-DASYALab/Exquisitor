@@ -103,7 +103,8 @@ namespace exq {
         /**
          * @brief train the Linear SVM model
          */
-        vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels, ItemFilter filters);
+        vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels,
+                             const Filters& filters, bool changeFilters);
 
         /**
          * @brief get \a k suggestions from the latest generated SVM model
@@ -137,6 +138,7 @@ namespace exq {
         vector<ItemProperties> _itemProperties;
         //collection -> video -> property -> value(s)
         vector<vector<Props>> _vidProperties;
+        ItemFilter _activeFilters;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;
