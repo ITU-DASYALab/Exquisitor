@@ -55,10 +55,9 @@ bool ItemFilter::compare(ItemProperties item, Props &vidProps) {
         for (auto c : _filters.vidFilters) {
             // As it is treated as an OR filter, item has already passed collection id filter
             if (!_filters.collection.empty())
-                if (item.collectionId != c.first)
-                    continue;
-            if (item.collectionId != c.first)
-                return false;
+                if (item.collectionId != c.first) continue;
+            if (item.collectionId != c.first) return false;
+            if (!item.vid) return false;
             for (auto prop : c.second) {
                 bool ok = false;
                 for (auto elem : vidProps.props[prop.first]) {
