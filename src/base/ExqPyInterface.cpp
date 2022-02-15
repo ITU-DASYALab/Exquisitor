@@ -375,26 +375,3 @@ PyMODINIT_FUNC exq::PyInit_exq(void) {
     Py_Initialize();
     return PyModule_Create(&exquisitor_definition);
 }
-
-//case 0: {
-//for (int m = 0; m < numModalities; m++)
-//functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16,
-//                                                                 16, 1000, 1000);
-//break;
-//}
-//case 1: {
-//for (int m = 0; m < numModalities; m++)
-//functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, iota, 48, 16,
-//16, 281474976710655,
-//200000000000000.0, 65535,
-//65535, 50000.0);
-//break;
-//}
-//case 2: {
-//for (int m = 0; m < numModalities; m++)
-//functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(7, iota, 54, 10,
-//10, 18014398509481983,
-//10000000000000000.0, 1023,
-//1023, 1000.0);
-//break;
-//}
