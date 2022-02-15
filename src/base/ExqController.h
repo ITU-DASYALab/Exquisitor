@@ -64,8 +64,8 @@ namespace exq {
                 ExqDataHandler<T>* handler,
                 vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker,
-                const ExqArray<ItemProperties>& itemProps,
-                const ExqArray<ExqArray<Props>>& vidProps
+                const vector<ItemProperties>& itemProps,
+                const vector<vector<Props>>& vidProps
         );
 
 /**
@@ -133,8 +133,9 @@ namespace exq {
         ExqDataHandler<T>* _handler;
         vector<ExqClassifier*> _classifiers;
         ExqWorker<T>* _worker;
-        ExqArray<ItemProperties> _itemProperties;
-        ExqArray<ExqArray<Props>> _vidProperties;
+        vector<ItemProperties> _itemProperties;
+        //collection -> video -> property -> value(s)
+        vector<vector<Props>> _vidProperties;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;

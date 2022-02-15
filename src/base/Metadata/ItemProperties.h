@@ -8,16 +8,21 @@
 #include <cstdint>
 #include <set>
 #include <map>
-
-#include "../ExqArray.h"
+#include <vector>
 
 namespace exq {
     using std::set;
     using std::map;
+    using std::vector;
 
     // Container for properties
     struct Props {
-        ExqArray<ExqArray<uint16_t>> props;
+        // property -> value(s)
+        vector<set<uint16_t>> props;
+    };
+
+    struct MetaPropsProbs {
+        vector<map<int,float>> props;
     };
 
     /**
@@ -33,6 +38,25 @@ namespace exq {
         int vidId = 0;
         Props stdProps;
         Props collProps;
+    };
+
+    /**
+     * collectionIdProb - probability of items being from a collection
+     * videoIdProb - probability of items being from a video from a collection
+     * stdPropProbs - probabilities of items standard properties
+     * collPropProbs - probabilities of items collection properties
+     * vidPropProbs - probabilties of items video properties
+     */
+    struct MetaProbabilities {
+        // collection -> probabiltiy
+        map<int,float> collectionIdProb;
+        // collection -> video -> probability
+        vector<map<int,float>> videoIdProb;
+        // property -> value(s) -> probability
+        MetaPropsProbs stdPropProbs;
+        MetaPropsProbs collPropProbs;
+        // collection -> video -> property -> value(s) -> probability
+        vector<map<int,MetaPropsProbs>> vidPropProbs;
     };
 }
 

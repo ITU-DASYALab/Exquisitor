@@ -32,8 +32,8 @@ namespace exq {
         int faces;
         int color;
         int text;
-        ExqArray<int> ctgs;
-        ExqArray<int> tags;
+        //ExqArray<int> ctgs;
+        //ExqArray<int> tags;
     };
 }
 

@@ -32,8 +32,8 @@ ExqController<T>::ExqController(
         ExqDataHandler<T>* handler,
         vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker,
-        const ExqArray<ItemProperties>& itemProps,
-        const ExqArray<ExqArray<Props>>& vidProps
+        const vector<ItemProperties>& itemProps,
+        const vector<vector<Props>>& vidProps
     ) {
     cout << "(CTRL) Setting parameters" << endl;
     // Set standard fields
@@ -55,22 +55,26 @@ ExqController<T>::ExqController(
     cout << "Checking item metadata" << endl;
     for(int i = 0; i < 3; i++) {
         cout <<"Item: " << i << " | ";
-        cout <<"Collection Id: " << _itemProperties.getItem(i).collectionId << " | ";
-        cout <<"Video Id: " << _itemProperties.getItem(i).vidId << " | ";
+        cout <<"Collection Id: " << _itemProperties[i].collectionId << " | ";
+        cout <<"Video Id: " << _itemProperties[i].vidId << " | ";
         cout << "Standard Props: ";
-        for (int j = 0; j < _itemProperties.getItem(i).stdProps.props.getSize(); j++) {
+        for (int j = 0; j < (int)_itemProperties[i].stdProps.props.size(); j++) {
             cout << i << "." << j << " = [";
-            for (int k = 0; k < _itemProperties.getItem(i).stdProps.props.getItem(j).getSize(); k++) {
-                cout <<  _itemProperties.getItem(i).stdProps.props.getItem(j).getItem(k) << ", ";
+            std::set<uint16_t>::iterator it = _itemProperties[i].stdProps.props[j].begin();
+            while (it != _itemProperties[i].stdProps.props[j].end()) {
+                cout <<  (*it) << ", ";
+                it++;
             }
             cout << "] ";
         }
         cout << "| ";
         cout << "Collection Props: ";
-        for (int j = 0; j < _itemProperties.getItem(i).collProps.props.getSize(); j++) {
+        for (int j = 0; j < (int)_itemProperties[i].collProps.props.size(); j++) {
             cout << i << "." << j << " = [";
-            for (int k = 0; k < _itemProperties.getItem(i).collProps.props.getItem(j).getSize(); k++) {
-                cout <<  _itemProperties.getItem(i).collProps.props.getItem(j).getItem(k) << ", ";
+            std::set<uint16_t>::iterator it = _itemProperties[i].collProps.props[j].begin();
+            while (it != _itemProperties[i].collProps.props[j].end()) {
+                cout << (*it) << ", ";
+                it++;
             }
             cout << "] ";
         }
