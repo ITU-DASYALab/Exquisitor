@@ -31,9 +31,11 @@ exquisitor = Extension('exq',
                        extra_compile_args=['-O3', '-Wall', '-std=c++17',
                                            # '-DDEBUG',
                                            # '-DDEBUG_EXTRA',
-                                           '-DDEBUG_TRAIN',
+                                           # '-DDEBUG_INIT',
+                                           # '-DDEBUG_INIT_META',
+                                           # '-DDEBUG_TRAIN',
                                            # '-DDEBUG_TRAIN_EXTRA',
-                                           '-DDEBUG_SUGGEST',
+                                           # '-DDEBUG_SUGGEST',
                                            # '-DDEBUG_SUGGEST_EXTRA',
                                            ])
 

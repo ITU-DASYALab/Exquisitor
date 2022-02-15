@@ -148,12 +148,19 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
     PyObject* itemMetadataPy = PyTuple_GetItem(args, 10);
     PyObject* tmpPropsPy;
     auto itemProps = ExqArray<ItemProperties>((int)PyList_Size(itemMetadataPy));
+    cout << "Getting metadata" << endl;
     for (int i = 0; i < itemProps.getSize(); i++) {
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+        cout << "Item: " << i << endl;
+#endif
         ItemProperties it = ItemProperties();
         it.collectionId = (uint8_t) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),0));
         it.vid = (bool) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),1));
         it.vidId = (int) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),2));
         PyObject* stdPropsPy = PyList_GetItem(PyList_GetItem(itemMetadataPy,i),3);
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+        cout << "Getting standard properties" << endl;
+#endif
         it.stdProps.props = ExqArray<ExqArray<uint16_t>>((int)PyList_Size(stdPropsPy));
         for (int j = 0; j < PyList_Size(stdPropsPy); j++) {
             tmpPropsPy = PyList_GetItem(stdPropsPy,j);
@@ -163,15 +170,27 @@ PyObject* exq::initialize_py(PyObject* self, PyObject* args) {
             }
             it.stdProps.props.setItem(arr, j);
         }
-        PyObject* collPropsPy = PyTuple_GetItem(PyList_GetItem(itemMetadataPy,i),3);
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+        cout << "Getting collection specific properties" << endl;
+#endif
+        PyObject* collPropsPy = PyList_GetItem(PyList_GetItem(itemMetadataPy,i),4);
         it.collProps.props = ExqArray<ExqArray<uint16_t>>((int)PyList_Size(collPropsPy));
         for (int j = 0; j < PyList_Size(collPropsPy); j++) {
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+            cout << "Collection prop: " << j << endl;
+#endif
             tmpPropsPy = PyList_GetItem(collPropsPy, j);
             auto arr = ExqArray<uint16_t>((int)PyList_Size(tmpPropsPy));
             for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
                 arr.setItem((uint16_t)PyLong_AsLong(PyList_GetItem(tmpPropsPy,k)), k);
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+                cout << "Prop: "  << j << "." << k << ": " << arr.getItem(k) << endl;
+#endif
             }
             it.collProps.props.setItem(arr, j);
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+            cout << "Prop " << j  << " set" << endl;
+#endif
         }
         itemProps.setItem(it,i);
     }

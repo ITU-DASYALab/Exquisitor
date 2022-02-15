@@ -51,6 +51,32 @@ ExqController<T>::ExqController(
     _classifiers = std::move(classifiers);
     _worker = worker;
     _itemProperties = itemProps;
+#if defined(DEBUG) || defined(DEBUG_INIT_META)
+    cout << "Checking item metadata" << endl;
+    for(int i = 0; i < 3; i++) {
+        cout <<"Item: " << i << " | ";
+        cout <<"Collection Id: " << _itemProperties.getItem(i).collectionId << " | ";
+        cout <<"Video Id: " << _itemProperties.getItem(i).vidId << " | ";
+        cout << "Standard Props: ";
+        for (int j = 0; j < _itemProperties.getItem(i).stdProps.props.getSize(); j++) {
+            cout << i << "." << j << " = [";
+            for (int k = 0; k < _itemProperties.getItem(i).stdProps.props.getItem(j).getSize(); k++) {
+                cout <<  _itemProperties.getItem(i).stdProps.props.getItem(j).getItem(k) << ", ";
+            }
+            cout << "] ";
+        }
+        cout << "| ";
+        cout << "Collection Props: ";
+        for (int j = 0; j < _itemProperties.getItem(i).collProps.props.getSize(); j++) {
+            cout << i << "." << j << " = [";
+            for (int k = 0; k < _itemProperties.getItem(i).collProps.props.getItem(j).getSize(); k++) {
+                cout <<  _itemProperties.getItem(i).collProps.props.getItem(j).getItem(k) << ", ";
+            }
+            cout << "] ";
+        }
+        cout << endl;
+    }
+#endif
     _vidProperties = vidProps;
 
     cout << "(CTRL) Loading data..." << endl;

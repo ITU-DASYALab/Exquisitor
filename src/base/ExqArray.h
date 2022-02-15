@@ -5,8 +5,12 @@
 #ifndef EXQUISITOR_EXQARRAY_H
 #define EXQUISITOR_EXQARRAY_H
 
+#include <iostream>
+
 namespace exq {
 
+    using std::cout;
+    using std::endl;
     /**
      * @class Minimalistic dynamic array. Less memory usage than vector.
      */
@@ -31,7 +35,26 @@ namespace exq {
         /// Constructor. 0 size array.
         ExqArray() {
             _size = 0;
-            _arr = new T[0];
+            _arr = nullptr;
+        }
+
+        /// copy constructor
+        ExqArray(const ExqArray<T>& org) noexcept : _size(0) {
+            _size = org._size;
+            _arr = new T[_size];
+            for (int i = 0; i < _size; i++)
+                _arr[i] = org._arr[i];
+        }
+
+        /// copy assignment operator
+        /// \param that
+        /// \return
+        ExqArray<T>& operator=(const ExqArray<T>& that) noexcept {
+            _size = that._size;
+            _arr = new T[_size];
+            for (int i = 0; i < _size; i++)
+                _arr[i] = that._arr[i];
+            return *this;
         }
 
         ~ExqArray() {
@@ -54,7 +77,7 @@ namespace exq {
             return _arr;
         };
 
-    private:
+    protected:
         int _size;
         T* _arr;
     };
