@@ -9,13 +9,16 @@ using namespace exq;
 template <typename T, typename U, typename V>
 ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
                                             vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions,
-                                            vector<int>& featureDimensions) {
+                                            vector<int>& featureDimensions,
+                                            vector<ItemProperties> itemProps,
+                                            vector<vector<Props>> vidProps) {
     _indx = vector<ECPIndex<T,U,V>*>(modalities);
     _modalities = modalities;
     _descriptors = vector<vector<ExqDescriptor<T,U,V>*>>();
     _descriptors.reserve(_modalities);
     for (int m = 0; m < modalities; m++) {
-        _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m]);
+        _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m],
+                                       itemProps, vidProps);
     }
 }
 
@@ -60,7 +63,7 @@ void ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<vector<doubl
 template <typename T, typename U, typename V>
 void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                                      vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
-                                                     unordered_set<uint32_t>& seenItems) {
+                                                     unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
     auto suggIdsPerMod = vector<vector<uint32_t>>(_modalities);
     auto clusterIdsPerMod = vector<vector<uint32_t>>(_modalities);
     auto totalData = vector<int>(_modalities);
@@ -68,7 +71,8 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
         int chnk = _b[m]/ totalSegments;
         suggIdsPerMod[m] = vector<uint32_t>();
         clusterIdsPerMod[m] = vector<uint32_t>();
-        _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], clusterIdsPerMod[m], currentSegment, totalSegments);
+        _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], clusterIdsPerMod[m], currentSegment,
+                         totalSegments, seenItems, filters);
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "(ExqHandler) totalData[" << m << "]: " << totalData[m] << endl;
         cout << "(ExqHandler) suggIdsPerMod[" << m << "].size(): " << suggIdsPerMod[m].size() << endl;

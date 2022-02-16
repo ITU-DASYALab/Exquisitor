@@ -10,8 +10,8 @@
 
 #include "ExqDescriptor.h"
 #include "ExqFunctions.h"
-#include "Metadata/ItemFilter.h"
 #include "ExqItem.h"
+#include "Metadata/ItemFilter.h"
 
 namespace exq {
 
@@ -46,7 +46,8 @@ namespace exq {
                                     ItemFilter& filters) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                           vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems) = 0;
+                                           vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems,
+                                           ItemFilter& filters) = 0;
     };
 
 }

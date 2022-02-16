@@ -25,7 +25,8 @@ namespace exq {
          * \param cnfgFile - Config file containing metadata information about the cluster index
          */
         ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
-                          vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions, vector<int>& featureDimensions);
+                          vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions, vector<int>& featureDimensions,
+                          vector<ItemProperties> itemProps, vector<vector<Props>> vidProps);
 
         ~ExqDataHandlerECP();
 
@@ -41,7 +42,8 @@ namespace exq {
                             ItemFilter& filters) override;
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
-                                   unordered_set<uint32_t>& seenItems) override;
+                                   unordered_set<uint32_t>& seenItems,
+                                   ItemFilter& filters) override;
 
     private:
         int _modalities;

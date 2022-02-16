@@ -104,6 +104,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
     if (changeFilters)
         _activeFilters.setFilters(filters);
+        //TODO: Reset cache of frc in ECPQOP
 
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
@@ -149,7 +150,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
 
 template <typename T>
-TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, bool useActiveFilters,
+TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, bool changeFilters,
                                      const Filters& filters) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Setting suggest parameters" << endl;
@@ -170,7 +171,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     int totalItemsReturned = 0;
 
     ItemFilter usedFilters;
-    useActiveFilters ? usedFilters = _activeFilters : usedFilters = ItemFilter(filters);
+    changeFilters ? usedFilters = ItemFilter(filters) : usedFilters = _activeFilters;
 
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Starting workers" << endl;
@@ -207,28 +208,34 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     }
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Workers done" << endl;
-    cout << "(CTRL) Sanity check: " << itemsFromSegments[0][0].itemId << " " << itemsFromSegments[0][0].distance[0] << endl;
 #endif
     auto items2Return = vector<ExqItem>();
     items2Return.reserve(totalItemsReturned);
-    int totalReturnedItems = 0;
-    for (int s = 0; s < _segments; s++) {
-        items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
-        totalReturnedItems += itemsFromSegments[s].size();
-        itemsFromSegments[s].clear();
-    }
-    assert(items2Return.size() == totalReturnedItems);
-    //TODO: Duplicate check
-    _functions[0]->sortItems(items2Return, _modalities);
+    if (totalItemsReturned != 0) {
+        int totalReturnedItems = 0;
+        for (int s = 0; s < _segments; s++) {
+            items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
+            totalReturnedItems += (int)itemsFromSegments[s].size();
+            itemsFromSegments[s].clear();
+        }
+        assert(items2Return.size() == totalReturnedItems);
+        //TODO: Duplicate check
+        _functions[0]->sortItems(items2Return, _modalities);
 
-    for (int i = 0; i < k; i++) {
-#if defined(DEBUG) || defined(DEBUG_SUGGEST)
-        cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
-        << items2Return[i].distance[0] << endl;
-#endif
-        results.suggs.push_back(items2Return[i].itemId);
+        for (int i = 0; i < k; i++) {
+    #if defined(DEBUG) || defined(DEBUG_SUGGEST)
+            cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
+            << items2Return[i].distance[0] << endl;
+    #endif
+            results.suggs.push_back(items2Return[i].itemId);
+        }
     }
 
+    //TODO: Update session clusters in ECPQOP
+
+    if ((int)results.suggs.size() < k) {
+        //TODO: Incremental retrieval
+    }
     //completedSegments = 0;
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
     results.overheadTime = duration<double, milli>(finish - begin).count();

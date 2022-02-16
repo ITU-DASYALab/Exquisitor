@@ -9,6 +9,8 @@
 #include "ECPCluster.h"
 #include "ECPNode.h"
 
+#include "../Metadata/ItemProperties.h"
+
 #include <vector>
 #include <map>
 
@@ -28,7 +30,8 @@ namespace exq {
     template<typename T, typename U, typename V>
     class ECPQueryOptimisationPolicies {
     public:
-        ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel, vector<ECPCluster<T,U,V>*>& clusters);
+        ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel, vector<ECPCluster<T,U,V>*>& clusters,
+                                     vector<ItemProperties>* itemProps, vector<vector<Props>>* vidProps);
 
         ~ECPQueryOptimisationPolicies();
 
@@ -54,6 +57,9 @@ namespace exq {
         uint32_t* _filterReturnedCnt;
         uint32_t* _clusterToStatLevel;
         vector<map<std::string,double>> _combinations;
+
+        vector<ItemProperties>* _itemProps;
+        vector<vector<Props>>* _vidProps;
     };
 }
 

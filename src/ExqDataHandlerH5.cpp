@@ -56,7 +56,7 @@ void ExqDataHandlerH5<T,U,V>::selectClusters(vector<int> b, vector<vector<double
 template <typename T, typename U, typename V>
 void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                                     vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
-                                                    unordered_set<uint32_t>& seenItems) {
+                                                    unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
     for (int m = 0; m < modalities; m++) {
         vector<ExqDescriptor<T,U,V>> descs = vector<ExqDescriptor<T,U,V>>();
         int segmentSize = this->getTotalItemsCount(m)/totalSegments;

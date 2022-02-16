@@ -110,23 +110,6 @@ def initialize_metadata():
                 ids_map[ids_reverse_meta_map[img_id]]['activity'] = act
 
 
-def train():
-    # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
-    train_ret = exq.train(item_ids, labels, False, [])
-    print(train_ret)
-
-
-def train_with_filters():
-    # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
-    filters = []
-    train_ret = exq.train(item_ids, labels, True, filters)
-    print(train_ret)
-
-
 def single_modality_initialize():
     iota = 1
     noms = 100
@@ -181,10 +164,14 @@ def test_single_modality_no_filters_no_seen():
     n_suggest = 50
     segments = 16
     seen = []
-    filters = []
+    # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
+    item_ids = [39310,17230,73524,65850,54647]
+    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    train_ret = exq.train(item_ids, labels, False, [])
+    print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, filters)
+        exq.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -193,7 +180,69 @@ def test_single_modality_no_filters_no_seen():
     return 0
 
 
-def test_single_modality_filters_grc():
+def test_single_modality_filters_no_exp():
+    n_suggest = 50
+    segments = 16
+    seen = []
+    # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
+    item_ids = [39310,17230,73524,65850,54647]
+    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    collections = []
+    std_filters = []
+    coll_filters = [
+        [
+            [46],  # location (home)
+            [],  # activity
+            [12, 16, 17],  # hour
+            [4],  # day (Friday)
+            []  # year
+        ]
+    ]
+    vid_filters = []
+    filters = [collections, std_filters, coll_filters, vid_filters]
+    train_ret = exq.train(item_ids, labels, True, filters)
+    print(train_ret)
+    ts = time()
+    (suggestions, total_items, worker_times, total_times, overhead) = \
+        exq.suggest(n_suggest, segments, seen, False, [])
+    ts = time() - ts
+    print("Suggestions: ", suggestions)
+    print("Total Items: ", total_items)
+    print("Total Times: ", total_times)
+    print("Time taken: ", ts)
+    return 0
+
+
+def test_single_modality_filters_incr():
+    n_suggest = 50
+    segments = 16
+    seen = []
+    # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
+    item_ids = [39310,17230,73524,65850,54647]
+    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    collections = []
+    std_filters = []
+    coll_filters = [
+        [
+            [46],  # location (home)
+            [],  # activity
+            [12],  # hour
+            [4],  # day (Friday)
+            []  # year
+        ]
+    ]
+    vid_filters = []
+    filters = [collections, std_filters, coll_filters, vid_filters]
+    train_ret = exq.train(item_ids, labels, True, filters)
+    print(train_ret)
+    ts = time()
+    (suggestions, total_items, worker_times, total_times, overhead) = \
+        exq.suggest(n_suggest, segments, seen, False, [])
+    ts = time() - ts
+    print("Suggestions: ", suggestions)
+    print("Total Items: ", total_items)
+    print("Total Times: ", total_times)
+    print("Time taken: ", ts)
     return 0
 
 
@@ -236,16 +285,17 @@ if __name__ == "__main__":
 
     if args.test_group == 0:
         single_modality_initialize()
-        train()
         test_single_modality_no_filters_no_seen()
         exit()
     elif args.test_group == 1:
         initialize_metadata()
         single_modality_initialize_with_metadata()
-        train()
-        test_single_modality_no_filters_no_seen()
+        test_single_modality_filters_no_exp()
         exit()
     elif args.test_group == 2:
+        initialize_metadata()
+        single_modality_initialize_with_metadata()
+        test_single_modality_filters_incr()
         exit()
     elif args.test_group == 3:
         exit()

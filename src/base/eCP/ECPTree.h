@@ -4,8 +4,9 @@
 #include "ECPFarthestNeighbour.h"
 #include "ECPNearestNeighbour.h"
 #include "ECPCluster.h"
-#include "../ExqFunctions.h"
 #include "ECPQueryOptimisationPolicies.h"
+#include "../ExqFunctions.h"
+#include "../Metadata/ItemProperties.h"
 
 #include <queue>
 #include <set>

@@ -42,7 +42,8 @@ namespace exq {
 
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
-                                   unordered_set<uint32_t>& seenItems) override;
+                                   unordered_set<uint32_t>& seenItems,
+                                   ItemFilter& filters) override;
 
         ~ExqDataHandlerH5();
 

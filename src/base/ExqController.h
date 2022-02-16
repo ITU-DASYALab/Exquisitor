@@ -115,7 +115,7 @@ namespace exq {
         /**
          * @brief get \a k suggestions from the latest generated SVM model
          */
-        TopResults suggest(int k, const vector<uint>& seen, bool useActiveFilters, const Filters& filters);
+        TopResults suggest(int k, const vector<uint>& seen, bool changeFilters, const Filters& filters);
 
         /**
          * @brief create a new SVM model

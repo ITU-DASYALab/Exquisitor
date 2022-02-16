@@ -8,10 +8,14 @@ using namespace exq;
 
 template <typename T, typename U, typename V>
 ECPQueryOptimisationPolicies<T,U,V>::ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel,
-                                                                  vector<ECPCluster<T,U,V>*>& clusters) {
+                                                                  vector<ECPCluster<T,U,V>*>& clusters,
+                                                                  vector<ItemProperties>* itemProps,
+                                                                  vector<vector<Props>>* vidProps) {
     _expansionType = expansionType;
     _statLevel = statLevel;
     _clusters = clusters;
+    _itemProps = itemProps;
+    _vidProps = vidProps;
 }
 
 template <typename T, typename U, typename V>

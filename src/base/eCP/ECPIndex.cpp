@@ -1,14 +1,19 @@
 #include "ECPIndex.h"
 
+#include <utility>
+
 using std::ofstream;
 using std::ios_base;
+using std::unordered_set;
 
 using namespace exq;
 
 template <typename T, typename U, typename V>
 ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
+                          vector<ItemProperties> itemProps,
+                          vector<vector<Props>> vidProps,
                           ExpansionType expansionType, int statLevel) {
-    _cnfg = cnfg;
+            _cnfg = cnfg;
     cout << "Descriptor size: " << func->getDescriptorSize() << endl;
     _indexEntrySize = (sizeof(int) * 3) + sizeof(uint32_t) + func->getDescriptorSize();
     cout << "Index Entry Size: " << _indexEntrySize << endl;
@@ -44,6 +49,10 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
         exit(EXIT_FAILURE);
     }
 
+    // Set metadata
+    _itemProperties = std::move(itemProps);
+    _vidProperties = std::move(vidProps);
+
     cout << "(ECPIndx) Initializing index data structure" << endl;
     // Initialize the data structure for the index file
     vector<ExqDescriptor<T,U,V>*> centroids = vector<ExqDescriptor<T,U,V>*>(_maxClusters);
@@ -61,7 +70,8 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     }
 
     cout << "(ECPIndx) Initializing QOP object" << endl;
-    _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters);
+    _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters,
+                                                   &_itemProperties, &_vidProperties);
 
     cout << "Creating Tree object" << endl;
     // Create the tree from the cluster information
@@ -142,7 +152,7 @@ void ECPIndex<T,U,V>::set_b_clusters(vector<double>& query, double bias, int b) 
 
 template <typename T, typename U, typename V>
 void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster,
-                             int run, int segments) {
+                             int run, int segments, unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
     int start = chnk * run;
     int end = start + chnk;
     int numDesc = 0;
@@ -163,18 +173,22 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
     for (int cnt = start; cnt < end; cnt++) {
         numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();
         for (int i = 0; i < numDesc; i++) {
-            //Descriptor* descriptor = clusters[*clusterID]->descriptorList[i];
-            suggIds[j] = _clusters[_bClusters[cnt]]->descriptorIds[i];
-            suggToCluster[j] = _bClusters[cnt];
+            if (!seenItems.contains(_clusters[_bClusters[cnt]]->descriptorIds[i])
+            && filters.compare(_itemProperties[_clusters[_bClusters[cnt]]->descriptorIds[i]], _vidProperties)) {
+                suggIds[j] = _clusters[_bClusters[cnt]]->descriptorIds[i];
+                suggToCluster[j] = _bClusters[cnt];
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
-            cout << suggIds[j] << ", ";
+                cout << suggIds[j] << ", ";
 #endif
-            j++;
+                j++;
+            }
         }
     }
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << endl;
 #endif
+    suggIds.resize(j);
+    suggToCluster.resize(j);
 }
 
 template <typename T, typename U, typename V>

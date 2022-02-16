@@ -55,7 +55,7 @@ namespace exq {
         explicit ItemFilter(Filters filters);
         ItemFilter() { _filters = Filters(); };
         ~ItemFilter();
-        bool compare(ItemProperties item, Props& vidProps);
+        bool compare(ItemProperties& item, vector<vector<Props>>& vidProps);
         inline void setFilters(Filters filters) {
             _filters.collection = filters.collection;
             _filters.stdFilters = filters.stdFilters;

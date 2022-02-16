@@ -128,16 +128,6 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     //    compCnfgFiles.push_back(cnfgFiles);
     //}
     //auto dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compCnfgFiles, numModalities);
-    vector<string> cnfgFiles = vector<string>(PyList_Size(compCnfgFilesPy));
-    for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
-        cnfgFiles[i] = _PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i));
-        cout << "Config[" << i << "]: " << cnfgFiles[i] << endl;
-    }
-    cout << "Initializing DataHandler" << endl;
-    auto dataHandler =
-            new ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>(cnfgFiles, numModalities,
-                                                              functions, modFeatureDimensions);
-    cout << "DataHandler ready" << endl;
     vector<ExqClassifier*> classifiers = vector<ExqClassifier*>(numModalities);
     for (int m = 0; m < numModalities; m++) {
         classifiers[m] = new ExqClassifier(modFeatureDimensions[m]);
@@ -218,6 +208,18 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         collVidProps[c] = cVids;
     }
     cout << "Video metadata filled" << endl;
+
+    vector<string> cnfgFiles = vector<string>(PyList_Size(compCnfgFilesPy));
+    for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
+        cnfgFiles[i] = _PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i));
+        cout << "Config[" << i << "]: " << cnfgFiles[i] << endl;
+    }
+    cout << "Initializing DataHandler" << endl;
+    auto dataHandler =
+            new ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>(cnfgFiles, numModalities,
+                                                              functions, modFeatureDimensions,
+                                                              itemProps, collVidProps);
+    cout << "DataHandler ready" << endl;
 
     cout << "Initializing Controller" << endl;
     _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t,uint64_t,uint64_t>>(

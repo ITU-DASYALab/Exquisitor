@@ -6,6 +6,7 @@
 #include "ECPFarthestNeighbour.h"
 #include "ECPQueryOptimisationPolicies.h"
 
+#include "../Metadata/ItemFilter.h"
 #include "../ExqDescriptor.h"
 #include "../ExqFunctions.h"
 
@@ -15,21 +16,26 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_set>
 
 namespace exq {
     using std::vector;
+    using std::unordered_set;
 
     template <typename T, typename U, typename V>
     class ECPIndex {
     public:
         ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions,
+                 vector<ItemProperties> itemProps=vector<ItemProperties>(),
+                 vector<vector<Props>> vidProps=vector<vector<Props>>(),
                  ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
 
-        ~ECPIndex();
+                ~ECPIndex();
 
         void loadDescriptors(vector<ExqDescriptor<T,U,V>*>& desc);
 
-        void search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster, int run, int segments);
+        void search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster,
+                    int run, int segments, unordered_set<uint32_t>& seenItems, ItemFilter& filters);
 
         void set_b_clusters(vector<double>& query, double bias, int b);
 
@@ -55,6 +61,11 @@ namespace exq {
 
         // Info about the data file, which must be opened as well
         FILE* _dataFile;
+
+        // Metadata info
+        vector<ItemProperties> _itemProperties;
+        //collection -> video -> property -> value(s)
+        vector<vector<Props>> _vidProperties;
 
         // Data structures
         vector<ECPCluster<T,U,V>*> _clusters;
