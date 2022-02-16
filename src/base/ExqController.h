@@ -104,12 +104,18 @@ namespace exq {
          * @brief train the Linear SVM model
          */
         vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels,
-                             const Filters& filters, bool changeFilters);
+                             bool changeFilters, Filters filters);//Filters filters);
+        //vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels,
+        //                     bool changeFilters,
+        //                     set<uint16_t> collections,
+        //                     vector<pair<int,set<uint16_t>>> stdFilters,
+        //                     vector<pair<int,vector<pair<int,set<uint16_t>>>>> collFilters,
+        //                     vector<pair<int,vector<pair<int,set<uint16_t>>>>> vidFilters);
 
         /**
          * @brief get \a k suggestions from the latest generated SVM model
          */
-        TopResults suggest(int k, const vector<uint>& seen);
+        TopResults suggest(int k, const vector<uint>& seen, bool useActiveFilters, const Filters& filters);
 
         /**
          * @brief create a new SVM model

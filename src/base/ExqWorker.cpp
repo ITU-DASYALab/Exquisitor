@@ -29,7 +29,7 @@ template<typename T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                            int currentSegment, int totalSegments, int noms, int modalities, ExqDataHandler<T>*& handler,
                            vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, double& time,
-                           int& totalItemsConsidered, int workerId) {
+                           int& totalItemsConsidered, int workerId, ItemFilter& filters) {
 
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
     //time_point<high_resolution_clock> begin = high_resolution_clock::now();

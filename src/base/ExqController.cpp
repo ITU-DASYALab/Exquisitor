@@ -44,8 +44,7 @@ ExqController<T>::ExqController(
     _modalities = numberModalities;
     _bClusters = bClusters;
     _featureDimensions = std::move(modFeatureDimensions);
-    Filters filters = Filters();
-    _activeFilters = ItemFilter(filters);
+    _activeFilters = ItemFilter();
 
     // Set exq class object fields
     _functions = functions;
@@ -94,7 +93,7 @@ ExqController<T>::ExqController(
 
 template <typename T>
 vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels,
-                                       const Filters& filters, bool changeFilters) {
+                                       bool changeFilters, Filters filters) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) In train" << endl;
 #endif
@@ -105,6 +104,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
     if (changeFilters)
         _activeFilters.setFilters(filters);
+
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
         for (int i = 0; i < (int)trainIds.size(); i++) {
@@ -149,7 +149,8 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
 
 template <typename T>
-TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems) {
+TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, bool useActiveFilters,
+                                     const Filters& filters) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Setting suggest parameters" << endl;
 #endif
@@ -168,6 +169,9 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems) {
     auto itemsFromSegments = vector<vector<ExqItem>>(_segments);
     int totalItemsReturned = 0;
 
+    ItemFilter usedFilters;
+    useActiveFilters ? usedFilters = _activeFilters : usedFilters = ItemFilter(filters);
+
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Starting workers" << endl;
 #endif
@@ -182,7 +186,8 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems) {
                                             workerSegments[w], _segments,
                                             _noms, _modalities, _handler, _functions, seenSet,
                                             results.totalTimePerSegment[workerSegments[w]],
-                                            results.totalItemsConsideredPerSegment[workerSegments[w]], w);
+                                            results.totalItemsConsideredPerSegment[workerSegments[w]], w,
+                                            usedFilters);
                 });
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << "(CTRL) Running segment " << workerSegments[w] << endl;

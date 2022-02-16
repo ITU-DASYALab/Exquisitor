@@ -164,7 +164,7 @@ def test_single_modality_no_filters():
     # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
     item_ids = [39310,17230,73524,65850,54647]
     labels = [1.0,1.0,1.0,-1.0,-1.0]
-    train_ret = exq.train(item_ids, labels)
+    train_ret = exq.train(item_ids, labels, False, [])
     print(train_ret)
     return 0
 
@@ -173,6 +173,7 @@ def test_single_modality_filters_grc():
     # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
     item_ids = [39310,17230,73524,65850,54647]
     labels = [1.0,1.0,1.0,-1.0,-1.0]
+    collections = []
     std_filters = []
     coll_filters = [
         [
@@ -184,8 +185,8 @@ def test_single_modality_filters_grc():
         ]
     ]
     vid_filters = []
-    filters = [std_filters, coll_filters, vid_filters]
-    train_ret = exq.train(item_ids, labels, filters)
+    filters = [collections, std_filters, coll_filters, vid_filters]
+    train_ret = exq.train(item_ids, labels, True, filters)
     print(train_ret)
     return 0
 

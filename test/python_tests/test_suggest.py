@@ -114,7 +114,16 @@ def train():
     # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
     item_ids = [39310,17230,73524,65850,54647]
     labels = [1.0,1.0,1.0,-1.0,-1.0]
-    train_ret = exq.train(item_ids, labels)
+    train_ret = exq.train(item_ids, labels, False, [])
+    print(train_ret)
+
+
+def train_with_filters():
+    # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
+    item_ids = [39310,17230,73524,65850,54647]
+    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    filters = []
+    train_ret = exq.train(item_ids, labels, True, filters)
     print(train_ret)
 
 
@@ -172,8 +181,10 @@ def test_single_modality_no_filters_no_seen():
     n_suggest = 50
     segments = 16
     seen = []
+    filters = []
     ts = time()
-    (suggestions, total_items, worker_times, total_times, overhead) = exq.suggest(n_suggest, segments, seen)
+    (suggestions, total_items, worker_times, total_times, overhead) = \
+        exq.suggest(n_suggest, segments, seen, False, filters)
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)

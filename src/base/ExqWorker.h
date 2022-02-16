@@ -28,7 +28,7 @@ namespace exq {
         void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                      int currentSegment, int totalSegments, int noms, int modalities,
                      ExqDataHandler<T>*& handler, vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems,
-                     double& times, int& totalItemsConsidered, int workerId);
+                     double& times, int& totalItemsConsidered, int workerId, ItemFilter& filters);
     private:
         void logInfo(string info, int workerId);
     }; //End of class ExqWorker

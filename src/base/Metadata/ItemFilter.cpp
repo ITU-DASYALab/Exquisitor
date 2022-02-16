@@ -7,8 +7,13 @@
 using namespace exq;
 
 ItemFilter::ItemFilter(Filters filters) {
-    _filters = filters;
+    _filters.collection = filters.collection;
+    _filters.stdFilters = filters.stdFilters;
+    _filters.collFilters = filters.collFilters;
+    _filters.vidFilters = filters.vidFilters;
 }
+
+ItemFilter::~ItemFilter() {}
 
 bool ItemFilter::compare(ItemProperties item, Props &vidProps) {
     // Check collection id

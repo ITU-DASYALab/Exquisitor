@@ -5,6 +5,7 @@
 #include "ExqPyInterface.h"
 #include "../ExqDataHandlerECP.h"
 #include "../ExqFunctionsR64.h"
+#include "ExqPyHelperFunctions.h"
 
 using namespace exq;
 using std::milli;
@@ -270,25 +271,30 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
     }
 
     //Change filters?
-    bool changeFilters = (bool) PyBool_FromLong(PyLong_AsLong(PyTuple_GetItem(args,3)));
+    bool changeFilters = (bool) PyLong_AsLong(PyTuple_GetItem(args,2));
     // Set filters
     if (changeFilters) {
-        PyObject* filtersPy = PyTuple_GetItem(args,4);
-        filters.collection = set<uint16_t>();
-        filters.stdFilters = vector<pair<int,set<uint16_t>>>();
-        filters.collFilters = vector<pair<int,vector<pair<int,set<uint16_t>>>>>();
-        filters.vidFilters = vector<pair<int,vector<pair<int,set<uint16_t>>>>>();
-        for (int i = 0; i < (int) PyList_Size(PyList_GetItem(filtersPy,0)); i++) {
-
-        }
+        cout << "Getting filters" << endl;
+        PyObject* filtersPy = PyTuple_GetItem(args,3);
+        extractFiltersFromPythonObject(filtersPy, filters);
+        cout << "Set filters" << endl;
     }
 
-    auto times = _pyExqV1._controller->train(trainIds, trainLabels, filters, changeFilters);
+    auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
 
-    PyObject* timeList = PyList_New((int)times.size());
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    cout << "Creating return object" << endl;
+#endif
+    PyObject* timeList = PyList_New(times.size());
     for (int i = 0; i < (int)times.size(); i++) {
-        PyList_SET_ITEM(timeList, i, PyFloat_FromDouble(times[i]));
+        PyList_SetItem(timeList, i, PyFloat_FromDouble(times[i]));
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+        cout << times[i] << endl;
+#endif
     }
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    cout << "Returning" << endl;
+#endif
 
     return timeList;
 }
@@ -301,6 +307,8 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
     PyObject* totalTimePy;
     PyObject* overheadTimePy;
 
+    Filters filters = Filters();
+
     cout << "Getting suggestions" << endl;
     vector<uint32_t> seen = vector<uint32_t>();
     int r = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
@@ -308,13 +316,19 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
     TopResults top = TopResults(segments);
     PyObject* alreadySeenPy = PyTuple_GetItem(args, 2);
 
+    bool changeFilters = (bool) PyLong_AsLong(PyTuple_GetItem(args,3));
+    if (changeFilters) {
+        PyObject* filtersPy = PyTuple_GetItem(args,4);
+        extractFiltersFromPythonObject(filtersPy, filters);
+    }
+
     for (int i = 0; i < PyList_Size(alreadySeenPy); i++) {
         seen.push_back((uint32_t)PyLong_AsLong(PyList_GetItem(alreadySeenPy,i)));
     }
 
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
     cout << "Calling suggest" << endl;
-    top = _pyExqV1._controller->suggest(r, seen);
+    top = _pyExqV1._controller->suggest(r, seen, changeFilters, filters);
     cout << "Suggestions retrieved" << endl;
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
