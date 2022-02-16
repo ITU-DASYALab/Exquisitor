@@ -230,7 +230,7 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
             if (total_count > 0.0 && bx*2 > 65536) break; //Break after 2^16
             thresh *= 0.5; // Half threshold each expansion
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
-            cout << "threshold: " << thresh << " bx: " << bx*2 << endl;
+            cout << "threshold: " << thresh << " next bx: " << bx*2 << endl;
 #endif
         }
 
@@ -241,16 +241,16 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
         //    if (pq.empty()) pq_empty = true;
             break;
         } else {
-            if ((bx*2) < (uint32_t)this->_numClusters) {
+            if ((bx*2) < (uint32_t)_numClusters) {
                 //Expand b by power of 2
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
-                cout << "Expanding b" << endl;
+                cout << "Expanding b to " << (bx*2) << "/" << _numClusters<< endl;
 #endif
                 _expCounter++;
                 exp++;
                 bx *= 2;
                 res->setK(bx);
-            } else if (bx == (uint32_t)this->_numClusters) {
+            } else if (bx == (uint32_t)_numClusters) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
                 cout << "Can not expand further" << endl;
 #endif
@@ -259,9 +259,9 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
                 _expCounter++;
                 exp++;
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
-                cout << "Expanding b to max clusters " << this->_numClusters << endl;
+                cout << "Expanding b to max clusters " << _numClusters << endl;
 #endif
-                bx = this->_numClusters;
+                bx = _numClusters;
                 res->setK(bx);
             }
         }
