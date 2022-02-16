@@ -36,7 +36,7 @@ exquisitor = Extension('exq',
                                            # '-DDEBUG_TRAIN',
                                            # '-DDEBUG_TRAIN_EXTRA',
                                            '-DDEBUG_SUGGEST',
-                                           '-DDEBUG_SUGGEST_EXTRA',
+                                           # '-DDEBUG_SUGGEST_EXTRA',
                                            ])
 
 setup(name='exq',

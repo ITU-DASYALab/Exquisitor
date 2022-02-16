@@ -42,8 +42,8 @@ namespace exq {
 
         virtual int getTotalItemsCount(int mod) = 0;
 
-        virtual void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                                    ItemFilter& filters) = 0;
+        virtual vector<bool> selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers,//vector<vector<double>>& model, vector<double>& bias,
+                                            ItemFilter& filters, bool resume=false) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                            vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems,

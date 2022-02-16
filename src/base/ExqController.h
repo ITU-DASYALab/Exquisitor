@@ -115,7 +115,8 @@ namespace exq {
         /**
          * @brief get \a k suggestions from the latest generated SVM model
          */
-        TopResults suggest(int k, const vector<uint>& seen, bool changeFilters, const Filters& filters);
+        TopResults suggest(int k, const vector<uint>& seen, bool changeFilters, const Filters& filters,
+                           TopResults prevResults=TopResults(0));
 
         /**
          * @brief create a new SVM model
@@ -149,6 +150,8 @@ namespace exq {
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;
         vector<bool> _seenItems;
+
+        vector<bool> _pq_state;
 
         void _init_filters();
         void _init_workers();

@@ -20,7 +20,7 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     // Open the indx file
     string indxPath = cnfg->getPathIdx();
     _indxFile = fopen(indxPath.c_str(), "rb");
-    if (_indxFile == NULL) {
+    if (_indxFile == nullptr) {
         cout << "Index: Could not open index file " << indxPath << endl;
         exit(EXIT_FAILURE);
     }
@@ -28,14 +28,14 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     // Open the data file, needed for the creation of the clusters
     string dataPath = cnfg->getPathDat();
     _dataFile = fopen(dataPath.c_str(), "rb");
-    if (_dataFile == NULL) {
+    if (_dataFile == nullptr) {
         cout << "Index: Could not open data file " << dataPath << endl;
         exit(EXIT_FAILURE);
     }
 
     cout << "Index files loaded" << endl;
     // Double check the file size
-    struct stat filestat;
+    struct stat filestat{};
     fstat(fileno(_indxFile), &filestat);
     _maxClusters = filestat.st_size / _indexEntrySize;
     if (_maxClusters != cnfg->getNumClst()) {
@@ -81,7 +81,7 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     for (uint32_t i = 0; i < _maxClusters; i++) {
         delete centroids[i];
     }
-};
+}
 
 template <typename T, typename U, typename V>
 ECPIndex<T,U,V>::~ECPIndex() {
@@ -119,7 +119,7 @@ void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>& descs) {
             //printf("Cluster %u skipped\n", i);
             continue;
         }
-        while ((descriptor = _clusters[i]->next()) != NULL) {
+        while ((descriptor = _clusters[i]->next()) != nullptr) {
 #if defined(DEBUG) || defined(DEBUG_INIT)
             printf("(ECPIndx) Cluster %u indx %d descriptor id %u\n", i, indx, descriptor->id);
 #endif
@@ -134,20 +134,26 @@ void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>& descs) {
 }
 
 template <typename T, typename U, typename V>
-void ECPIndex<T,U,V>::set_b_clusters(vector<double>& query, double bias, int b) {
+bool ECPIndex<T,U,V>::set_b_clusters(vector<double> query, double bias, int b, bool resume) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
     cout << "(ECPIndx) Searching for farthest neighbor" << endl;
 #endif
-    ECPFarthestNeighbour<T,U,V>* clusters = _tree->search(query, bias, b, _clusters);
+    ECPFarthestNeighbour<T,U,V>* clusters;
+    if (!resume) {
+        clusters = _tree->search(query, bias, b, _clusters);
+    } else {
+        clusters = _tree->search_pq(query, bias, b, _clusters);
+    }
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
     cout << "(ECPIndx) Got clusters" << endl;
 #endif
     _bClusters.clear();
     clusters->open();
     uint32_t* clusterId;
-    while((clusterId = clusters->next()) != NULL) {
+    while((clusterId = clusters->next()) != nullptr) {
         _bClusters.push_back(*clusterId);
     }
+    return _tree->check_pq();
 }
 
 template <typename T, typename U, typename V>

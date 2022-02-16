@@ -38,6 +38,10 @@ namespace exq {
         ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint32_t k,
                                             vector<ECPCluster<T,U,V>*>& clusters);
 
+        inline bool check_pq() { return _pq.empty(); }
+
+        ECPFarthestNeighbour<T,U,V>* search_pq(vector<double>& query, double bias, uint32_t b,
+                                               vector<ECPCluster<T,U,V>*>& clusters);
         // Sanity checks
         void PrintTree();
     private:
@@ -47,13 +51,13 @@ namespace exq {
         int _featureDimensions;
         // The two-dimensional array of nodes (level, node) and the size at each level
         vector<vector<ECPNode<T,U,V>*>> _nodes;
-        int* _levelsizes;
+        int* _levelsizes{};
         // pq for incremental retrieval
         int _expCounter = 0;
         int _skipCounter = 0;
         int _numClusters = 0;
-        priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> pq;
-        set<uint32_t> bfs;
+        priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> _pq;
+        set<uint32_t> _bfs;
         // query optimisation policies
         ECPQueryOptimisationPolicies<T,U,V>* _qop;
         // limit for accepting clusters
@@ -71,8 +75,6 @@ namespace exq {
 
         ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint32_t k, uint32_t level);
 
-        ECPFarthestNeighbour<T,U,V>* search_pq(vector<double>& query, double bias, uint32_t b,
-                                               vector<ECPCluster<T,U,V>*>& clusters);
 
         //int getClusterCount(uint64_t id, vector<ECPCluster<T,U,V>*>& clusters, bool check=false);
     };

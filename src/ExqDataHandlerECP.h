@@ -38,8 +38,8 @@ namespace exq {
 
         int getTotalItemsCount(int mod) override;
 
-        void selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                            ItemFilter& filters) override;
+        vector<bool> selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers, //vector<vector<double>>& model, vector<double>& bias,
+                                    ItemFilter& filters, bool resume=false) override;
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
                                    unordered_set<uint32_t>& seenItems,

@@ -108,8 +108,8 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
-        for (int i = 0; i < (int)trainIds.size(); i++) {
-            T desc = _handler->getDescriptor(trainIds[i]);
+        for (uint32_t trainId : trainIds) {
+            T desc = _handler->getDescriptor(trainId);
             ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(desc);
             vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
             for (int j = 0; j < descVals.getSize(); j++) {
@@ -130,16 +130,17 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     cout << "(CTRL) Classifier trained" << endl;
 #endif
     begin = high_resolution_clock::now();
-    vector<int> bPerMod;
-    vector<double> bias;
-    for (int m = 0; m < _modalities; m++) {
-        bPerMod.push_back(_bClusters);
-        bias.push_back(_classifiers[m]->getBias());
+    auto bPerMod = vector<int>(_modalities);
+    //vector<double> bias;
+for (int m = 0; m < _modalities; m++) {
+        bPerMod[m] = _bClusters;
+        //bias.push_back(_classifiers[m]->getBias());
     }
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) Selecting clusters" << endl;
 #endif
-    _handler->selectClusters(bPerMod, weights, bias, _activeFilters);
+    //_handler->selectClusters(bPerMod, weights, bias, _activeFilters);
+    _pq_state = _handler->selectClusters(bPerMod, _classifiers, _activeFilters);
     finish = high_resolution_clock::now();
     times.push_back(duration<double, milli>(finish - begin).count());
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
@@ -151,7 +152,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
 template <typename T>
 TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, bool changeFilters,
-                                     const Filters& filters) {
+                                     const Filters& filters, TopResults prevResults) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Setting suggest parameters" << endl;
 #endif
@@ -209,6 +210,9 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Workers done" << endl;
 #endif
+    if (!prevResults.suggs.empty()) {
+        results.suggs = prevResults.suggs;
+    }
     auto items2Return = vector<ExqItem>();
     items2Return.reserve(totalItemsReturned);
     if (totalItemsReturned != 0) {
@@ -222,19 +226,33 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
         //TODO: Duplicate check
         _functions[0]->sortItems(items2Return, _modalities);
 
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < (int)items2Return.size(); i++) {
     #if defined(DEBUG) || defined(DEBUG_SUGGEST)
             cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
             << items2Return[i].distance[0] << endl;
     #endif
             results.suggs.push_back(items2Return[i].itemId);
+            if ((int)results.suggs.size() == k) break;
         }
     }
 
     //TODO: Update session clusters in ECPQOP
 
     if ((int)results.suggs.size() < k) {
-        //TODO: Incremental retrieval
+        auto bPerMod = vector<int>(_modalities);
+        bool done = true;
+        for (int m = 0; m < _modalities; m++) {
+            if (_pq_state[m])
+                bPerMod[m] = 0;
+            else {
+                done = false;
+                bPerMod[m] = _bClusters;
+            }
+        }
+        if (!done) {
+            _pq_state = _handler->selectClusters(bPerMod, _classifiers, _activeFilters, true);
+            results = suggest(k, seenItems, changeFilters, filters, results);
+        }
     }
     //completedSegments = 0;
     time_point<high_resolution_clock> finish = high_resolution_clock::now();

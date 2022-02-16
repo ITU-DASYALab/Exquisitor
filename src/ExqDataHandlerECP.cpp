@@ -48,16 +48,24 @@ int ExqDataHandlerECP<T,U,V>::getTotalItemsCount(int mod) {
 }
 
 template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<vector<double>>& model, vector<double>& bias,
-                                              ItemFilter& filters) {
+vector<bool> ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers, //vector<vector<double>>& model, vector<double>& bias,
+                                                      ItemFilter& filters, bool resume) {
     _b = b;
-    for (int m = 0; m < this->_modalities; m++) {
+    vector<bool> empty = vector<bool>(_modalities);
+    for (int m = 0; m < _modalities; m++) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
         cout << "(ExqHandler) Selecting " << b[m] << " clusters from mod " << m << endl;
 #endif
+        if (b[m] == 0) {
+            empty[m] = true;
+            continue;
+        }
         _b[m] = b[m];
-        _indx[m]->set_b_clusters(model[m], bias[m], _b[m]);
+        //empty[m] = _indx[m]->set_b_clusters(model[m], bias[m], _b[m]);
+        empty[m] = _indx[m]->set_b_clusters(classifiers[m]->getWeights(), classifiers[m]->getBias(), _b[m],
+                                            resume);
     }
+    return empty;
 }
 
 template <typename T, typename U, typename V>

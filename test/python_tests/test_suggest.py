@@ -5,7 +5,6 @@ from time import time
 import json
 import csv
 
-
 # Filter parameters
 ids_file = '../data/lsc_100K/meta21/lsc21.txt'
 meta_file = '../data/lsc_100K/meta21/lsc2020-metadata.csv'
@@ -68,8 +67,8 @@ def initialize_metadata():
             dt = ''
             t = ''
             if len(split) == 1:
-                ids_map[idx]['name'] = ids_map[idx-4]['name'].split('_')[0] + '_' + split[0]
-                dt = ids_map[idx-4]['name'].split('_')[0]
+                ids_map[idx]['name'] = ids_map[idx - 4]['name'].split('_')[0] + '_' + split[0]
+                dt = ids_map[idx - 4]['name'].split('_')[0]
                 t = badDates[dt][split[0] + '.jpg']
             elif len(split) == 4:
                 dt = split[2]
@@ -82,7 +81,6 @@ def initialize_metadata():
             yy = dt[:4]
             mm = dt[4:6]
             dd = dt[6:8]
-            date = "%s/%s/%s" % (yy, mm, dd)
             day = datetime.date(int(yy), int(mm), int(dd)).weekday()
             ids_map[idx]['locationId'] = 167
             ids_map[idx]['location'] = 'unknown'
@@ -120,7 +118,7 @@ def single_modality_initialize():
     comp_conf_files = ['../data/lsc_100K/imagenet13k/img13k_100k_index_full.cnfg']
     mod_feature_dimensions = [12988]
     func_type = 0
-    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10,14)), 65535, 65535, 50000.0]]
+    func_objs = [[5, 48, 16, 16, 281474976710655, float(2 * pow(10, 14)), 65535, 65535, 50000.0]]
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
@@ -137,7 +135,7 @@ def single_modality_initialize_with_metadata():
     comp_conf_files = ['../data/lsc_100K/imagenet13k/img13k_100k_index_full.cnfg']
     mod_feature_dimensions = [12988]
     func_type = 0
-    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10,14)), 65535, 65535, 50000.0]]
+    func_objs = [[5, 48, 16, 16, 281474976710655, float(2 * pow(10, 14)), 65535, 65535, 50000.0]]
     n_items = len(ids_map)
     items_meta = []
     for i in range(n_items):
@@ -165,8 +163,8 @@ def test_single_modality_no_filters_no_seen():
     segments = 16
     seen = []
     # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
     train_ret = exq.train(item_ids, labels, False, [])
     print(train_ret)
     ts = time()
@@ -185,15 +183,15 @@ def test_single_modality_filters_no_exp():
     segments = 16
     seen = []
     # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
     collections = []
     std_filters = []
     coll_filters = [
         [
             [46],  # location (home)
             [],  # activity
-            [12, 16, 17],  # hour
+            [12, 16],  # hour
             [4],  # day (Friday)
             []  # year
         ]
@@ -218,8 +216,8 @@ def test_single_modality_filters_incr():
     segments = 16
     seen = []
     # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
     collections = []
     std_filters = []
     coll_filters = [
