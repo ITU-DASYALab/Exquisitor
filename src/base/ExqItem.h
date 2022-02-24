@@ -9,7 +9,6 @@
 
 #include <array>
 
-#include "ExqConstants.h"
 
 namespace exq {
 

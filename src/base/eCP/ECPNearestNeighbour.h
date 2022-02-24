@@ -5,7 +5,6 @@
 #include <map>
 
 #include "../ExqDescriptor.h"
-#include "../ExqConstants.h"
 #include "../ExqFunctions.h"
 
 namespace exq {

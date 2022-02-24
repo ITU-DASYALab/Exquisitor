@@ -16,7 +16,6 @@
 
 #include "Metadata/ItemProperties.h"
 #include "Metadata/ItemFilter.h"
-#include "ExqConstants.h"
 #include "ExqClassifier.h"
 #include "ExqFunctions.h"
 #include "ExqDataHandler.h"

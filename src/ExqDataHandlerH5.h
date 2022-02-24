@@ -15,7 +15,6 @@
 
 #include "base/ExqDataHandler.h"
 #include "base/ExqDescriptor.h"
-#include "base/ExqConstants.h"
 #include "base/ExqFunctions.h"
 
 namespace exq {
