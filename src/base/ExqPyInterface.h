@@ -18,7 +18,7 @@ namespace exq {
 #ifdef __cpluplus
     extern "C" {
 #endif
-        [[maybe_unused]] void PyInit_exq(void);
+        PyMODINIT_FUNC PyInit_exq(void);
 #ifdef __cpluplus
     };
 #endif
