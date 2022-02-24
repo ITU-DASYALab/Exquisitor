@@ -15,9 +15,9 @@ ExqDataHandlerH5<T,U,V>::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles,
     this->_numModalities = modalities;
     for (int m = 0; m < modalities; m++) {
         this->_descriptors.push_back(vector<ExqDescriptor<T,U,V>*>());
-        this->_topFeatPaths.push_back(compCnfgFiles[m][TOP_FEATURES_PATH]);
-        this->_featIdsPaths.push_back(compCnfgFiles[m][FEATURE_IDS_PATH]);
-        this->_ratiosPaths.push_back(compCnfgFiles[m][FEATURE_RATIOS_PATH]);
+        this->_topFeatPaths.push_back(compCnfgFiles[m][0]);
+        this->_featIdsPaths.push_back(compCnfgFiles[m][1]);
+        this->_ratiosPaths.push_back(compCnfgFiles[m][2]);
     }
 }
 

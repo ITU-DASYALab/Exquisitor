@@ -26,7 +26,7 @@ namespace exq {
 
         ExqItem() {
             itemId = UINT32_MAX;
-            fromModality = VIS;
+            fromModality = 0;
             aggScore = 0.0;
             fromCluster = UINT64_MAX;
             segment = -1;

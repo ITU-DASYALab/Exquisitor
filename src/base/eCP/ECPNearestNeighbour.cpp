@@ -44,7 +44,7 @@ ECPNearestNeighbour<T,U,V>::ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, ui
     }
 
     indexQueryArr = vector<vector<double>>();
-    for(uint32_t y = 0; y < QUERY_Y; y++) {
+    for(uint32_t y = 0; y < 2; y++) {
         indexQueryArr.push_back(vector<double>(_functions->getDescFeatCount()));
         for(uint32_t x = 0; x < (uint32_t)_functions->getDescFeatCount(); x++) {
             indexQueryArr[y][x] = 0;

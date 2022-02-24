@@ -75,7 +75,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
     cout << "(ExqFncR64) Top: " << descriptor.getTop() << " Ids: " << descriptor.getFeatureIds() << " Ratio: "
     << descriptor.getFeatureRatios() << endl;
 #endif
-    auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
+    auto exqArr = ExqArray<pair<int, float>>(this->nDescFeatures);
 
     int featId = descriptor.getTop() >> this->topFeatureShift;
 #ifdef DEBUG
@@ -85,7 +85,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 #ifdef DEBUG
     cout << "(ExqFncR64) Top Feature Value: " << featVal << endl;
 #endif
-    exqArr->setItem(std::make_pair(featId, featVal), 0);
+    exqArr.setItem(std::make_pair(featId, featVal), 0);
 
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
         featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
@@ -96,10 +96,10 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 #ifdef DEBUG
         cout << "(ExqFncR64) Feature Val: " << featVal << endl;
 #endif
-        exqArr->setItem(std::make_pair(featId, featVal), i+1);
+        exqArr.setItem(std::make_pair(featId, featVal), i+1);
     }
 
-    return *exqArr;
+    return exqArr;
 }
 
 ///

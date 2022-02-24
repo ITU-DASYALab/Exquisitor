@@ -104,7 +104,7 @@ void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>& descs) {
 #if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPIndx) Loading descriptors" << endl;
 #endif
-    descs = vector<ExqDescriptor<T,U,V>*>(_totalItems);
+    descs.resize(_totalItems);
 #if defined(DEBUG) || defined(DEBUG_INIT)
     printf("(ECPIndx) maxClusters: %u\n", _maxClusters);
 #endif
