@@ -72,6 +72,8 @@ template <typename T, typename U, typename V>
 inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformation(ExqDescriptor<T,U,V> &descriptor) {
 #ifdef DEBUG
     cout << "(ExqFncR64) Getting descriptor information for descriptor " << descriptor.id << endl;
+    cout << "(ExqFncR64) Top: " << descriptor.getTop() << " Ids: " << descriptor.getFeatureIds() << " Ratio: "
+    << descriptor.getFeatureRatios() << endl;
 #endif
     auto exqArr = new ExqArray<pair<int, float>>(this->nDescFeatures);
 

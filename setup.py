@@ -21,21 +21,26 @@ exquisitor = Extension('exq',
                                 'src/ExqDataHandlerH5.cpp',
                                 'src/ExqDataHandlerECP.cpp',
                                 'src/base/Metadata/ItemFilter.cpp'],
-                       include_dirs=['/Library/Frameworks/Python.framework/Versions/Current/include/python3.10',
-                                     '/usr/local/Cellar/opencv/4.2.0_1/include/opencv4',
-                                     '/usr/local/Cellar/hdf5/1.10.5_1/include/hdf5'],
-                       library_dirs=['/Library/Frameworks/Python.framework/Versions/Current/lib',
-                                     '/usr/local/Cellar/hdf5/1.10.5_1/lib',
-                                     '/usr/local/Cellar/opencv/4.2.0_1/lib'],
+                       include_dirs=[
+                           '/Library/Frameworks/Python.framework/Versions/Current/include/python3.10',
+                           '/usr/local/include/opencv4',
+                           '/usr/local/Cellar/hdf5/1.10.5_1/include/hdf5'
+                       ],
+                       library_dirs=[
+                           '/Library/Frameworks/Python.framework/Versions/Current/lib',
+                           '/usr/local/Cellar/hdf5/1.10.5_1/lib',
+                           '/usr/local/lib'
+                       ],
                        libraries=['python3.10', 'hdf5', 'opencv_core', 'opencv_ml'],
                        extra_compile_args=['-O3', '-Wall', '-std=c++20',
+                                           '-D_LARGE_FILE_SOURCE', '-D_FILE_OFFSET_BITS=64',
                                            # '-DDEBUG',
                                            # '-DDEBUG_EXTRA',
                                            # '-DDEBUG_INIT',
                                            # '-DDEBUG_INIT_META',
                                            # '-DDEBUG_TRAIN',
                                            # '-DDEBUG_TRAIN_EXTRA',
-                                           '-DDEBUG_SUGGEST',
+                                           # '-DDEBUG_SUGGEST',
                                            # '-DDEBUG_SUGGEST_EXTRA',
                                            ])
 

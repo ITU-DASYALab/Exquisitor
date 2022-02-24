@@ -21,6 +21,8 @@ namespace exq {
 
         ~ExqClassifier();
 
+        void resetClassifier();
+
         vector<double> train(vector<vector<double>> data, vector<float> labels);
 
         vector<double> getWeights();

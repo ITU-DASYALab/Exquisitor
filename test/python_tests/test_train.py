@@ -157,6 +157,12 @@ def single_modality_initialize_with_metadata():
 
 
 def two_modalities_initialize():
+    # TODO: Use YFCC data
+    return 0
+
+
+def three_modalities_initialize():
+    # TODO: Use VBS22 data
     return 0
 
 
@@ -164,6 +170,15 @@ def test_single_modality_no_filters():
     # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
     item_ids = [39310,17230,73524,65850,54647]
     labels = [1.0,1.0,1.0,-1.0,-1.0]
+    train_ret = exq.train(item_ids, labels, False, [])
+    print(train_ret)
+    return 0
+
+
+def test_single_modality_no_filters_no_training_items():
+    # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
+    item_ids = []
+    labels = []
     train_ret = exq.train(item_ids, labels, False, [])
     print(train_ret)
     return 0
@@ -231,6 +246,7 @@ if __name__ == "__main__":
     if args.test_group == 0:
         single_modality_initialize()
         test_single_modality_no_filters()
+        test_single_modality_no_filters_no_training_items()
         exit()
     elif args.test_group == 1:
         initialize_metadata()

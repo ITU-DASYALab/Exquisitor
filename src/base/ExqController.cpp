@@ -262,7 +262,8 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
 
 template <typename T>
 void ExqController<T>::reset_model() {
-
+    for (int m = 0; m < _modalities; m++)
+        _classifiers[m]->resetClassifier();
 }
 
 template <typename T>

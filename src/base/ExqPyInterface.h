@@ -15,7 +15,13 @@ namespace exq {
     };
     PyExquisitorV1 _pyExqV1;
 
-    [[maybe_unused]] PyMODINIT_FUNC PyInit_exq(void);
+#ifdef __cpluplus
+    extern "C" {
+#endif
+        [[maybe_unused]] void PyInit_exq(void);
+#ifdef __cpluplus
+    };
+#endif
 
     static PyObject* initialize_py([[maybe_unused]] PyObject* self, PyObject* args);
     static PyObject* train_py([[maybe_unused]] PyObject* self, PyObject* args);

@@ -16,7 +16,7 @@ link_directories(${HDF5_LIBRARY_DIRS})
 include_directories(${HDF5_INCLUDE_DIRS})
 
 # OpenCV
-find_package(OpenCV 4.2 REQUIRED)
+find_package(OpenCV 4.5.5 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 link_directories(${OpenCV_LIBS})
 

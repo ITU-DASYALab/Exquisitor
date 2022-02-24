@@ -11,7 +11,7 @@
 ## Compile
 
 * Update include and library directory paths in setup.py
-* May need to set the /usr/local/lib directory in $LD_LIBRARY_PATH (Linux) or $DYLD_LIBRARY_PATH (MacOS). Add this to your .bashrc:
+* Add library directory for opencv and hdf5 to $LD_LIBRARY_PATH (Linux) or $DYLD_LIBRARY_PATH (MacOS). Example for .bashrc:
     ```
     export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH
     or

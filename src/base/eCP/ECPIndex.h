@@ -30,7 +30,7 @@ namespace exq {
                  vector<vector<Props>> vidProps=vector<vector<Props>>(),
                  ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
 
-                ~ECPIndex();
+        ~ECPIndex();
 
         void loadDescriptors(vector<ExqDescriptor<T,U,V>*>& desc);
 

@@ -119,7 +119,7 @@ def test_one_modality():
     comp_conf_files = ['../data/lsc_100K/imagenet13k/img13k_100k_index_full.cnfg']
     mod_feature_dimensions = [12988]
     func_type = 0
-    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10,14)), 65535, 65535, 50000.0]]
+    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10, 14)), 65535, 65535, 50000.0]]
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
@@ -129,17 +129,17 @@ def test_one_modality():
 
 def test_two_modalities():
     iota = 1
-    noms = 100
+    noms = 1000
     num_workers = 1
     segments = 16
-    num_modalities = 1
+    num_modalities = 2
     b = 256
-    comp_conf_files = [[]]
-    mod_feature_dimensions = []
-    func_type = 0
-    func_objs = [[]]
-    item_metadata = [[]]
-    video_metadata = [[]]
+    comp_conf_files = ['../data/yfcc/vis_index_full.cnfg', '../data/yfcc/txt_index_full.cnfg']
+    mod_feature_dimensions = [1000, 100]
+    func_type = 1
+    func_objs = [[7, 54, 10, 10, 18014398509481983, float(pow(10, 16)), 1023, 1023, 1000.0]]
+    item_metadata = []
+    video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata)
     return 0
@@ -313,7 +313,7 @@ if __name__ == "__main__":
         test_one_modality()
     elif args.test_group == 1:
         test_two_modalities()
-        test_three_modalities()
+        # test_three_modalities()
     elif args.test_group == 2:
         test_two_modalities_different_compression()
         test_three_modalities_different_compression()

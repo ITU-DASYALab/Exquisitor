@@ -178,6 +178,39 @@ def test_single_modality_no_filters_no_seen():
     return 0
 
 
+def test_single_modality_no_filters_no_seen_two_rounds():
+    n_suggest = 50
+    segments = 16
+    seen = []
+    # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
+    exq.reset_model()
+    train_ret = exq.train(item_ids, labels, False, [])
+    print(train_ret)
+    ts = time()
+    (suggestions, total_items, worker_times, total_times, overhead) = \
+        exq.suggest(n_suggest, segments, seen, False, [])
+    ts = time() - ts
+    print("Suggestions: ", suggestions)
+    print("Total Items: ", total_items)
+    print("Total Times: ", total_times)
+    print("Time taken: ", ts)
+
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
+    exq.reset_model()
+    train_ret = exq.train(item_ids, labels, False, [])
+    print(train_ret)
+    (suggestions, total_items, worker_times, total_times, overhead) = \
+        exq.suggest(n_suggest, segments, seen, False, [])
+    print("Suggestions: ", suggestions)
+    print("Total Items: ", total_items)
+    print("Total Times: ", total_times)
+    print("Time taken: ", ts)
+    return 0
+
+
 def test_single_modality_filters_no_exp():
     n_suggest = 50
     segments = 16
@@ -284,6 +317,7 @@ if __name__ == "__main__":
     if args.test_group == 0:
         single_modality_initialize()
         test_single_modality_no_filters_no_seen()
+        test_single_modality_no_filters_no_seen_two_rounds()
         exit()
     elif args.test_group == 1:
         initialize_metadata()

@@ -15,17 +15,34 @@ using cv::ml::TrainData;
 
 ExqClassifier::ExqClassifier(int totalFeats) {
     _svm = SVMSGD::create();
+    resetClassifier();
+//    _svm->setSvmsgdType(SVMSGD::ASGD);
+//    _svm->setOptimalParameters();
+//    _svm->setMarginType(SVMSGD::HARD_MARGIN);
+//    _svm->setMarginRegularization(0.0001);
+//    _svm->setInitialStepSize(0.0001);
+//    _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 100, 0.01));
+    _totalFeats = totalFeats;
+}
+
+ExqClassifier::~ExqClassifier() {
+    delete _svm;
+}
+
+void ExqClassifier::resetClassifier() {
+    if (_svm->isTrained()) {
+        _weights.clear();
+        _svm->clear();
+        _svm.release();
+        _svm = Ptr<SVMSGD>();
+        _svm = SVMSGD::create();
+    }
     _svm->setSvmsgdType(SVMSGD::ASGD);
     _svm->setOptimalParameters();
     _svm->setMarginType(SVMSGD::HARD_MARGIN);
     _svm->setMarginRegularization(0.0001);
     _svm->setInitialStepSize(0.0001);
     _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 100, 0.01));
-    _totalFeats = totalFeats;
-}
-
-ExqClassifier::~ExqClassifier() {
-    delete _svm;
 }
 
 std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {

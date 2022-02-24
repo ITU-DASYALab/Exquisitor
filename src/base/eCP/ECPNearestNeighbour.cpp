@@ -122,7 +122,7 @@ template <typename T, typename U, typename V>
 double ECPNearestNeighbour<T,U,V>::Distance(ExqDescriptor<T,U,V>* data) {
     double dist = 0.0;
 
-#if defined(DEBUG) || defined(DEBUG_INIT)
+#if defined(DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
     cout << "(ECPNN) Calculating nn distance from desc " << query->id << " to " << data->id << endl;
 #endif
     auto arr = _functions->getDescriptorInformation(*data);

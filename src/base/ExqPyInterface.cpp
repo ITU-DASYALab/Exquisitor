@@ -397,7 +397,8 @@ PyObject* exq::get_descriptors_info_py([[maybe_unused]] PyObject *self, PyObject
     return descListPy;
 }
 
-[[maybe_unused]] PyMODINIT_FUNC exq::PyInit_exq(void) {
+[[maybe_unused]] void exq::PyInit_exq(void) {
     Py_Initialize();
-    return PyModule_Create(&exquisitor_definition);
+    //return
+    PyModule_Create(&exquisitor_definition);
 }
