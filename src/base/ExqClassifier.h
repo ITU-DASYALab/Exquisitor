@@ -34,7 +34,6 @@ namespace exq {
     protected:
         int _totalFeats;
         Ptr<SVMSGD> _svm;
-        Ptr<cv::ml::TrainData> _trainData;
         vector<double> _weights;
 
     }; //End of class ExqClassifier

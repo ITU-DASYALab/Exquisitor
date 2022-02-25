@@ -13,7 +13,7 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
                           vector<ItemProperties> itemProps,
                           vector<vector<Props>> vidProps,
                           ExpansionType expansionType, int statLevel) {
-            _cnfg = cnfg;
+    _cnfg = cnfg;
     cout << "Descriptor size: " << func->getDescriptorSize() << endl;
     _indexEntrySize = (sizeof(int) * 3) + sizeof(uint32_t) + func->getDescriptorSize();
     cout << "Index Entry Size: " << _indexEntrySize << endl;
@@ -56,7 +56,7 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     cout << "(ECPIndx) Initializing index data structure" << endl;
     // Initialize the data structure for the index file
     vector<ExqDescriptor<T,U,V>*> centroids = vector<ExqDescriptor<T,U,V>*>(_maxClusters);
-    _clusters = vector<ECPCluster<T,U,V>*>(_maxClusters);
+    _clusters.resize(_maxClusters);
 
     cout << "(ECPIndx) Reading cluster info and centroids" << endl;
     // Read the cluster info and centroids from the indx file
@@ -153,6 +153,7 @@ bool ECPIndex<T,U,V>::set_b_clusters(vector<double> query, double bias, int b, b
     while((clusterId = clusters->next()) != nullptr) {
         _bClusters.push_back(*clusterId);
     }
+    delete clusters;
     return _tree->check_pq();
 }
 
@@ -161,7 +162,7 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
                              int run, int segments, unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
     int start = chnk * run;
     int end = start + chnk;
-    int numDesc = 0;
+    int numDesc;
     totalData = 0;
     for (int cnt = start; cnt < end; cnt++) {
         numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();

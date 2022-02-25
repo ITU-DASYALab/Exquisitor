@@ -36,8 +36,10 @@ namespace exq {
         double overheadTime;
         TopResults(int segments) {
             suggs = vector<uint32_t>();
-            totalItemsConsideredPerSegment = vector<int>(segments);
-            totalTimePerSegment = vector<double>(segments);
+            totalItemsConsideredPerSegment = vector<int>(segments, 0);
+            std::fill(totalItemsConsideredPerSegment.begin(), totalItemsConsideredPerSegment.end(), 0);
+            totalTimePerSegment = vector<double>(segments, 0.0);
+            std::fill(totalTimePerSegment.begin(), totalTimePerSegment.end(), 0.0);
         }
     };
     /**

@@ -22,6 +22,13 @@ ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modali
 }
 
 template <typename T, typename U, typename V>
+ExqDataHandlerECP<T,U,V>::~ExqDataHandlerECP() {
+    for (int m = 0; m < _modalities; m++) {
+        delete _indx[m];
+    }
+}
+
+template <typename T, typename U, typename V>
 void ExqDataHandlerECP<T,U,V>::loadData(int workers) {
     cout << "(ExqHandler) Loading data into index" << endl;
     for (int m = 0; m < this->_modalities; m++) {

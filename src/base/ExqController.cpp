@@ -90,6 +90,12 @@ ExqController<T>::ExqController(
     _threads.resize(_numWorkers);
 }
 
+template <typename T>
+ExqController<T>::~ExqController() {
+    for (int m = 0; m < _modalities; m++) {
+        delete _classifiers[m];
+    }
+}
 
 template <typename T>
 vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels,

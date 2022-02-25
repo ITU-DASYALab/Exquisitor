@@ -68,8 +68,8 @@ namespace exq {
         vector<vector<Props>> _vidProperties;
 
         // Data structures
-        vector<ECPCluster<T,U,V>*> _clusters;
-        vector<uint32_t> _bClusters;
+        vector<ECPCluster<T,U,V>*> _clusters = vector<ECPCluster<T,U,V>*>();
+        vector<uint32_t> _bClusters = vector<uint32_t>();
         ECPTree<T,U,V>* _tree;
     };
 }

@@ -26,7 +26,11 @@ ExqClassifier::ExqClassifier(int totalFeats) {
 }
 
 ExqClassifier::~ExqClassifier() {
-    delete _svm;
+    if (_svm->isTrained()) {
+        _weights.clear();
+        _svm->clear();
+        _svm.release();
+    }
 }
 
 void ExqClassifier::resetClassifier() {
@@ -78,8 +82,7 @@ std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<flo
     }
 #endif
 
-    _trainData = TrainData::create(dataMat, cv::ml::ROW_SAMPLE, labelsMat);
-    _svm->train(_trainData);
+    _svm->train(dataMat, cv::ml::ROW_SAMPLE, labelsMat);
     cv::Mat sv = _svm->getWeights();
     rows = sv.rows;
     cols = sv.cols;
@@ -103,7 +106,6 @@ std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<flo
     }
     cout << "bias: " << _svm->getShift() << endl;
 #endif
-
     return _weights;
 }
 

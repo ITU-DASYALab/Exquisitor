@@ -34,6 +34,9 @@ ECPFarthestNeighbour<T,U,V>::ECPFarthestNeighbour(vector<double>& query, double 
 template <typename T, typename U, typename V>
 ECPFarthestNeighbour<T,U,V>::~ECPFarthestNeighbour() {
     // Clean up data, vectors clean themselves
+    _descriptorIDs.clear();
+    _clusterIDs.clear();
+    _distances.clear();
 };
 
 template <typename T, typename U, typename V>

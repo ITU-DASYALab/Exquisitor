@@ -247,6 +247,7 @@ if __name__ == "__main__":
         single_modality_initialize()
         test_single_modality_no_filters()
         test_single_modality_no_filters_no_training_items()
+        exq.reset_model()
         exit()
     elif args.test_group == 1:
         initialize_metadata()
@@ -255,6 +256,7 @@ if __name__ == "__main__":
         # test_single_modality_filters_frc()
         # test_single_modality_filters_erc()
         # test_single_modality_filters_arc()
+        exq.reset_model()
         exit()
     elif args.test_group == 2:
         exit()
@@ -262,3 +264,4 @@ if __name__ == "__main__":
         exit()
     elif args.test_group == 4:
         exit()
+    # exq.safe_close() # Not implemented yet
