@@ -132,12 +132,12 @@ namespace exq {
         vector<ExqArray<pair<int,float>>> get_descriptors(vector<int> ids, int mod);
 
     private:
-        int _iota;
-        int _noms;
-        int _numWorkers;
-        int _segments;
-        int _modalities;
-        int _bClusters;
+        int _iota = 1;
+        int _noms = 100;
+        int _numWorkers = 1;
+        int _segments = 16;
+        int _modalities = 1;
+        int _bClusters = 256;
 
         vector<ExqFunctions<T>*> _functions;
         ExqDataHandler<T>* _handler;

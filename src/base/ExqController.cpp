@@ -166,15 +166,14 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     auto results = TopResults(_segments);
     int completedSegments = 0;
     int runningSegments = 0;
-    int workerSegments[_numWorkers];
-    for (int w = 0; w < _numWorkers; w++) {
-        workerSegments[w] = -1;
-    }
+    vector<int> workerSegments = vector<int>(_numWorkers, -1);
+    std::fill(workerSegments.begin(), workerSegments.end(), -1);
     auto seenSet = unordered_set<uint32_t>();
     for (const uint32_t& seenItem : seenItems) {
         seenSet.insert(seenItem);
     }
     auto itemsFromSegments = vector<vector<ExqItem>>(_segments);
+    std::fill(itemsFromSegments.begin(), itemsFromSegments.end(), vector<ExqItem>());
     int totalItemsReturned = 0;
 
     ItemFilter usedFilters;
