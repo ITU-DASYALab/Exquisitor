@@ -185,15 +185,16 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     while (completedSegments < _segments) {
         for (int w = 0; w < _numWorkers; w++) {
             if (workerSegments[w] == -1 && runningSegments < _segments) {
+                int currSegment = runningSegments; // Avoids race condition
                 workerSegments[w] = runningSegments;
-                itemsFromSegments[workerSegments[w]] = vector<ExqItem>();
+                itemsFromSegments[currSegment] = vector<ExqItem>();
                 _threads[w] = async(std::launch::async, [&] {
-                    return _worker->suggest(k, itemsFromSegments[workerSegments[w]],
+                    return _worker->suggest(k, itemsFromSegments[currSegment],
                                             _classifiers,
-                                            workerSegments[w], _segments,
+                                            currSegment, _segments,
                                             _noms, _modalities, _handler, _functions, seenSet,
-                                            results.totalTimePerSegment[workerSegments[w]],
-                                            results.totalItemsConsideredPerSegment[workerSegments[w]], w,
+                                            results.totalTimePerSegment[currSegment],
+                                            results.totalItemsConsideredPerSegment[currSegment], w,
                                             usedFilters);
                 });
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
