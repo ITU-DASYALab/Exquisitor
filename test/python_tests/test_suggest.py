@@ -154,7 +154,22 @@ def single_modality_initialize_with_metadata():
                    func_type, func_objs, item_metadata, video_metadata)
 
 
+
 def two_modalities_initialize():
+    iota = 1
+    noms = 1000
+    num_workers = 1
+    segments = 16
+    num_modalities = 2
+    b = 256
+    comp_conf_files = ['../data/yfcc/vis_index_full.cnfg', '../data/yfcc/txt_index_full.cnfg']
+    mod_feature_dimensions = [1000, 100]
+    func_type = 1
+    func_objs = [[7, 54, 10, 10, 18014398509481983, float(pow(10, 16)), 1023, 1023, 1000.0]]
+    item_metadata = []
+    video_metadata = []
+    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+                   func_type, func_objs, item_metadata, video_metadata)
     return 0
 
 
@@ -290,6 +305,22 @@ def test_single_modality_filters_arc():
 
 
 def test_two_modalities_no_filters():
+    n_suggest = 50
+    segments = 16
+    seen = []
+    # Random items just to see if the process works with multiple modalities
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
+    train_ret = exq.train(item_ids, labels, False, [])
+    print(train_ret)
+    ts = time()
+    (suggestions, total_items, worker_times, total_times, overhead) = \
+        exq.suggest(n_suggest, segments, seen, False, [])
+    ts = time() - ts
+    print("Suggestions: ", suggestions)
+    print("Total Items: ", total_items)
+    print("Total Times: ", total_times)
+    print("Time taken: ", ts)
     return 0
 
 
@@ -330,6 +361,8 @@ if __name__ == "__main__":
         test_single_modality_filters_incr()
         exit()
     elif args.test_group == 3:
+        two_modalities_initialize()
+        test_two_modalities_no_filters()
         exit()
     elif args.test_group == 4:
         exit()
