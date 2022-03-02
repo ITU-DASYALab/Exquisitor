@@ -170,12 +170,12 @@ def test_three_modalities():
     segments = 16
     num_modalities = 1
     b = 256
-    comp_conf_files = [[]]
+    comp_conf_files = []
     mod_feature_dimensions = []
     func_type = 0
-    func_objs = [[]]
-    item_metadata = [[]]
-    video_metadata = [[]]
+    func_objs = []
+    item_metadata = []
+    video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata)
     return 0
@@ -183,17 +183,17 @@ def test_three_modalities():
 
 def test_three_modalities_different_compression():
     iota = 1
-    noms = 100
+    noms = 1000
     num_workers = 1
     segments = 16
     num_modalities = 1
     b = 256
-    comp_conf_files = [[]]
-    mod_feature_dimensions = []
-    func_type = 0
-    func_objs = [[]]
-    item_metadata = [[]]
-    video_metadata = [[]]
+    comp_conf_files = ['', '', '']
+    mod_feature_dimensions = [12988, 700, 365]
+    func_type = 1
+    func_objs = []
+    item_metadata = []
+    video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata)
 

@@ -123,3 +123,4 @@ fabric.properties
 
 # yfcc data
 test/data/yfcc
+test/data/vbs
