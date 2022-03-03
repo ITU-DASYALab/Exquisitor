@@ -55,7 +55,7 @@ int ExqDataHandlerECP<T,U,V>::getTotalItemsCount(int mod) {
 }
 
 template <typename T, typename U, typename V>
-vector<bool> ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers, //vector<vector<double>>& model, vector<double>& bias,
+vector<bool> ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers,
                                                       ItemFilter& filters, bool resume) {
     _b = b;
     vector<bool> empty = vector<bool>(_modalities);

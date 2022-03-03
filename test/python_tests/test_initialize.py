@@ -188,10 +188,16 @@ def test_three_modalities_different_compression():
     segments = 16
     num_modalities = 1
     b = 256
-    comp_conf_files = ['', '', '']
+    comp_conf_files = ['../data/vbs/index/plain/imgnet_index_full.cnfg',
+                       '../data/vbs/index/plain/actions_mid_index_full.cnfg',
+                       '../data/vbs/index/plain/places_index_full.cnfg']
     mod_feature_dimensions = [12988, 700, 365]
     func_type = 1
-    func_objs = []
+    func_objs = [
+        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
+    ]
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
@@ -315,7 +321,7 @@ if __name__ == "__main__":
         test_two_modalities()
         # test_three_modalities()
     elif args.test_group == 2:
-        test_two_modalities_different_compression()
+        # test_two_modalities_different_compression()
         test_three_modalities_different_compression()
     elif args.test_group == 3:
         initialize_metadata()

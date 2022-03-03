@@ -175,14 +175,34 @@ def two_modalities_initialize():
 
 
 def three_modalities_initialize():
-    # TODO: Use VBS22 data
+    iota = 1
+    noms = 1000
+    num_workers = 1
+    segments = 16
+    num_modalities = 1
+    b = 256
+    comp_conf_files = ['../data/vbs/index/plain/imgnet_index_full.cnfg',
+                       '../data/vbs/index/plain/actions_mid_index_full.cnfg',
+                       '../data/vbs/index/plain/places_index_full.cnfg']
+    mod_feature_dimensions = [12988, 700, 365]
+    func_type = 1
+    func_objs = [
+        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
+    ]
+    item_metadata = []
+    video_metadata = []
+    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+                   func_type, func_objs, item_metadata, video_metadata)
+
     return 0
 
 
 def test_single_modality_no_filters():
     # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
     train_ret = exq.train(item_ids, labels, False, [])
     print(train_ret)
     return 0
@@ -199,8 +219,8 @@ def test_single_modality_no_filters_no_training_items():
 
 def test_single_modality_filters_grc():
     # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
     collections = []
     std_filters = []
     coll_filters = [
@@ -233,8 +253,8 @@ def test_single_modality_filters_arc():
 
 def test_two_modalities_no_filters():
     # Arbitrary items from the collections, meant to test if the training phase works
-    item_ids = [39310,17230,73524,65850,54647]
-    labels = [1.0,1.0,1.0,-1.0,-1.0]
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
     train_ret = exq.train(item_ids, labels, False, [])
     print(train_ret)
     return 0
@@ -253,6 +273,15 @@ def test_two_modalities_filters_erc():
 
 
 def test_two_modalities_filters_arc():
+    return 0
+
+
+def test_three_modalities_no_filters():
+    # Arbitrary items from the collections, meant to test if the training phase works
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
+    train_ret = exq.train(item_ids, labels, False, [])
+    print(train_ret)
     return 0
 
 
@@ -281,6 +310,8 @@ if __name__ == "__main__":
         test_two_modalities_no_filters()
         exit()
     elif args.test_group == 3:
+        three_modalities_initialize()
+        test_two_modalities_no_filters()
         exit()
     elif args.test_group == 4:
         exit()

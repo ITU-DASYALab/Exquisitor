@@ -154,7 +154,6 @@ def single_modality_initialize_with_metadata():
                    func_type, func_objs, item_metadata, video_metadata)
 
 
-
 def two_modalities_initialize():
     iota = 1
     noms = 1000
@@ -170,6 +169,31 @@ def two_modalities_initialize():
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata)
+    return 0
+
+
+def three_modalities_initialize():
+    iota = 1
+    noms = 1000
+    num_workers = 1
+    segments = 16
+    num_modalities = 1
+    b = 256
+    comp_conf_files = ['../data/vbs/index/plain/imgnet_index_full.cnfg',
+                       '../data/vbs/index/plain/actions_mid_index_full.cnfg',
+                       '../data/vbs/index/plain/places_index_full.cnfg']
+    mod_feature_dimensions = [12988, 700, 365]
+    func_type = 1
+    func_objs = [
+        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
+    ]
+    item_metadata = []
+    video_metadata = []
+    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+                   func_type, func_objs, item_metadata, video_metadata)
+
     return 0
 
 
@@ -304,7 +328,7 @@ def test_single_modality_filters_arc():
     return 0
 
 
-def test_two_modalities_no_filters():
+def test_modalities_no_filters():
     n_suggest = 50
     segments = 16
     seen = []
@@ -362,7 +386,9 @@ if __name__ == "__main__":
         exit()
     elif args.test_group == 3:
         two_modalities_initialize()
-        test_two_modalities_no_filters()
+        test_modalities_no_filters()
         exit()
     elif args.test_group == 4:
+        three_modalities_initialize()
+        test_modalities_no_filters()
         exit()
