@@ -177,16 +177,16 @@ def three_modalities_initialize():
     noms = 1000
     num_workers = 1
     segments = 16
-    num_modalities = 1
+    num_modalities = 3
     b = 256
     comp_conf_files = ['../data/vbs/index/plain/imgnet_index_full.cnfg',
                        '../data/vbs/index/plain/actions_mid_index_full.cnfg',
                        '../data/vbs/index/plain/places_index_full.cnfg']
     mod_feature_dimensions = [12988, 700, 365]
-    func_type = 1
+    func_type = 0
     func_objs = [
         [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
-        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 10)-1, pow(2, 10)-1, pow(2, 10)],
         [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
     ]
     item_metadata = []
@@ -329,7 +329,7 @@ def test_single_modality_filters_arc():
 
 
 def test_modalities_no_filters():
-    n_suggest = 50
+    n_suggest = 25
     segments = 16
     seen = []
     # Random items just to see if the process works with multiple modalities

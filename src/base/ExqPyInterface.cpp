@@ -175,7 +175,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
                 props.insert((uint16_t)PyLong_AsLong(PyList_GetItem(tmpPropsPy,k)));
 #if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
-                cout << "Prop: "  << j << "." << k << ": " << arr.getItem(k) << endl;
+                //cout << "Prop: "  << j << "." << k << ": " << arr.getItem(k) << endl;
 #endif
             }
             it.collProps.props[j] = props;

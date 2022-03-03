@@ -115,7 +115,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
         for (uint32_t trainId : trainIds) {
-            T desc = _handler->getDescriptor(trainId);
+            T desc = _handler->getDescriptor(trainId, m);
             ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(desc);
             vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
             for (int j = 0; j < descVals.getSize(); j++) {
