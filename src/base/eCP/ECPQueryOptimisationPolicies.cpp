@@ -16,11 +16,20 @@ ECPQueryOptimisationPolicies<T,U,V>::ECPQueryOptimisationPolicies(ExpansionType 
     _clusters = clusters;
     _itemProps = itemProps;
     _vidProps = vidProps;
+    _originalCnt = nullptr;
+    _sessionRemainingCnt = nullptr;
+    _filterExactCnt = nullptr;
+    _filterReturnedCnt = nullptr;
+    _clusterToStatLevel = nullptr;
 }
 
 template <typename T, typename U, typename V>
 ECPQueryOptimisationPolicies<T,U,V>::~ECPQueryOptimisationPolicies() {
-
+    delete _originalCnt;
+    delete _sessionRemainingCnt;
+    delete _filterExactCnt;
+    delete _filterReturnedCnt;
+    delete _clusterToStatLevel;
 }
 
 template <typename T, typename U, typename V>
@@ -46,10 +55,10 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
             _combinations[i] = map<string,double>();
         }
         _clusterToStatLevel = new uint32_t[numClusters];
-        double* clusterTotals = new double[levelSizes[_statLevel]]();
+        auto* clusterTotals = new double[levelSizes[_statLevel]]();
         cout << "Gathering statistics..." << endl;
         for (int i = 0; i < numClusters; i++) {
-            int temp_level = cnfg->getNumLvls()-1;
+            int temp_level = (int) cnfg->getNumLvls()-1;
             int p = i;
             while (temp_level != _statLevel) {
                 p = nodes[temp_level][p]->parent;
