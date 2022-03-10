@@ -19,3 +19,4 @@ Make sure cmake is installed.
       ../opencv
 5. make -j8
 6. make install
+
