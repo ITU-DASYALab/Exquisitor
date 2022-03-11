@@ -141,7 +141,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     auto itemProps = vector<ItemProperties>((int)PyList_Size(itemMetadataPy));
     cout << "Getting metadata" << endl;
     for (int i = 0; i < (int)itemProps.size(); i++) {
-#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
         cout << "Item: " << i << endl;
 #endif
         ItemProperties it = ItemProperties();
@@ -149,7 +149,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         it.vid = (bool) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),1));
         it.vidId = (int) PyLong_AsLong(PyList_GetItem(PyList_GetItem(itemMetadataPy,i),2));
         PyObject* stdPropsPy = PyList_GetItem(PyList_GetItem(itemMetadataPy,i),3);
-#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
         cout << "Getting standard properties" << endl;
 #endif
         it.stdProps.props = vector<set<uint16_t>>((int)PyList_Size(stdPropsPy));
@@ -161,25 +161,25 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             }
             it.stdProps.props[j] = props;
         }
-#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
         cout << "Getting collection specific properties" << endl;
 #endif
         PyObject* collPropsPy = PyList_GetItem(PyList_GetItem(itemMetadataPy,i),4);
         it.collProps.props = vector<set<uint16_t>>((int)PyList_Size(collPropsPy));
         for (int j = 0; j < PyList_Size(collPropsPy); j++) {
-#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
             cout << "Collection prop: " << j << endl;
 #endif
             tmpPropsPy = PyList_GetItem(collPropsPy, j);
             auto props = set<uint16_t>();
             for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
                 props.insert((uint16_t)PyLong_AsLong(PyList_GetItem(tmpPropsPy,k)));
-#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
                 //cout << "Prop: "  << j << "." << k << ": " << arr.getItem(k) << endl;
 #endif
             }
             it.collProps.props[j] = props;
-#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_EXTRA)
+#if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
             cout << "Prop " << j  << " set" << endl;
 #endif
         }
@@ -189,23 +189,27 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
 
     PyObject* videoMetadataPy = PyTuple_GetItem(args, 11);
     auto collVidProps = vector<vector<Props>>((int)PyList_Size(videoMetadataPy));
+    // Go through collections
     for (int c = 0; c < PyList_Size(videoMetadataPy); c++) {
-        auto cVids = vector<Props>((int)PyList_Size(PyList_GetItem(videoMetadataPy,c)));
-        for (int v = 0; v < (int)cVids.size(); v++) {
-            PyObject* vidPropsPy = PyList_GetItem(videoMetadataPy,c);
-            Props vp = Props();
-            vp.props = vector<set<uint16_t>>((int)PyList_Size(vidPropsPy));
-            for (int p = 0; p < (int)vp.props.size(); p++) {
-                tmpPropsPy = PyList_GetItem(PyList_GetItem(vidPropsPy, v), p);
+        collVidProps[c] = vector<Props>((int)PyList_Size(PyList_GetItem(videoMetadataPy,c)));
+        PyObject* videosPy = PyList_GetItem(videoMetadataPy,c);
+        // cout << "Videos: " << collVidProps[c].size() << endl;
+        // Go through videos of collection c
+        for (int v = 0; v < (int)collVidProps[c].size(); v++) {
+            // Video properties
+            PyObject* vidPropsPy = PyList_GetItem(videosPy,v);
+            collVidProps[c][v] = Props();
+            collVidProps[c][v].props = vector<set<uint16_t>>((int)PyList_Size(vidPropsPy));
+            // Go through properties and set values
+            for (int p = 0; p < (int)PyList_Size(vidPropsPy); p++) {
+                tmpPropsPy = PyList_GetItem(vidPropsPy, p);
                 auto props = set<uint16_t>();
                 for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
                     props.insert((uint16_t) PyLong_AsLong(PyList_GetItem(tmpPropsPy, k)));
                 }
-                vp.props[p] = props;
+                collVidProps[c][v].props[p] = props;
             }
-            cVids[v] = vp;
         }
-        collVidProps[c] = cVids;
     }
     cout << "Video metadata filled" << endl;
 

@@ -197,6 +197,51 @@ def three_modalities_initialize():
     return 0
 
 
+def three_modalities_initialize_with_metadata(filters_file):
+    with open(filters_file, 'r') as fp:
+        filters = json.load(fp)
+
+    iota = 1
+    noms = 1000
+    num_workers = 1
+    segments = 16
+    num_modalities = 3
+    b = 256
+    comp_conf_files = ['../data/vbs/index/plain/7475_vids/imgnet13k_max_index_full.cnfg',
+                       '../data/vbs/index/plain/7475_vids/actions_mid_index_full.cnfg',
+                       '../data/vbs/index/plain/7475_vids/places365_index_full.cnfg']
+    mod_feature_dimensions = [12988, 700, 365]
+    func_type = 0
+    func_objs = [
+        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 10)-1, pow(2, 10)-1, pow(2, 10)],
+        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
+    ]
+    n_items = len(filters)
+    item_metadata = []
+    vid_ids = {}
+    for i in range(n_items):
+        if filters[i]['vidId'] not in vid_ids:
+            # print('Adding key', filters[i]['vidId'], ' with value', i)
+            vid_ids[filters[i]['vidId']] = i
+        item = [0, True, filters[i]['vidId'], [], [
+            [filters[i]['faces']]
+        ]]
+        item_metadata.append(item)
+    video_metadata = [[]]
+    print('Number of videos', len(vid_ids))
+    for i in range(len(vid_ids)):
+        vid = [
+            filters[vid_ids[i]]['catIds'],
+            filters[vid_ids[i]]['tagIds']
+        ]
+        video_metadata[0].append(vid)
+    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+                   func_type, func_objs, item_metadata, video_metadata)
+
+    return 0
+
+
 def test_single_modality_no_filters_no_seen():
     n_suggest = 50
     segments = 16
@@ -364,6 +409,40 @@ def test_two_modalities_filters_arc():
     return 0
 
 
+def test_three_modalities_with_filters():
+    n_suggest = 25
+    segments = 16
+    seen = []
+    # Random items just to see if the process works with multiple modalities
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
+    collections = []
+    std_filters = []
+    coll_filters = [
+        [
+            [0]  # faces
+        ]
+    ]
+    vid_filters = [
+        [
+            [1], # categories
+            [] # tags
+        ]
+    ]
+    filters = [collections, std_filters, coll_filters, vid_filters]
+    train_ret = exq.train(item_ids, labels, True, filters)
+    print(train_ret)
+    ts = time()
+    (suggestions, total_items, worker_times, total_times, overhead) = \
+        exq.suggest(n_suggest, segments, seen, False, [])
+    ts = time() - ts
+    print("Suggestions: ", suggestions)
+    print("Total Items: ", total_items)
+    print("Total Times: ", total_times)
+    print("Time taken: ", ts)
+    return 0
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Test Exquisitor's initialize function")
     parser.add_argument('test_group', type=int, help='')
@@ -391,4 +470,7 @@ if __name__ == "__main__":
     elif args.test_group == 4:
         three_modalities_initialize()
         test_modalities_no_filters()
+    elif args.test_group == 5:
+        three_modalities_initialize_with_metadata('../data/vbs/filters_map.json')
+        test_three_modalities_with_filters()
         exit()

@@ -274,21 +274,48 @@ def test_filters_two_collections():
     return 0
 
 
-def test_filters_videos_one_collection():
+def test_filters_videos_one_collection(filters_file):
+    with open(filters_file, 'r') as fp:
+        filters = json.load(fp)
+
     iota = 1
-    noms = 100
+    noms = 1000
     num_workers = 1
     segments = 16
-    num_modalities = 1
+    num_modalities = 3
     b = 256
-    comp_conf_files = [[]]
-    mod_feature_dimensions = []
+    comp_conf_files = ['../data/vbs/index/plain/imgnet_index_full.cnfg',
+                       '../data/vbs/index/plain/actions_mid_index_full.cnfg',
+                       '../data/vbs/index/plain/places_index_full.cnfg']
+    mod_feature_dimensions = [12988, 700, 365]
     func_type = 0
-    func_objs = [[]]
-    item_metadata = [[]]
+    func_objs = [
+        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 10)-1, pow(2, 10)-1, pow(2, 10)],
+        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
+    ]
+    n_items = len(filters)
+    item_metadata = []
+    vid_ids = {}
+    for i in range(n_items):
+        if filters[i]['vidId'] not in vid_ids:
+            # print('Adding key', filters[i]['vidId'], ' with value', i)
+            vid_ids[filters[i]['vidId']] = i
+        item = [0, True, filters[i]['vidId'], [], [
+            [filters[i]['faces']]
+        ]]
+        item_metadata.append(item)
     video_metadata = [[]]
+    print('Number of videos', len(vid_ids))
+    for i in range(len(vid_ids)):
+        vid = [
+            filters[vid_ids[i]]['catIds'],
+            filters[vid_ids[i]]['tagIds']
+        ]
+        video_metadata[0].append(vid)
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata)
+
     return 0
 
 
@@ -328,5 +355,5 @@ if __name__ == "__main__":
         test_filters_one_collection()
         # test_filters_two_collections()
     elif args.test_group == 4:
-        test_filters_videos_one_collection()
-        test_filters_videos_two_collections()
+        test_filters_videos_one_collection('../data/vbs/filters_map.json')
+        # test_filters_videos_two_collections()

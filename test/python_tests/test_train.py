@@ -285,6 +285,29 @@ def test_three_modalities_no_filters():
     return 0
 
 
+def test_three_modaliters_filters_grc():
+    # 3 Positive images of indoor setting (1 with a clock). 1 Negative outdoor image
+    item_ids = [39310, 17230, 73524, 65850, 54647]
+    labels = [1.0, 1.0, 1.0, -1.0, -1.0]
+    collections = []
+    std_filters = []
+    coll_filters = [
+        [
+            [0]  # faces
+        ]
+    ]
+    vid_filters = [
+        [
+            [1], # categories
+            [] # tags
+        ]
+    ]
+    filters = [collections, std_filters, coll_filters, vid_filters]
+    train_ret = exq.train(item_ids, labels, True, filters)
+    print(train_ret)
+    return 0
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Test Exquisitor's initialize function")
     parser.add_argument('test_group', type=int, help='')
