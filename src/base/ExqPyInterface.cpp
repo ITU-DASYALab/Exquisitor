@@ -213,6 +213,26 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     }
     cout << "Video metadata filled" << endl;
 
+    ExpansionType expType;
+    int exp = (int)PyLong_AsLong(PyTuple_GetItem(args, 12));
+    switch (exp) {
+        case 1:
+            expType = ExpansionType::GLOBAL_REMAINING_CNT;
+            break;
+        case 2:
+            expType = ExpansionType::FILTER_REMAINING_CNT;
+            break;
+        case 3:
+            expType = ExpansionType::ESTIMATED_REMAINING_CNT;
+            break;
+        case 4:
+            expType = ExpansionType::ALL_REMAINING_CNT;
+            break;
+        default:
+            expType = ExpansionType::ORIGINAL_CNT;
+    }
+    int statLevel = (int)PyLong_AsLong(PyTuple_GetItem(args, 13));
+
     vector<string> cnfgFiles = vector<string>(PyList_Size(compCnfgFilesPy));
     for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
         cnfgFiles[i] = _PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i));
@@ -222,7 +242,8 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     auto dataHandler =
             new ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>(cnfgFiles, numModalities,
                                                               functions, modFeatureDimensions,
-                                                              itemProps, collVidProps);
+                                                              itemProps, collVidProps,
+                                                              expType, statLevel);
     cout << "DataHandler ready" << endl;
 
     cout << "Initializing Controller" << endl;

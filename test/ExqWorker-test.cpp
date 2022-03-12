@@ -52,7 +52,8 @@ TEST_F(SingleModalityWorker, get_k_stuff) {
     unordered_set<uint32_t> seenItems = unordered_set<uint32_t>();
     vector<double> times;
     vector<int> totalItemsConsidered;
+    ItemFilter filter = ItemFilter();
     _worker->suggest(k,items,_classifier, 0, 2, 10, 1,
-                     _dataHandler, _functionsR64, seenItems, times[0], totalItemsConsidered[0], 0);
+                     _dataHandler, _functionsR64, seenItems, times[0], totalItemsConsidered[0], 0, filter);
     assert(items.size() == k);
 }

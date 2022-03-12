@@ -26,7 +26,8 @@ namespace exq {
          */
         ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
                           vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions, vector<int>& featureDimensions,
-                          vector<ItemProperties> itemProps, vector<vector<Props>> vidProps);
+                          vector<ItemProperties> itemProps, vector<vector<Props>> vidProps, ExpansionType expType,
+                          int statLevel);
 
         ~ExqDataHandlerECP();
 

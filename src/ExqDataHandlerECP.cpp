@@ -11,13 +11,15 @@ ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modali
                                             vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions,
                                             vector<int>& featureDimensions,
                                             vector<ItemProperties> itemProps,
-                                            vector<vector<Props>> vidProps) {
+                                            vector<vector<Props>> vidProps,
+                                            ExpansionType expType,
+                                            int statLevel) {
     _indx = vector<ECPIndex<T,U,V>*>(modalities);
     _modalities = modalities;
     _descriptors = vector<vector<ExqDescriptor<T,U,V>*>>(_modalities);
     for (int m = 0; m < modalities; m++) {
         _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m],
-                                       itemProps, vidProps);
+                                       itemProps, vidProps, expType, statLevel);
     }
 }
 
