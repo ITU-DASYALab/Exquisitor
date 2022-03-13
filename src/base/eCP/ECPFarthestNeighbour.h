@@ -23,7 +23,7 @@ namespace exq {
         vector<double> getQuery() { return _query; }
 
         uint32_t getK() { return _k; }
-        void setK(uint32_t k) { _k = k; }
+        void updateK(uint32_t k);
 
         vector<double> getTopDistances();
 

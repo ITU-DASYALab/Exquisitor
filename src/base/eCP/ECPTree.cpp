@@ -249,7 +249,7 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
                 _expCounter++;
                 exp++;
                 bx *= 2;
-                res->setK(bx);
+                res->updateK(bx);
             } else if (bx == (uint32_t)_numClusters) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
                 cout << "Can not expand further" << endl;
@@ -262,7 +262,7 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
                 cout << "Expanding b to max clusters " << _numClusters << endl;
 #endif
                 bx = _numClusters;
-                res->setK(bx);
+                res->updateK(bx);
             }
         }
     }
@@ -282,7 +282,7 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
     //    }
     //}
     if (k != bx) {
-        res->setK(k);
+        res->updateK(k);
     }
 
     //cout << "PQ(" << pq.size() << ") Searched!" << endl;

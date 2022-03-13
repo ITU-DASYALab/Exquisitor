@@ -384,6 +384,7 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
 }
 
 PyObject* exq::reset_model_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args) {
+    cout << "Resetting model" << endl;
     _pyExqV1._controller->reset_model();
 
     Py_IncRef(Py_None);

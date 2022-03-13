@@ -149,10 +149,16 @@ bool ECPIndex<T,U,V>::set_b_clusters(vector<double> query, double bias, int b, b
 #endif
     _bClusters.clear();
     clusters->open();
+#if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
+    cout << "(ECPIndx) Adding to _bClusters (size: " << _bClusters.size() << ")" << endl;
+#endif
     uint32_t* clusterId;
     while((clusterId = clusters->next()) != nullptr) {
         _bClusters.push_back(*clusterId);
     }
+#if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
+    cout << "(ECPIndx) Index Ready (freeing & returning)"<< endl;
+#endif
     delete clusters;
     return _tree->check_pq();
 }

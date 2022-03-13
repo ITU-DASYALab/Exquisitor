@@ -40,6 +40,18 @@ ECPFarthestNeighbour<T,U,V>::~ECPFarthestNeighbour() {
 };
 
 template <typename T, typename U, typename V>
+void ECPFarthestNeighbour<T,U,V>::updateK(uint32_t k) {
+    _descriptorIDs.resize(k);
+    _clusterIDs.resize(k);
+    _distances.resize(k);
+    for (uint32_t i = _k; i < k; i++) {
+        _distances[i] = -DBL_MAX;
+    }
+    _k = k;
+    FindFarthest();
+}
+
+template <typename T, typename U, typename V>
 void ECPFarthestNeighbour<T,U,V>::compareAndReplaceFarthest(ExqDescriptor<T,U,V>* data, uint32_t clusterid) {
     // Find the distance.  If new k-nn found, then replace the farthest one
     double dist = _functions->distance(_query, _bias, *data);
