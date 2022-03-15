@@ -66,12 +66,14 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             candItem.itemId = descriptors[m][i].id;
             candItem.distance = vector<double>(modalities);
 #if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
-            cout << "(ExqWorker[" << workerId << "]) Getting distance for candidate item " << i << endl;
+            cout << "(ExqWorker[" << workerId << "]) Getting distance for candidate item " << i << " descId ";
+            cout << candItem.itemId << endl;
 #endif
             for (int mm = 0; mm < modalities; mm++) {
                 vector<double> model = classifiers[mm]->getWeights();
                 double bias = classifiers[mm]->getBias();
-                candItem.distance[mm] = functions[m]->distance(model, bias, descriptors[mm][i]);
+                candItem.distance[mm] = functions[mm]->distance(model, bias,
+                                                                *handler->getDescriptor(candItem.itemId, mm));
             }
 
             if ((int) candidateItems[m].size() == noms) {
@@ -101,9 +103,6 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
                 }
                 modSize[m]++;
             }
-#if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
-            cout << "(ExqWorker[" << workerId << "]) Checked candidate item " << i << endl;
-#endif
         }
     }
     finish = high_resolution_clock::now();
@@ -148,8 +147,8 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     if (itemsToReturn.size() > 0) {
         cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " Sanity check: " << itemsToReturn[0].itemId
         << " " << itemsToReturn[0].distance[0] << endl;
-        cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " finished" << endl;
     }
+    cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " finished" << endl;
 #endif
 }
 
