@@ -116,6 +116,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             sortedCandidates.insert(sortedCandidates.end(), candidateItems[m].begin(), candidateItems[m].end());
             candidateItems[m].clear();
         }
+        candidateItems.clear();
         functions[0]->sortItems(sortedCandidates, modalities);
 
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
@@ -123,13 +124,13 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 #endif
         int cnt = 0;
         for (int i = 0; i < (int) sortedCandidates.size(); i++) {
-            if (sortedCandidates[i].aggScore != -1) {
+            if (sortedCandidates[i].aggScore != -1.0) {
                 sortedCandidates[i].segment = currentSegment;
 
                 itemsToReturn.push_back(sortedCandidates[i]);
                 cnt++;
 
-                for (int j = i; j < (int) candidateItems.size(); j++) {
+                for (int j = i; j < (int) sortedCandidates.size(); j++) {
                     if (sortedCandidates[i].itemId == sortedCandidates[j].itemId) {
                         sortedCandidates[j].aggScore = -1.0;
                     }
