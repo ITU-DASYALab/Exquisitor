@@ -51,12 +51,11 @@ bool ItemFilter::compare(ItemProperties& item, vector<vector<Props>>& vidProps) 
         cout << "Collection property filters found" << endl;
 #endif
         for (auto c : _filters.collFilters) {
-            // As it is treated as an OR filter, item has already passed collection id filter
-            if (!_filters.collection.empty())
-                if (item.collectionId != c.first)
-                    continue;
-            if (item.collectionId != c.first)
-                return false;
+            //if (!_filters.collection.empty())
+            //    if (item.collectionId != c.first)
+            //        continue;
+            //if (item.collectionId != c.first)
+            //    return false;
             for (auto prop : c.second) {
 #if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
                 cout << "Checking prop " << prop.first << " (item has ";
