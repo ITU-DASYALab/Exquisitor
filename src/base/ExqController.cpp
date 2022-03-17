@@ -147,6 +147,9 @@ for (int m = 0; m < _modalities; m++) {
 #endif
     //_handler->selectClusters(bPerMod, weights, bias, _activeFilters);
     _pq_state = _handler->selectClusters(bPerMod, _classifiers, _activeFilters);
+#if defined(DEBUG) || defined(DEBUG_TRAIN)
+    for (int m = 0; m < _modalities; m++) cout << "(CTRL) PQ state( " << m << "): " << _pq_state[m] << endl;
+#endif
     finish = high_resolution_clock::now();
     times.push_back(duration<double, milli>(finish - begin).count());
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
@@ -245,17 +248,20 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     //TODO: Update session clusters in ECPQOP
 
     if ((int)results.suggs.size() < k) {
+        cout << "Incremental Retrieval" << endl;
         auto bPerMod = vector<int>(_modalities);
         bool done = true;
         for (int m = 0; m < _modalities; m++) {
             if (_pq_state[m])
                 bPerMod[m] = 0;
             else {
+                cout << "mod " << m << " pq_state " << _pq_state[m] << endl;
                 done = false;
                 bPerMod[m] = _bClusters;
             }
         }
         if (!done) {
+            cout << "In !done" << endl;
             _pq_state = _handler->selectClusters(bPerMod, _classifiers, _activeFilters, true);
             results = suggest(k, seenItems, changeFilters, filters, results);
         }

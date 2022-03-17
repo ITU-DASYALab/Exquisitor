@@ -73,6 +73,9 @@ vector<bool> ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<ExqC
         //empty[m] = _indx[m]->set_b_clusters(model[m], bias[m], _b[m]);
         empty[m] = _indx[m]->set_b_clusters(classifiers[m]->getWeights(), classifiers[m]->getBias(), _b[m],
                                             resume);
+#if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
+        cout << "(ExqHandler) PQ state: " << empty[m] << endl;
+#endif
     }
     return empty;
 }

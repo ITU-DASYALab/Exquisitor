@@ -237,6 +237,7 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
         if (_pq.empty() || total_count >= ((int)thresh)) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
             cout << "(ECPTree) Total Count " << total_count << endl;
+            cout << "(ECPTree) PQ " << _pq.empty() << endl;
 #endif
         //    if (pq.empty()) pq_empty = true;
             break;

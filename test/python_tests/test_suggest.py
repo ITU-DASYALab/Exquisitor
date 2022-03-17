@@ -308,7 +308,7 @@ def test_single_modality_filters_no_exp():
         [
             [46],  # location (home)
             [],  # activity
-            [12, 16],  # hour
+            [12],  # hour
             [4],  # day (Friday)
             []  # year
         ]
@@ -360,6 +360,7 @@ def test_single_modality_filters_not_active_no_exp():
     print("Time taken: ", ts)
     return 0
 
+
 def test_single_modality_filters_incr():
     n_suggest = 50
     segments = 16
@@ -373,7 +374,7 @@ def test_single_modality_filters_incr():
         [
             [46],  # location (home)
             [],  # activity
-            [12],  # hour
+            [12, 16],  # hour
             [4],  # day (Friday)
             []  # year
         ]
