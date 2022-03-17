@@ -61,7 +61,7 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     cout << "(ECPIndx) Reading cluster info and centroids" << endl;
     // Read the cluster info and centroids from the indx file
     for (uint32_t i = 0; i < _maxClusters; i++) {
-        _clusters[i] = new ECPCluster<T,U,V>(cnfg, _indxFile, _dataFile, _indexEntrySize);
+        _clusters[i] = new ECPCluster<T,U,V>(cnfg, _indxFile, _dataFile, _indexEntrySize, func->getIota());
         _totalItems += _clusters[i]->getNumDescriptors();
         centroids[i] = new ExqDescriptor<T,U,V>(_indxFile);
 #if defined(DEBUG) || defined(DEBUG_INIT)
@@ -157,7 +157,7 @@ bool ECPIndex<T,U,V>::set_b_clusters(vector<double> query, double bias, int b, b
         _bClusters.push_back(*clusterId);
     }
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
-    cout << "(ECPIndx) Index Ready (freeing & returning)"<< endl;
+    cout << "(ECPIndx) Index Ready (freeing & returning)... _bClusters (size: " << _bClusters.size() << ")" << endl;
 #endif
     delete clusters;
     return _tree->check_pq();
@@ -216,7 +216,7 @@ void ECPIndex<T,U,V>::saveClusterDistribution(uint64_t numC, ECPConfig* cnfg, FI
 
     // Read the cluster info and centroids from the indx file
     for (uint64_t i = 0; i < numC; i++) {
-        _clusters[i] = new ECPCluster<T,U,V>(cnfg, indxFile, dataFile, _indexEntrySize);
+        _clusters[i] = new ECPCluster<T,U,V>(cnfg, indxFile, dataFile, _indexEntrySize, 1);
         myfile << "BCP\t" << mod << "\t" << i << "\t" << "Number-of-Descriptors" << "\t"
                << _clusters[i]->getNumDescriptors() << endl;
         centroids[i] = new ExqDescriptor<T,U,V>(indxFile);

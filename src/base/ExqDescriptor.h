@@ -27,14 +27,14 @@ namespace exq {
     public:
         uint32_t id;
         T topFeature;
-        U featureIds;
-        V featureRatios;
+        ExqArray<U> featureIds;
+        ExqArray<V> featureRatios;
         ExqDescriptor() = default;
 
         /**
          * @brief constructs the Descriptor
          */
-        ExqDescriptor(uint32_t itemId, T top, U featIds, V ratios) {
+        ExqDescriptor(uint32_t itemId, T top, ExqArray<U> featIds, ExqArray<V> ratios) {
             id = itemId;
             topFeature = top;
             featureIds = featIds;
@@ -61,15 +61,23 @@ namespace exq {
             featureRatios = org->featureRatios;
         }
 
-        ExqDescriptor(FILE* file, bool gobbleDist = 0) {
+        ExqDescriptor(FILE* file, int iota = 1, bool gobbleDist = 0) {
             size_t res;
             res = fread(&this->id, sizeof(int), 1, file);
             if (gobbleDist) {
                 res = fread(&this->topFeature, sizeof(int), 1, file);
             }
+            featureIds = ExqArray<U>(iota);
+            featureRatios = ExqArray<V>(iota);
             res = fread(&this->topFeature, sizeof(uint64_t), 1, file);
-            res = fread(&this->featureIds, sizeof(uint64_t), 1, file);
-            res = fread(&this->featureRatios, sizeof(uint64_t), 1, file);
+            uint64_t featId;
+            uint64_t ratios;
+            for (int i = 0; i < iota; i++) {
+                res = fread(&featId, sizeof(uint64_t), 1, file);
+                featureIds.setItem(featId, i);
+                res = fread(&ratios, sizeof(uint64_t), 1, file);
+                featureRatios.setItem(ratios, i);
+            }
             if (res == 0) std::cout << "Error reading descriptor" << std::endl;
         }
 
@@ -90,9 +98,9 @@ namespace exq {
 
         T getTop() { return this->topFeature; }
 
-        U getFeatureIds() { return this->featureIds; }
+        U getFeatureIds(int i) { return this->featureIds.getItem(i); }
 
-        V getFeatureRatios() { return this->featureRatios; }
+        V getFeatureRatios(int i) { return this->featureRatios.getItem(i); }
 
     }; //End of class ExqDescriptor
 

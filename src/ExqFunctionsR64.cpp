@@ -25,7 +25,6 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, i
     this->ratiosMask = (uint64_t)(pow(2, this->ratiosFeatureShift)-1);
     this->ratiosDivisor = ratiosDivisor;
 
-    //TODO: Make use of iota to get correct values
     this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
     this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
@@ -87,16 +86,19 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 #endif
     exqArr.setItem(std::make_pair(featId, featVal), 0);
 
-    for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
+    for (int i = 0; i < iota; i++) {
+        for (int j = 0; j < (this->nDescFeatures-1); j++) {
+            featId = (descriptor.getFeatureIds(i) >> this->idsBitShifts[j]) & this->idsMask;
 #ifdef DEBUG
-        cout << "(ExqFncR64) Feature ID: " << featId << endl;
+            cout << "(ExqFncR64) Feature ID: " << featId << endl;
 #endif
-        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask)/this->ratiosDivisor;
+            featVal *= ((descriptor.getFeatureRatios(i) >> this->ratiosBitShifts[j]) & \
+                       this->ratiosMask)/this->ratiosDivisor;
 #ifdef DEBUG
-        cout << "(ExqFncR64) Feature Val: " << featVal << endl;
+            cout << "(ExqFncR64) Feature Val: " << featVal << endl;
 #endif
-        exqArr.setItem(std::make_pair(featId, featVal), i+1);
+            exqArr.setItem(std::make_pair(featId, featVal), j+1);
+        }
     }
 
     return exqArr;
@@ -117,10 +119,13 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
     int featId = descriptor.getTop() >> this->topFeatureShift;
     double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
     score += model[featId] * featVal;
-    for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        featId = (descriptor.getFeatureIds() >> this->idsBitShifts[i]) & this->idsMask;
-        featVal *= ((descriptor.getFeatureRatios() >> this->ratiosBitShifts[i]) & this->ratiosMask)/this->ratiosDivisor;
-        score += model[featId] * featVal;
+    for (int i = 0; i < iota; i++) {
+        for (int j = 0; j < (this->nDescFeatures - 1); j++) {
+            featId = (descriptor.getFeatureIds(i) >> this->idsBitShifts[j]) & this->idsMask;
+            featVal *= ((descriptor.getFeatureRatios(i) >> this->ratiosBitShifts[j]) & this->ratiosMask) /
+                       this->ratiosDivisor;
+            score += model[featId] * featVal;
+        }
     }
 
 #if defined(DEBUG_EXTRA) || defined(DEBUG_TRAIN_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
@@ -171,8 +176,8 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
         if (items[i].distance[mod] == items[i-1].distance[mod]) {
             items[i].aggScore += rank;
         } else {
-            items[i].aggScore += i;
-            rank = i;
+            items[i].aggScore += i; //* weight[mod]
+            rank = i; //* weight[mod]
         }
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "(ExqFunc) Item " << items[i].itemId << " aggScore: " << items[i].aggScore << endl;

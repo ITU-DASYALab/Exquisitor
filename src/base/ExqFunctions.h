@@ -33,6 +33,8 @@ namespace exq {
 
         virtual int getDescFeatCount() = 0;
         virtual int getDescriptorSize() = 0;
+        virtual int getIota() = 0; // Only applicable if the R64 compression is used.
+
         /**
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return

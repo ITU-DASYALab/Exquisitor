@@ -26,8 +26,10 @@ namespace exq {
         // Support for scanning an associated cluster or sub-entry
         int _nextDescriptor;
 
+        int _iota;
+
     public:
-        ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize);
+        ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize, int iota);
 
         ~ECPCluster();
 

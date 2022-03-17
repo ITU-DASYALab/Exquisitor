@@ -11,7 +11,7 @@
 using namespace exq;
 
 template <typename T, typename U, typename V>
-ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize) {
+ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize, int iota) {
     // Note the bookkeeping info for later
     _cnfg = cnfg;
     _datafile = datafile;
@@ -25,6 +25,8 @@ ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, s
     descriptorIds = vector<uint32_t>(_descriptors);
     // Prepare for scans
     _nextDescriptor = -1;
+
+    _iota = iota;
 };
 
 template <typename T, typename U, typename V>
@@ -59,7 +61,7 @@ ExqDescriptor<T,U,V>* ECPCluster<T,U,V>::next() {
     if (_nextDescriptor == _descriptors)
         return NULL;
     _nextDescriptor++;
-    return new ExqDescriptor<T,U,V>(_datafile, 1);
+    return new ExqDescriptor<T,U,V>(_datafile, _iota, 1);
 };
 
 template <typename T, typename U, typename V>

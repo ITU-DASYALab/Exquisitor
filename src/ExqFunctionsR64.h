@@ -24,14 +24,8 @@ namespace exq {
     class ExqFunctionsR64 : public ExqFunctions<ExqDescriptor<T,U,V>> {
     public:
         ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
-        //Constructor for different compression per modality
-        //ExqFunctionsR64(vector<int> nFeat, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<double> topDivisor,
-        //                vector<double> ratiosDivisor);
         ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
                         uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor);
-        //Constructor for different compression per modality
-        //ExqFunctionsR64(vector<int> nFeat, vector<int> topShift, vector<int> idsShift, vector<int> ratiosShift, vector<uint64_t> topMask, vector<double> topDivisor,
-        //                vector<uint64_t> idsMask, vector<uint64_t> ratiosMask, vector<double> ratiosDivisor);
 
         ~ExqFunctionsR64();
 
@@ -57,6 +51,8 @@ namespace exq {
          * @brief assign aggregate score for multimodal items
          */
         void assignRanking(vector<ExqItem>& items, int mod) override;
+
+        int getIota() override { return iota; };
 
     private:
         int iota;
