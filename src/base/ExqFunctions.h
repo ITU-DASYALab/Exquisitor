@@ -56,6 +56,11 @@ namespace exq {
          */
         virtual void assignRanking(vector<ExqItem>& items, int mod) = 0;
 
+        void setModalityWeights(vector<double> modWeights) { modalityWeights = std::move(modWeights); }
+
+    protected:
+        vector<double> modalityWeights;
+
     }; //End of class ExqFunctions
 
 } //End of namespace exq

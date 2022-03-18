@@ -176,8 +176,8 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
         if (items[i].distance[mod] == items[i-1].distance[mod]) {
             items[i].aggScore += rank;
         } else {
-            items[i].aggScore += i; //* weight[mod]
-            rank = i; //* weight[mod]
+            items[i].aggScore += i * this->modalityWeights[mod];
+            rank = i * this->modalityWeights[mod];
         }
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "(ExqFunc) Item " << items[i].itemId << " aggScore: " << items[i].aggScore << endl;

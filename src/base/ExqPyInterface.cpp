@@ -57,6 +57,8 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     int nFeat, topShift, idsShift, ratiosShift;
     double topDivisor, ratiosDivisor;
     uint64_t topMask, idsMask, ratiosMask;
+    // TODO: This should be part of a helper class later on, but for now belongs in FunctionsR64
+    vector<double> modalityWeights;
     cout << "Creating functions object" << endl;
     PyObject* funcObjPy;
     if (funcType) {
@@ -80,15 +82,19 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         cout << "ratiosMask: " << ratiosMask << endl;
         ratiosDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
         cout << "ratiosDivisor: " << ratiosDivisor << endl;
+        auto modWeight = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
+        modalityWeights = vector<double>(numModalities, modWeight);
         for (int m = 0; m < numModalities; m++) {
             functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
                                                                              ratiosShift,
                                                                              topMask, topDivisor, idsMask,
                                                                              ratiosMask,
                                                                              ratiosDivisor);
+            cout << "Modality " << m << " weight: " << modalityWeights[m] << endl;
         }
     } else {
         cout << "Different modality settings" << endl;
+        modalityWeights = vector<double>(numModalities);
         for (int m = 0; m < numModalities; m++) {
             funcObjPy = PyList_GetItem(funcObjsPy, m);
             nFeat = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 0));
@@ -109,12 +115,18 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             cout << "ratiosMask: " << ratiosMask << endl;
             ratiosDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
             cout << "ratiosDivisor: " << ratiosDivisor << endl;
+            modalityWeights[m] = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
+            cout << "Modality " << m << " weight: " << modalityWeights[m] << endl;
             functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
                                                                              ratiosShift,
                                                                              topMask, topDivisor, idsMask,
                                                                              ratiosMask,
                                                                              ratiosDivisor);
         }
+    }
+    assert(!modalityWeights.empty());
+    for (int m = 0; m < numModalities; m++) {
+        functions[m]->setModalityWeights(modalityWeights);
     }
     cout << "Loaded functions" << endl;
     //TODO: Could also make this an argument choice per modality to select eCP or H5 or something different.
@@ -336,7 +348,7 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
 
     Filters filters = Filters();
 
-    cout << "Getting suggestions" << endl;
+    //cout << "Getting suggestions" << endl;
     vector<uint32_t> seen = vector<uint32_t>();
     int r = (int)PyLong_AsLong(PyTuple_GetItem(args, 0));
     int segments = (int)PyLong_AsLong(PyTuple_GetItem(args, 1));

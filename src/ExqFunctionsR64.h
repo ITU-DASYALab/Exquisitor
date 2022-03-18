@@ -42,6 +42,7 @@ namespace exq {
          */
         double distance(vector<double>& model, double bias, ExqDescriptor<T,U,V>& descriptor) override;
 
+
         /**
          * @brief rank aggregation using scores from each modality
          */
@@ -53,6 +54,7 @@ namespace exq {
         void assignRanking(vector<ExqItem>& items, int mod) override;
 
         int getIota() override { return iota; };
+
 
     private:
         int iota;
@@ -67,6 +69,7 @@ namespace exq {
         uint64_t idsMask;
         uint64_t ratiosMask;
         double ratiosDivisor;
+
     }; //End of class ExqFunctions
 
 } //End of namespace exq

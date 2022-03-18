@@ -119,7 +119,7 @@ def test_one_modality():
     comp_conf_files = ['../data/lsc_100K/imagenet13k/img13k_100k_index_full.cnfg']
     mod_feature_dimensions = [12988]
     func_type = 0
-    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10, 14)), 65535, 65535, 50000.0]]
+    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10, 14)), 65535, 65535, 50000.0, 1.0]]
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
@@ -137,7 +137,7 @@ def test_two_modalities():
     comp_conf_files = ['../data/yfcc/vis_index_full.cnfg', '../data/yfcc/txt_index_full.cnfg']
     mod_feature_dimensions = [1000, 100]
     func_type = 1
-    func_objs = [[7, 54, 10, 10, 18014398509481983, float(pow(10, 16)), 1023, 1023, 1000.0]]
+    func_objs = [[7, 54, 10, 10, 18014398509481983, float(pow(10, 16)), 1023, 1023, 1000.0, 1.0]]
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
@@ -194,9 +194,9 @@ def test_three_modalities_different_compression():
     mod_feature_dimensions = [12988, 700, 365]
     func_type = 0
     func_objs = [
-        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
-        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 10)-1, pow(2, 10)-1, pow(2, 10)],
-        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
+        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16), 1.0],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 10)-1, pow(2, 10)-1, pow(2, 10), 1.0],
+        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9), 1.0]
     ]
     item_metadata = []
     video_metadata = []
@@ -216,7 +216,7 @@ def test_filters_one_collection():
     comp_conf_files = ['../data/lsc_100K/imagenet13k/img13k_100k_index_full.cnfg']
     mod_feature_dimensions = [12988]
     func_type = 0
-    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10, 14)), 65535, 65535, 50000.0]]
+    func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10, 14)), 65535, 65535, 50000.0, 1.0]]
     n_items = len(ids_map)
     items_meta = []
     for i in range(n_items):
@@ -290,9 +290,9 @@ def test_filters_videos_one_collection(filters_file):
     mod_feature_dimensions = [12988, 700, 365]
     func_type = 0
     func_objs = [
-        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16)],
-        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 10)-1, pow(2, 10)-1, pow(2, 10)],
-        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9)]
+        [5, 48, 16, 16, pow(2, 32)-1, float(pow(2, 32)), pow(2, 16)-1, pow(2, 16)-1, pow(2, 16), 1.0],
+        [7, 54, 10, 10, pow(2, 32)-1, float(pow(2, 32)), pow(2, 10)-1, pow(2, 10)-1, pow(2, 10), 1.0],
+        [8, 55, 9, 9, pow(2, 32)-1, float(pow(2, 32)), pow(2, 9)-1, pow(2, 9)-1, pow(2, 9), 1.0]
     ]
     n_items = len(filters)
     item_metadata = []
