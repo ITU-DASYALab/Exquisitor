@@ -301,10 +301,10 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
     bool changeFilters = (bool) PyLong_AsLong(PyTuple_GetItem(args,2));
     // Set filters
     if (changeFilters) {
-        cout << "Getting filters" << endl;
+        //cout << "Getting filters" << endl;
         PyObject* filtersPy = PyTuple_GetItem(args,3);
         extractFiltersFromPythonObject(filtersPy, filters);
-        cout << "Set filters" << endl;
+        //cout << "Set filters" << endl;
     }
 
     auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
@@ -354,9 +354,9 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
     }
 
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
-    cout << "Calling suggest" << endl;
+    //cout << "Calling suggest" << endl;
     top = _pyExqV1._controller->suggest(r, seen, changeFilters, filters);
-    cout << "Suggestions retrieved" << endl;
+    //cout << "Suggestions retrieved" << endl;
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
     suggsPy = PyList_New((int)top.suggs.size());
@@ -384,7 +384,7 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
 }
 
 PyObject* exq::reset_model_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args) {
-    cout << "Resetting model" << endl;
+    //cout << "Resetting model" << endl;
     _pyExqV1._controller->reset_model();
 
     Py_IncRef(Py_None);
