@@ -144,7 +144,7 @@ void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality
             assignRanking(items2Rank, m);
         }
         std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
-            return lhs.aggScore > rhs.aggScore;
+            return lhs.aggScore < rhs.aggScore;
         });
     } else {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
