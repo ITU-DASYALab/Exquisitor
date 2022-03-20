@@ -45,8 +45,8 @@ void ExqClassifier::resetClassifier() {
     _svm->setOptimalParameters();
     _svm->setMarginType(SVMSGD::HARD_MARGIN);
     _svm->setMarginRegularization(0.01);
-    _svm->setInitialStepSize(100);
-    _svm->setStepDecreasingPower(1.0);
+    _svm->setInitialStepSize(0.01);
+    _svm->setStepDecreasingPower(0.75);
     _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 100, 1));
 }
 
