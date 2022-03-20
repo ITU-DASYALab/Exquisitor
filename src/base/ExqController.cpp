@@ -161,7 +161,8 @@ for (int m = 0; m < _modalities; m++) {
 
 template <typename T>
 TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, bool changeFilters,
-                                     const Filters& filters, TopResults prevResults) {
+                                     const Filters& filters, bool withConcat, pair<int,int> concatMods,
+                                     TopResults prevResults) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Setting suggest parameters" << endl;
 #endif
@@ -198,7 +199,9 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
                                             _noms, _modalities, _handler, _functions, seenSet,
                                             results.totalTimePerSegment[currSegment],
                                             results.totalItemsConsideredPerSegment[currSegment], w,
-                                            usedFilters);
+                                            usedFilters,
+                                            withConcat,
+                                            concatMods);
                 });
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << "(CTRL) Running segment " << workerSegments[w] << endl;
@@ -263,7 +266,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
         if (!done) {
             //cout << "In !done" << endl;
             _pq_state = _handler->selectClusters(bPerMod, _classifiers, _activeFilters, true);
-            results = suggest(k, seenItems, changeFilters, filters, results);
+            results = suggest(k, seenItems, changeFilters, filters, withConcat, concatMods, results);
         }
     }
     //completedSegments = 0;
