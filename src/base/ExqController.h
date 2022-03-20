@@ -59,8 +59,6 @@ namespace exq {
                 int segments,
                 int numberModalities,
                 vector<int> modFeatureDimensions,
-                //vector<vector<string>> compFiles,
-                //vector<string> cnfgFiles,
                 int bClusters,
                 vector<ExqFunctions<T>*> functions,
                 ExqDataHandler<T>* handler,
@@ -102,16 +100,10 @@ namespace exq {
         void setClusterScope(int b);
 
         /**
-         * @brief train the Linear SVM model
+         * @brief train the Linear SVM model and select scope (clusters)
          */
         vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels,
-                             bool changeFilters, Filters filters);//Filters filters);
-        //vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels,
-        //                     bool changeFilters,
-        //                     set<uint16_t> collections,
-        //                     vector<pair<int,set<uint16_t>>> stdFilters,
-        //                     vector<pair<int,vector<pair<int,set<uint16_t>>>>> collFilters,
-        //                     vector<pair<int,vector<pair<int,set<uint16_t>>>>> vidFilters);
+                             bool changeFilters, Filters filters);
 
         /**
          * @brief get \a k suggestions from the latest generated SVM model
