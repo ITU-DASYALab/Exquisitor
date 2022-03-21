@@ -33,7 +33,8 @@ ExqController<T>::ExqController(
         vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker,
         const vector<ItemProperties>& itemProps,
-        const vector<vector<Props>>& vidProps
+        const vector<vector<Props>>& vidProps,
+        vector<double> modWeights
     ) {
     cout << "(CTRL) Setting parameters" << endl;
     // Set standard fields
@@ -81,6 +82,8 @@ ExqController<T>::ExqController(
     }
 #endif
     _vidProperties = vidProps;
+
+    _modalityWeights = modWeights;
 
     cout << "(CTRL) Loading data..." << endl;
     // Load data
@@ -161,8 +164,7 @@ for (int m = 0; m < _modalities; m++) {
 
 template <typename T>
 TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, bool changeFilters,
-                                     const Filters& filters, bool withConcat, pair<int,int> concatMods,
-                                     TopResults prevResults) {
+                                     const Filters& filters, TopResults prevResults) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Setting suggest parameters" << endl;
 #endif
@@ -199,9 +201,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
                                             _noms, _modalities, _handler, _functions, seenSet,
                                             results.totalTimePerSegment[currSegment],
                                             results.totalItemsConsideredPerSegment[currSegment], w,
-                                            usedFilters,
-                                            withConcat,
-                                            concatMods);
+                                            usedFilters, _modalityWeights);
                 });
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << "(CTRL) Running segment " << workerSegments[w] << endl;
@@ -235,8 +235,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             itemsFromSegments[s].clear();
         }
         assert(items2Return.size() == totalReturnedItems);
-        //TODO: Duplicate check
-        _functions[0]->sortItems(items2Return, _modalities);
+        _functions[0]->sortItems(items2Return, _modalities, _modalityWeights);
 
         for (int i = 0; i < (int)items2Return.size(); i++) {
     #if defined(DEBUG) || defined(DEBUG_SUGGEST)
@@ -244,6 +243,12 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             << items2Return[i].distance[0] << endl;
     #endif
             results.suggs.push_back(items2Return[i].itemId);
+            // Duplicate check
+            for (int j = i; j < (int)items2Return.size(); j++) {
+                if (items2Return[i].itemId == items2Return[j].itemId) {
+                    items2Return[j].aggScore = -1.0;
+                }
+            }
             if ((int)results.suggs.size() == k) break;
         }
     }
@@ -266,7 +271,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
         if (!done) {
             //cout << "In !done" << endl;
             _pq_state = _handler->selectClusters(bPerMod, _classifiers, _activeFilters, true);
-            results = suggest(k, seenItems, changeFilters, filters, withConcat, concatMods, results);
+            results = suggest(k, seenItems, changeFilters, filters, results);
         }
     }
     //completedSegments = 0;

@@ -125,9 +125,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         }
     }
     assert(!modalityWeights.empty());
-    for (int m = 0; m < numModalities; m++) {
-        functions[m]->setModalityWeights(modalityWeights);
-    }
+
     cout << "Loaded functions" << endl;
     //TODO: Could also make this an argument choice per modality to select eCP or H5 or something different.
     // Specific to ExqDataHandlerH5
@@ -272,7 +270,8 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             classifiers,
             worker,
             itemProps,
-            collVidProps
+            collVidProps,
+            modalityWeights
             );
 
     cout << "Controller initialized. Exquisitor is ready!" << endl;

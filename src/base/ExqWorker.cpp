@@ -29,8 +29,7 @@ template<typename T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                            int currentSegment, int totalSegments, int noms, int modalities, ExqDataHandler<T>*& handler,
                            vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, double& time,
-                           int& totalItemsConsidered, int workerId, ItemFilter& filters, bool withConcat,
-                           pair<int,int> concatMods) {
+                           int& totalItemsConsidered, int workerId, ItemFilter& filters, vector<double>& modWeights) {
 
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
     //time_point<high_resolution_clock> begin = high_resolution_clock::now();
@@ -118,7 +117,9 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             candidateItems[m].clear();
         }
         candidateItems.clear();
-        functions[0]->sortItems(sortedCandidates, modalities);
+
+        // rank aggregation
+        functions[0]->sortItems(sortedCandidates, modalities, modWeights);
 
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "(ExqWorker[" << workerId << "]) Removing duplicates in segment " << currentSegment << endl;

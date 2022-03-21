@@ -135,13 +135,13 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
 }
 
 template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality) {
+void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality, vector<double>& modWeights) {
     if (modality > 1) {
         for (int m = 0; m < modality; m++) {
             std::sort(items2Rank.begin(), items2Rank.end(), [m](const ExqItem& lhs, const ExqItem& rhs) {
                 return lhs.distance[m] > rhs.distance[m];
             });
-            assignRanking(items2Rank, m);
+            assignRanking(items2Rank, m, modWeights);
         }
         std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
             return lhs.aggScore < rhs.aggScore;
@@ -168,7 +168,7 @@ void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality
 }
 
 template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
+void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights) {
     double rank = 0.0;
     items[0].aggScore += 0.0;
 
@@ -176,8 +176,8 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod) {
         if (items[i].distance[mod] == items[i-1].distance[mod]) {
             items[i].aggScore += rank;
         } else {
-            items[i].aggScore += i * this->modalityWeights[mod];
-            rank = i * this->modalityWeights[mod];
+            items[i].aggScore += i * modWeights[mod];
+            rank = i * modWeights[mod];
         }
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "(ExqFunc) Item " << items[i].itemId << " aggScore: " << items[i].aggScore << endl;

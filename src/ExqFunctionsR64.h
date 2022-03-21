@@ -46,12 +46,12 @@ namespace exq {
         /**
          * @brief rank aggregation using scores from each modality
          */
-        void sortItems(vector<ExqItem>& items2Rank, int modality) override;
+        void sortItems(vector<ExqItem>& items2Rank, int modality, vector<double>& modWeights) override;
 
         /**
          * @brief assign aggregate score for multimodal items
          */
-        void assignRanking(vector<ExqItem>& items, int mod) override;
+        void assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights) override;
 
         int getIota() override { return iota; };
 

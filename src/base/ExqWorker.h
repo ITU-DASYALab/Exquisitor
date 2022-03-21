@@ -29,7 +29,7 @@ namespace exq {
                      int currentSegment, int totalSegments, int noms, int modalities,
                      ExqDataHandler<T>*& handler, vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems,
                      double& times, int& totalItemsConsidered, int workerId, ItemFilter& filters,
-                     bool withConcat, pair<int,int> concatMods);
+                     vector<double>& modWeights);
     private:
         void logInfo(string info, int workerId);
     }; //End of class ExqWorker

@@ -65,7 +65,8 @@ namespace exq {
                 vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker,
                 const vector<ItemProperties>& itemProps,
-                const vector<vector<Props>>& vidProps
+                const vector<vector<Props>>& vidProps,
+                vector<double> modWeights
         );
 
 /**
@@ -98,6 +99,12 @@ namespace exq {
          * @brief sets the number of clusters to check during train/suggest phase to b
          */
         void setClusterScope(int b);
+
+        /**
+         * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation
+         * @param modWeights
+         */
+        void setModalityWeights(vector<double> modWeights);
 
         /**
          * @brief train the Linear SVM model and select scope (clusters)
@@ -141,6 +148,8 @@ namespace exq {
         vector<vector<Props>> _vidProperties;
         ItemFilter _activeFilters;
 
+        vector<double> _modalityWeights;
+
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;
         vector<bool> _seenItems;
@@ -181,6 +190,11 @@ namespace exq {
     template <typename T>
     inline void ExqController<T>::setClusterScope(int b) {
         _bClusters = b;
+    }
+
+    template <typename T>
+    inline void ExqController<T>::setModalityWeights(vector<double> modWeights) {
+        _modalityWeights = std::move(modWeights);
     }
 } //End of namespace exq
 
