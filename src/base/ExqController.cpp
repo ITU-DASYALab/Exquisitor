@@ -227,11 +227,17 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     }
     auto items2Return = vector<ExqItem>();
     items2Return.reserve(totalItemsReturned);
+    auto unique = unordered_set<uint32_t>();
     if (totalItemsReturned != 0) {
-        int totalReturnedItems = 0;
         for (int s = 0; s < _segments; s++) {
-            items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
-            totalReturnedItems += (int)itemsFromSegments[s].size();
+            for (int i = 0; i < (int)itemsFromSegments[s].size(); i++) {
+                if (!unique.contains(itemsFromSegments[s][i].itemId)) {
+                    itemsFromSegments[s][i].aggScore = 0.0;
+                    items2Return.push_back(itemsFromSegments[s][i]);
+                    unique.insert(itemsFromSegments[s][i].itemId);
+                }
+            }
+            //items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
             itemsFromSegments[s].clear();
         }
         assert(items2Return.size() == totalReturnedItems);
