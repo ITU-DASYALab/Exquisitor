@@ -51,8 +51,8 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     for (int m = 0; m < modalities; m++) {
         totalItemsConsidered += descriptors[m].size();
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
-        cout << "(ExqWorker[" << workerId << "]) Total items considered for segment " << currentSegment << ": "
-        << totalItemsConsidered << endl;
+        cout << "(ExqWorker[" << workerId << "]) Total items considered for segment " << currentSegment << " mod " <<
+        m << ": " << totalItemsConsidered << endl;
 #endif
         //(position,score)
         pair<int, double> min = make_pair(-1, DBL_MAX);

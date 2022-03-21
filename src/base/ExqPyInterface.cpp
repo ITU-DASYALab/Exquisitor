@@ -57,7 +57,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     int nFeat, topShift, idsShift, ratiosShift;
     double topDivisor, ratiosDivisor;
     uint64_t topMask, idsMask, ratiosMask;
-    // TODO: This should be part of a helper class later on, but for now belongs in FunctionsR64
+    // TODO: This should be part of a helper class later on, but for now belongs in Controller
     vector<double> modalityWeights;
     cout << "Creating functions object" << endl;
     PyObject* funcObjPy;

@@ -22,6 +22,7 @@ namespace exq {
         vector<double> distance;
         double aggScore;
         int segment;
+        vector<double> modRank;
 
         ExqItem() {
             itemId = UINT32_MAX;
@@ -29,6 +30,7 @@ namespace exq {
             aggScore = 0.0;
             fromCluster = UINT64_MAX;
             segment = -1;
+            modRank = vector<double>();
         };
     }; //End of struct ExqItem
 

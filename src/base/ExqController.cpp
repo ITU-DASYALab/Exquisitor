@@ -83,7 +83,7 @@ ExqController<T>::ExqController(
 #endif
     _vidProperties = vidProps;
 
-    _modalityWeights = modWeights;
+    _modalityWeights = std::move(modWeights);
 
     cout << "(CTRL) Loading data..." << endl;
     // Load data
@@ -240,21 +240,24 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             //items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
             itemsFromSegments[s].clear();
         }
-        assert(items2Return.size() == totalReturnedItems);
-        _functions[0]->sortItems(items2Return, _modalities, _modalityWeights);
+        _functions[0]->sortItems(items2Return, _modalities, _modalityWeights, true);
 
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+        cout << "Size of items2Return: " << items2Return.size() << endl;
+        if (items2Return.size() > 0 && _modalities > 1) {
+            cout << items2Return[0].modRank.size() << endl;
+            for (int m = 0; m < _modalities; m++)
+                cout << items2Return[0].modRank[m] << endl;
+            cout << items2Return[0].aggScore << endl;
+        }
+#endif
         for (int i = 0; i < (int)items2Return.size(); i++) {
-    #if defined(DEBUG) || defined(DEBUG_SUGGEST)
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
             cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
             << items2Return[i].distance[0] << endl;
-    #endif
+#endif
             results.suggs.push_back(items2Return[i].itemId);
-            // Duplicate check
-            for (int j = i; j < (int)items2Return.size(); j++) {
-                if (items2Return[i].itemId == items2Return[j].itemId) {
-                    items2Return[j].aggScore = -1.0;
-                }
-            }
+            retSuggs[items2Return[i].itemId] = vector<double>(items2Return[i].modRank);
             if ((int)results.suggs.size() == k) break;
         }
     }
@@ -290,6 +293,25 @@ template <typename T>
 void ExqController<T>::reset_model() {
     for (int m = 0; m < _modalities; m++)
         _classifiers[m]->resetClassifier();
+}
+
+template <typename T>
+void ExqController<T>::updateModalityWeights(vector<uint32_t>& ids, vector<float>& labels) {
+    auto nSuggs = (float) retSuggs.size();
+    if (nSuggs == 0) return;
+
+    bool found = false;
+    for (int i = 0; i < (int) ids.size(); i++) {
+        if (retSuggs.contains(ids[i])) {
+            found = true;
+            for (int m = 0; m < _modalities; m++) {
+                _modalityWeights[m] += ((labels[i]/nSuggs) * retSuggs[i][m])/_change;
+            }
+        }
+    }
+    if (found) _change = 1;
+    else _change += 1;
+    retSuggs.clear();
 }
 
 template <typename T>

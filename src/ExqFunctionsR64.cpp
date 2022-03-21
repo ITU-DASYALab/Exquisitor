@@ -135,13 +135,14 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
 }
 
 template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality, vector<double>& modWeights) {
+void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality, vector<double>& modWeights,
+                                       bool setModRank) {
     if (modality > 1) {
         for (int m = 0; m < modality; m++) {
             std::sort(items2Rank.begin(), items2Rank.end(), [m](const ExqItem& lhs, const ExqItem& rhs) {
                 return lhs.distance[m] > rhs.distance[m];
             });
-            assignRanking(items2Rank, m, modWeights);
+            assignRanking(items2Rank, m, modWeights, setModRank);
         }
         std::sort(items2Rank.begin(), items2Rank.end(), [](const ExqItem& lhs, const ExqItem& rhs) {
             return lhs.aggScore < rhs.aggScore;
@@ -168,20 +169,35 @@ void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality
 }
 
 template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights) {
+void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights,
+                                           bool setModRank) {
     double rank = 0.0;
     items[0].aggScore += 0.0;
 
-    for (int i = 1; i < (int) items.size(); i++) {
-        if (items[i].distance[mod] == items[i-1].distance[mod]) {
-            items[i].aggScore += rank;
-        } else {
-            items[i].aggScore += i * modWeights[mod];
-            rank = i * modWeights[mod];
+    if (setModRank) {
+        double position = 0;
+        for (int i = 1; i < (int) items.size(); i++) {
+            if (items[i].distance[mod] == items[i - 1].distance[mod]) {
+                items[i].aggScore += rank;
+            } else {
+                items[i].aggScore += i * modWeights[mod];
+                rank = i * modWeights[mod];
+                position = i;
+            }
+            items[i].modRank.push_back((position/(double)items.size()));
         }
-#if defined(DEBUG) || defined(DEBUG_SUGGEST)
-        cout << "(ExqFunc) Item " << items[i].itemId << " aggScore: " << items[i].aggScore << endl;
+    } else {
+        for (int i = 1; i < (int) items.size(); i++) {
+            if (items[i].distance[mod] == items[i - 1].distance[mod]) {
+                items[i].aggScore += rank;
+            } else {
+                items[i].aggScore += i * modWeights[mod];
+                rank = i * modWeights[mod];
+            }
+#if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
+            cout << "(ExqFunc) Item " << items[i].itemId << " aggScore: " << items[i].aggScore << endl;
 #endif
+        }
     }
 }
 

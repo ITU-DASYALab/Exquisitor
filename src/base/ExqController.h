@@ -100,11 +100,6 @@ namespace exq {
          */
         void setClusterScope(int b);
 
-        /**
-         * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation
-         * @param modWeights
-         */
-        void setModalityWeights(vector<double> modWeights);
 
         /**
          * @brief train the Linear SVM model and select scope (clusters)
@@ -128,6 +123,14 @@ namespace exq {
          */
         void reset_model();
 
+        /**
+         * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation
+         * @param modWeights
+         */
+        void setModalityWeights(vector<double> modWeights);
+
+        void updateModalityWeights(vector<uint32_t>& ids, vector<float>& labels);
+
         vector<ExqArray<pair<int,float>>> get_descriptors(vector<int> ids, int mod);
 
     private:
@@ -149,6 +152,8 @@ namespace exq {
 
         //TODO: Move this to another class along with sortItems, and assignRanking
         vector<double> _modalityWeights;
+        std::map<uint32_t,vector<double>> retSuggs;
+        double _change = 1.0;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;
