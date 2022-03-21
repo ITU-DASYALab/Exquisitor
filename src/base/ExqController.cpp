@@ -213,7 +213,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << "(CTRL) Worker " << w << " done with segment " << workerSegments[w] << endl;
 #endif
-                totalItemsReturned += itemsFromSegments[workerSegments[w]].size();
+                totalItemsReturned += (int)itemsFromSegments[workerSegments[w]].size();
                 workerSegments[w] = -1;
                 completedSegments++;
             }

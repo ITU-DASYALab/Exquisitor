@@ -318,6 +318,12 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
         //cout << "Set filters" << endl;
     }
 
+    //update modality fusion weights?
+    bool updateModWeights = (bool) PyLong_AsLong(PyTuple_GetItem(args,4));
+    if (updateModWeights) {
+        _pyExqV1._controller->updateModalityWeights(trainIds, trainLabels);
+    }
+
     auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
 
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
