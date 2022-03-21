@@ -116,7 +116,6 @@ namespace exq {
          * @brief get \a k suggestions from the latest generated SVM model
          */
         TopResults suggest(int k, const vector<uint>& seen, bool changeFilters, const Filters& filters,
-                           bool withConcat=false, pair<int,int> concatMods=std::make_pair(0,0),
                            TopResults prevResults=TopResults(0));
 
         /**
