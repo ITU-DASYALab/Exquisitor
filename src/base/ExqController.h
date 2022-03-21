@@ -148,6 +148,7 @@ namespace exq {
         vector<vector<Props>> _vidProperties;
         ItemFilter _activeFilters;
 
+        //TODO: Move this to another class along with sortItems, and assignRanking
         vector<double> _modalityWeights;
 
         vector<future<void>> _threads = vector<future<void>>();
