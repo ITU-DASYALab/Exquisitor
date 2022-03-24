@@ -154,7 +154,10 @@ namespace exq {
         //TODO: Move this to another class along with sortItems, and assignRanking
         vector<double> _orgModWeights;
         vector<double> _modalityWeights;
+        vector<double> _normalizedModWeights;
+        double _learningRate;
         std::map<uint32_t,vector<double>> _retSuggs = std::map<uint32_t,vector<double>>();
+        double _noPosRds = 1.0;
         double _change = 1.0;
 
         vector<future<void>> _threads = vector<future<void>>();
