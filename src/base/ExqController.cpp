@@ -83,6 +83,7 @@ ExqController<T>::ExqController(
 #endif
     _vidProperties = vidProps;
 
+    _orgModWeights = vector<double>(modWeights);
     _modalityWeights = std::move(modWeights);
 
     cout << "(CTRL) Loading data..." << endl;
@@ -257,7 +258,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             << items2Return[i].distance[0] << endl;
 #endif
             results.suggs.push_back(items2Return[i].itemId);
-            retSuggs[items2Return[i].itemId] = vector<double>(items2Return[i].modRank);
+            _retSuggs[items2Return[i].itemId] = vector<double>(items2Return[i].modRank);
             if ((int)results.suggs.size() == k) break;
         }
     }
@@ -296,22 +297,44 @@ void ExqController<T>::reset_model() {
 }
 
 template <typename T>
-void ExqController<T>::updateModalityWeights(vector<uint32_t>& ids, vector<float>& labels) {
-    auto nSuggs = (float) retSuggs.size();
+void ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<float>& labels) {
+    auto nSuggs = (float) _retSuggs.size();
     if (nSuggs == 0) return;
 
     bool found = false;
     for (int i = 0; i < (int) ids.size(); i++) {
-        if (retSuggs.contains(ids[i])) {
+        if (_retSuggs.contains(ids[i])) {
             found = true;
             for (int m = 0; m < _modalities; m++) {
-                _modalityWeights[m] += ((labels[i]/nSuggs) * retSuggs[i][m])/_change;
+                _modalityWeights[m] += ((labels[i]/nSuggs) * _retSuggs[ids[i]][m])/_change;
+                if (_modalityWeights[m] <= 0.0) {
+                    _modalityWeights[m] = 0.01; // No negative weights
+                }
+                if (_modalityWeights[m] > 1.0) {
+                    _modalityWeights[m] = 1.0; // Max weight is 1.0
+                }
             }
         }
     }
-    if (found) _change = 1;
-    else _change += 1;
-    retSuggs.clear();
+    if (found)  {
+        cout << "Updated modality weights: [" <<
+        _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "]" << endl;
+        cout << "After " << _change << " rounds" << endl;
+        _change = 1.0;
+    }
+    else {
+        _change += 1.0;
+    }
+    _retSuggs.clear();
+}
+
+template <typename T>
+void ExqController<T>::reset_modality_weights() {
+    for (int m = 0; m < _modalities; m++) {
+        _modalityWeights[m] = _orgModWeights[m];
+    }
+    //cout << "Weights reset: [" <<
+    //     _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "]" << endl;
 }
 
 template <typename T>

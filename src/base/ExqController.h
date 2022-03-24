@@ -127,9 +127,10 @@ namespace exq {
          * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation
          * @param modWeights
          */
-        void setModalityWeights(vector<double> modWeights);
+        void set_modality_weights(vector<double> modWeights);
 
-        void updateModalityWeights(vector<uint32_t>& ids, vector<float>& labels);
+        void update_modality_weights(vector<uint32_t>& ids, vector<float>& labels);
+        void reset_modality_weights();
 
         vector<ExqArray<pair<int,float>>> get_descriptors(vector<int> ids, int mod);
 
@@ -151,8 +152,9 @@ namespace exq {
         ItemFilter _activeFilters;
 
         //TODO: Move this to another class along with sortItems, and assignRanking
+        vector<double> _orgModWeights;
         vector<double> _modalityWeights;
-        std::map<uint32_t,vector<double>> retSuggs;
+        std::map<uint32_t,vector<double>> _retSuggs = std::map<uint32_t,vector<double>>();
         double _change = 1.0;
 
         vector<future<void>> _threads = vector<future<void>>();
@@ -198,7 +200,7 @@ namespace exq {
     }
 
     template <typename T>
-    inline void ExqController<T>::setModalityWeights(vector<double> modWeights) {
+    inline void ExqController<T>::set_modality_weights(vector<double> modWeights) {
         _modalityWeights = std::move(modWeights);
     }
 } //End of namespace exq

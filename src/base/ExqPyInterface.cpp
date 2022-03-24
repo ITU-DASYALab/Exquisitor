@@ -321,7 +321,7 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
     //update modality fusion weights?
     bool updateModWeights = (bool) PyLong_AsLong(PyTuple_GetItem(args,4));
     if (updateModWeights) {
-        _pyExqV1._controller->updateModalityWeights(trainIds, trainLabels);
+        _pyExqV1._controller->update_modality_weights(trainIds, trainLabels);
     }
 
     auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
@@ -402,6 +402,10 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
 
 PyObject* exq::reset_model_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args) {
     //cout << "Resetting model" << endl;
+    bool resetModalityWeights = (bool) PyLong_AsLong(PyTuple_GetItem(args, 0));
+    if (resetModalityWeights) {
+        _pyExqV1._controller->reset_modality_weights();
+    }
     _pyExqV1._controller->reset_model();
 
     Py_IncRef(Py_None);
@@ -416,12 +420,12 @@ PyObject* exq::safe_exit_py([[maybe_unused]] PyObject* self, [[maybe_unused]] Py
 
 PyObject* exq::get_descriptors_info_py([[maybe_unused]] PyObject *self, PyObject *args) {
     PyObject* descIdsPy;
-    descIdsPy = PyTuple_GetItem(args,0);
+    descIdsPy = PyTuple_GetItem(args, 0);
     vector<int> ids = vector<int>(PyList_Size(descIdsPy));
     for (int i = 0; i < PyList_Size(descIdsPy); i++) {
-        ids[i] = (int) PyLong_AsLong(PyList_GetItem(descIdsPy,i));
+        ids[i] = (int) PyLong_AsLong(PyList_GetItem(descIdsPy, i));
     }
-    int modality = (int) PyLong_AsLong(PyTuple_GetItem(args,1));
+    int modality = (int) PyLong_AsLong(PyTuple_GetItem(args, 1));
     auto res = _pyExqV1._controller->get_descriptors(ids, modality);
 
     PyObject* descListPy;

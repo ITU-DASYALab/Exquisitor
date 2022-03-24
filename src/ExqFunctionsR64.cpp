@@ -173,9 +173,10 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vect
                                            bool setModRank) {
     double rank = 0.0;
     items[0].aggScore += 0.0;
+    items[0].modRank.push_back(0.0);
 
     if (setModRank) {
-        double position = 0;
+        double position = 0.0;
         for (int i = 1; i < (int) items.size(); i++) {
             if (items[i].distance[mod] == items[i - 1].distance[mod]) {
                 items[i].aggScore += rank;
