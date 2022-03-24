@@ -34,7 +34,8 @@ ExqController<T>::ExqController(
         ExqWorker<T>* worker,
         const vector<ItemProperties>& itemProps,
         const vector<vector<Props>>& vidProps,
-        vector<double> modWeights
+        vector<double> modWeights,
+        double learningRate
     ) {
     cout << "(CTRL) Setting parameters" << endl;
     // Set standard fields
@@ -83,7 +84,8 @@ ExqController<T>::ExqController(
 #endif
     _vidProperties = vidProps;
 
-    _learningRate = modWeights[0] * 0.1;
+    _learningRate0 = learningRate;
+    _learningRate = modWeights[0] * learningRate;
     _orgModWeights = vector<double>(modWeights);
     _normalizedModWeights = vector<double>(modWeights);
     _modalityWeights = std::move(modWeights);
@@ -144,7 +146,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     begin = high_resolution_clock::now();
     auto bPerMod = vector<int>(_modalities);
     //vector<double> bias;
-for (int m = 0; m < _modalities; m++) {
+    for (int m = 0; m < _modalities; m++) {
         bPerMod[m] = _bClusters;
         //bias.push_back(_classifiers[m]->getBias());
     }
@@ -299,13 +301,13 @@ void ExqController<T>::reset_model() {
 }
 
 template <typename T>
-void ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<float>& labels) {
+bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<float>& labels) {
     auto nSuggs = (float) _retSuggs.size();
-    if (nSuggs == 0) return;
+    if (nSuggs == 0) return true; // Sanity check, if no suggestions were returned, there are nothing more to show
 
     float rel = 0;
     bool found = false;
-    bool norm = false;
+    int flush = 0;
     for (int i = 0; i < (int) ids.size(); i++) {
         if (_retSuggs.contains(ids[i])) {
             found = true;
@@ -313,29 +315,20 @@ void ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             for (int m = 0; m < _modalities; m++) {
                 //_modalityWeights[m] += (((labels[i]/nSuggs) * _retSuggs[ids[i]][m])/_change);
                 _modalityWeights[m] += (((labels[i]/nSuggs) * _retSuggs[ids[i]][m])/_change) * _learningRate;
-                if (_modalityWeights[m] < 0.0) {
-                    norm = true;
-                }
-                //if (_modalityWeights[m] > 1.0) {
-                //    double max = std::max_element(_modalityWeights.begin(), _modalityWeights.end())[0];
-                //    double min = std::min_element(_modalityWeights.begin(), _modalityWeights.end())[0];
-                //    for (int mm = 0; mm < _modalities; mm++) {
-                //        _normalizedModWeights[mm] = _modalityWeights[mm]/(max+abs(min));
-                //    }
-                //}
             }
         }
     }
-    if (norm) {
-        int a = 0;
-        int b = 1;
-        double max = std::max_element(_modalityWeights.begin(), _modalityWeights.end())[0];
-        double min = std::min_element(_modalityWeights.begin(), _modalityWeights.end())[0];
-        for (int m = 0; m < _modalities; m++) {
-            _normalizedModWeights[m] = (b-a)*(_modalityWeights[m]-min)/(max-min)+a;
+    for (int m = 0; m < _modalities; m++) {
+        if (_modalityWeights[m] < 0.0) {
+            _normalizedModWeights[m] = 0.0;
+            flush += 1;
+        } else {
+            _normalizedModWeights[m] = _modalityWeights[m];
         }
-    } else {
-        _normalizedModWeights = vector<double>(_modalityWeights);
+    }
+    if (flush == _modalities) {
+        reset_modality_weights();
+        return false;
     }
     if (found)  {
         cout << "Updated modality weights: [" <<
@@ -343,7 +336,7 @@ void ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
         _normalizedModWeights[0] << ", " << _normalizedModWeights[1] << ", " << _normalizedModWeights[2] << "]" << endl;
         if (rel > 0) {
             // Decrease rate based on relevant items and suggestions returned
-            _learningRate *= (rel/nSuggs);
+            _learningRate -= _learningRate * (rel/nSuggs);
         } else {
             // Increase rate based on the number of items suggested and rounds no items were judged
             _learningRate += _orgModWeights[0] * 0.01;
@@ -354,6 +347,7 @@ void ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
         _change += 1.0;
     }
     _retSuggs.clear();
+    return true;
 }
 
 template <typename T>
@@ -362,7 +356,7 @@ void ExqController<T>::reset_modality_weights() {
         _modalityWeights[m] = _orgModWeights[m];
         _normalizedModWeights[m] = _orgModWeights[m];
     }
-    _learningRate = _orgModWeights[0] * 0.5;
+    _learningRate = _orgModWeights[0] * _learningRate0;
     //cout << "Weights reset: [" <<
     //     _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "]" << endl;
 }

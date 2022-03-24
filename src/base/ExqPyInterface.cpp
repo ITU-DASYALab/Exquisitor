@@ -243,6 +243,8 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     }
     int statLevel = (int)PyLong_AsLong(PyTuple_GetItem(args, 13));
 
+    double learningRate = (double)PyFloat_AsDouble(PyTuple_GetItem(args, 14));
+
     vector<string> cnfgFiles = vector<string>(PyList_Size(compCnfgFilesPy));
     for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
         cnfgFiles[i] = _PyUnicode_AsString(PyList_GetItem(compCnfgFilesPy,i));
@@ -271,7 +273,8 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             worker,
             itemProps,
             collVidProps,
-            modalityWeights
+            modalityWeights,
+            learningRate
             );
 
     cout << "Controller initialized. Exquisitor is ready!" << endl;
@@ -320,26 +323,34 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
 
     //update modality fusion weights?
     bool updateModWeights = (bool) PyLong_AsLong(PyTuple_GetItem(args,4));
+    bool modalityWeightsOk = true;
     if (updateModWeights) {
-        _pyExqV1._controller->update_modality_weights(trainIds, trainLabels);
+        modalityWeightsOk = _pyExqV1._controller->update_modality_weights(trainIds, trainLabels);
     }
 
-    auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
-
+    int returnSize = (_pyExqV1._controller->getNumModalites() * 2) + 1;
+    PyObject* timeList = PyList_New(returnSize);
+    if (modalityWeightsOk) {
+        auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
-    cout << "Creating return object" << endl;
+        cout << "Creating return object" << endl;
 #endif
-    PyObject* timeList = PyList_New(times.size());
-    for (int i = 0; i < (int)times.size(); i++) {
-        PyList_SetItem(timeList, i, PyFloat_FromDouble(times[i]));
+        for (int i = 0; i < (int)times.size(); i++) {
+            PyList_SetItem(timeList, i, PyFloat_FromDouble(times[i]));
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
-        cout << times[i] << endl;
+            cout << times[i] << endl;
 #endif
+        }
+        PyList_SetItem(timeList, times.size(), PyBool_FromLong(modalityWeightsOk));
+    } else {
+        for (int i = 0; i < returnSize-1; i++) {
+            PyList_SetItem(timeList, i, PyFloat_FromDouble(0.0));
+        }
+        PyList_SetItem(timeList, returnSize-1, PyBool_FromLong(modalityWeightsOk));
     }
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "Returning" << endl;
 #endif
-
     return timeList;
 }
 

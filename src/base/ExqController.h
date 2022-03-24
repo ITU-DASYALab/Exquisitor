@@ -66,7 +66,8 @@ namespace exq {
                 ExqWorker<T>* worker,
                 const vector<ItemProperties>& itemProps,
                 const vector<vector<Props>>& vidProps,
-                vector<double> modWeights
+                vector<double> modWeights,
+                double learningRate
         );
 
 /**
@@ -100,6 +101,8 @@ namespace exq {
          */
         void setClusterScope(int b);
 
+        int getNumModalites() { return _modalities; }
+
 
         /**
          * @brief train the Linear SVM model and select scope (clusters)
@@ -129,7 +132,7 @@ namespace exq {
          */
         void set_modality_weights(vector<double> modWeights);
 
-        void update_modality_weights(vector<uint32_t>& ids, vector<float>& labels);
+        bool update_modality_weights(vector<uint32_t>& ids, vector<float>& labels);
         void reset_modality_weights();
 
         vector<ExqArray<pair<int,float>>> get_descriptors(vector<int> ids, int mod);
@@ -155,6 +158,7 @@ namespace exq {
         vector<double> _orgModWeights;
         vector<double> _modalityWeights;
         vector<double> _normalizedModWeights;
+        double _learningRate0;
         double _learningRate;
         std::map<uint32_t,vector<double>> _retSuggs = std::map<uint32_t,vector<double>>();
         double _noPosRds = 1.0;
