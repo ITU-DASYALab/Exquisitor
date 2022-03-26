@@ -160,7 +160,7 @@ namespace exq {
         vector<double> _normalizedModWeights;
         double _learningRate0;
         double _learningRate;
-        std::map<uint32_t,vector<double>> _retSuggs = std::map<uint32_t,vector<double>>();
+        std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
         double _noPosRds = 1.0;
         double _change = 1.0;
 

@@ -185,7 +185,7 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vect
                 rank = i * modWeights[mod];
                 position = i;
             }
-            items[i].modRank.push_back((position/(double)items.size()));
+            items[i].modRank.push_back((((double)items.size()-position)/(double)items.size()));
         }
     } else {
         for (int i = 1; i < (int) items.size(); i++) {

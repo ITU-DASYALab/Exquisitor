@@ -262,7 +262,8 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             << items2Return[i].distance[0] << endl;
 #endif
             results.suggs.push_back(items2Return[i].itemId);
-            _retSuggs[items2Return[i].itemId] = vector<double>(items2Return[i].modRank);
+            // To update mdoality weight, store the modality rank of k*numSegment and the position
+            _retSuggs[items2Return[i].itemId] = std::make_pair(vector<double>(items2Return[i].modRank),i);
             if ((int)results.suggs.size() == k) break;
         }
     }
@@ -303,7 +304,7 @@ void ExqController<T>::reset_model() {
 template <typename T>
 bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<float>& labels) {
     auto nSuggs = (float) _retSuggs.size();
-    if (nSuggs == 0) return true; // Sanity check, if no suggestions were returned, there are nothing more to show
+    if (nSuggs == 0) return true; // Sanity check, if no suggestions were returned, there is nothing more to show
 
     float rel = 0;
     bool found = false;
@@ -313,8 +314,11 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             found = true;
             if (labels[i] == 1.0) rel += 1;
             for (int m = 0; m < _modalities; m++) {
-                //_modalityWeights[m] += (((labels[i]/nSuggs) * _retSuggs[ids[i]][m])/_change);
-                _modalityWeights[m] += (((labels[i]/nSuggs) * _retSuggs[ids[i]][m])/_change) * _learningRate;
+                double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
+                double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
+                //_modalityWeights[m] += labels[i] * ((suggRatio * rankRatio) / _change) * _learningRate;
+                //_modalityWeights[m] += labels[i] * ((suggRatio * rankRatio * _learningRate) / _change);
+                _modalityWeights[m] += labels[i] * suggRatio * rankRatio * _learningRate;
             }
         }
     }
@@ -335,11 +339,12 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
         _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "], " <<
         _normalizedModWeights[0] << ", " << _normalizedModWeights[1] << ", " << _normalizedModWeights[2] << "]" << endl;
         if (rel > 0) {
-            // Decrease rate based on relevant items and suggestions returned
+            // Decrease rate based on positive items and suggestions returned
             _learningRate -= _learningRate * (rel/nSuggs);
+            if (_learningRate <= 0.0) _learningRate = _orgModWeights[0] * 0.01;
         } else {
-            // Increase rate based on the number of items suggested and rounds no items were judged
-            _learningRate += _orgModWeights[0] * 0.01;
+            // Increase rate by original weight and rate
+            _learningRate += _orgModWeights[0] * _learningRate0;
         }
         _change = 1.0;
     }

@@ -328,7 +328,7 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
         modalityWeightsOk = _pyExqV1._controller->update_modality_weights(trainIds, trainLabels);
     }
 
-    int returnSize = (_pyExqV1._controller->getNumModalites() * 2) + 1;
+    int returnSize = (_pyExqV1._controller->getNumModalites() * 2) + 2;
     PyObject* timeList = PyList_New(returnSize);
     if (modalityWeightsOk) {
         auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
