@@ -316,8 +316,6 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             for (int m = 0; m < _modalities; m++) {
                 double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
                 double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
-                //_modalityWeights[m] += labels[i] * ((suggRatio * rankRatio) / _change) * _learningRate;
-                //_modalityWeights[m] += labels[i] * ((suggRatio * rankRatio * _learningRate) / _change);
                 _modalityWeights[m] += labels[i] * suggRatio * rankRatio * _learningRate;
             }
         }
