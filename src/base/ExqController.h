@@ -161,7 +161,9 @@ namespace exq {
         double _learningRate0;
         double _learningRate;
         std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
-        double _noPosRds = 1.0;
+        int _momentum_start = 3;
+        int _org_momentum_cnt = 3;
+        bool _momentum = true;
         double _change = 1.0;
 
         vector<future<void>> _threads = vector<future<void>>();
