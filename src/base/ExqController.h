@@ -164,6 +164,7 @@ namespace exq {
         std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
         double _noPosRds = 1.0;
         double _change = 1.0;
+        int _minModFeatCount;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;
