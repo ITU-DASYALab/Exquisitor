@@ -317,13 +317,6 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
 
     auto modWeights = vector<double>(_modalityWeights);
 
-    auto maxCount = vector<int>(_modalities,0);
-    auto commonCount = vector<float>(_modalities,0);
-    //auto maxCommonCount = vector<float>(_modalities,0);
-    int maxMod = -1;
-    int maxModCount = -1;
-    auto modFeatCount = vector<map<uint32_t,int>>(_modalities, map<uint32_t,int>());
-
     float rel = 0;
     bool found = false;
     int flush = 0;
@@ -332,22 +325,6 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             found = true;
             if (labels[i] == 1.0) {
                 rel += 1;
-                for (int m = 0; m < _modalities; m++) {
-                    auto feats = _functions[m]->getDescriptorInformation(*_handler->getDescriptor(ids[i], m));
-                    for (int j = 0; j < _minModFeatCount; j++) {
-                        auto featId = feats.getItem(j).first;
-                        if (modFeatCount[m].contains(featId)) modFeatCount[m][featId] += 1;
-                        else modFeatCount[m][featId] = 1;
-                        if (modFeatCount[m][featId] > maxCount[m]) {
-                            maxCount[m] = modFeatCount[m][featId];
-                            if (maxCount[m] > maxModCount) {
-                                maxModCount = maxCount[m];
-                                maxMod = m;
-                            }
-                        }
-                        if (modFeatCount[m][featId] == 2) commonCount[m] += 1;
-                    }
-                }
             }
             for (int m = 0; m < _modalities; m++) {
                 double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
@@ -357,48 +334,6 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             }
         }
     }
-
-    if (maxModCount >= 2) {
-        int tmpMaxMod = maxMod;
-        float tmpCommon = commonCount[maxMod];
-        for (int m = 0; m < _modalities; m++) {
-            if (m == tmpMaxMod) continue;
-            if (maxCount[m] == maxModCount) {
-                if (commonCount[m] > tmpCommon) {
-                    tmpCommon = commonCount[m];
-                    maxMod = m;
-                }
-            }
-        }
-        _modalityWeights[maxMod] += _orgModWeights[maxMod] / 2;
-    }
-
-    // Apply extra modality boost
-    //if (rel > 1) {
-    //    for (int m = 0; m < _modalities; m++) {
-    //        // Increase modality weight if a feature is present on all positive items
-    //        if (maxCount[m] != (int) rel) continue;
-    //        float maxCommon = 1;
-    //        // Are there more features that are present in all positive items
-    //        for (auto it = modFeatCount[m].begin(); it != modFeatCount[m].end(); ++it) {
-    //            if (it->second == maxCount[m]) {
-    //                maxCommon += 1;
-    //            }
-    //        }
-    //        _modalityWeights[m] += maxCommon/_minModFeatCount;
-    //    }
-    //    //bool boost = false;
-    //    //for (int m = 0; m < _modalities; m++) {
-    //    //    if (maxCount[m] != maxModCount) {
-    //    //        boost = true;
-    //    //        break;
-    //    //    }
-    //    //}
-    //    //if (boost)
-    //    //    for (int m = 0; m < _modalities; m++)
-    //    //        if (maxCount[m] == maxModCount)
-    //    //            _modalityWeights[m] += _orgModWeights[m] * _learningRate * maxModCount * 2;
-    //}
 
     for (int m = 0; m < _modalities; m++) {
         //if (_modalityWeights[m] > modWeights[m]) {
@@ -424,10 +359,7 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
         cout << "Updated modality weights: [" <<
         _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "], [" <<
         _normalizedModWeights[0] << ", " << _normalizedModWeights[1] << ", " << _normalizedModWeights[2] << "], [" <<
-        maxCount[0] << ", " << maxCount[1] << ", " << maxCount[2] << "], [" <<
-        commonCount[0] << ", " << commonCount[1] << ", " << commonCount[2] << "]" <<
         endl;
-        //maxCount[0] << ", " << maxCount[1] << ", " << maxCount[2] << "]" << endl;
         if (rel > 0) {
             // Decrease rate based on positive items and suggestions returned
             _learningRate -= _learningRate * (rel/nSuggs);
