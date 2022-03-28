@@ -88,6 +88,10 @@ ExqController<T>::ExqController(
     _learningRate = modWeights[0] * learningRate;
     _orgModWeights = vector<double>(modWeights);
     _normalizedModWeights = vector<double>(modWeights);
+    _momentum = vector<pair<int,double>>(_modalities);
+    for (int m = 0; m < _modalities; m++) {
+        _momentum[m] = std::make_pair(0, 1.0);
+    }
     _modalityWeights = std::move(modWeights);
 
     cout << "(CTRL) Loading data..." << endl;
@@ -306,6 +310,7 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
     auto nSuggs = (float) _retSuggs.size();
     if (nSuggs == 0) return true; // Sanity check, if no suggestions were returned, there is nothing more to show
 
+    auto modWeights = vector<double>(_modalityWeights);
     float rel = 0;
     bool found = false;
     int flush = 0;
@@ -316,11 +321,19 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             for (int m = 0; m < _modalities; m++) {
                 double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
                 double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
-                _modalityWeights[m] += labels[i] * suggRatio * rankRatio * _learningRate;
+                _modalityWeights[m] += labels[i] * suggRatio * rankRatio * _learningRate * _momentum[m].second;
             }
         }
     }
     for (int m = 0; m < _modalities; m++) {
+        if (_modalityWeights[m] > modWeights[m]) {
+            // Increase momentum for this modality
+            _momentum[m].first++;
+            _momentum[m].second += (_modalityWeights[m] - modWeights[m]) * _momentum[m].first;
+        } else {
+            _momentum[m].first = 0;
+            _momentum[m].second = 1.0;
+        }
         if (_modalityWeights[m] < 0.0) {
             _normalizedModWeights[m] = 0.0;
             flush += 1;

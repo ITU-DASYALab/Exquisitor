@@ -158,6 +158,7 @@ namespace exq {
         vector<double> _orgModWeights;
         vector<double> _modalityWeights;
         vector<double> _normalizedModWeights;
+        vector<pair<int,double>> _momentum;
         double _learningRate0;
         double _learningRate;
         std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
