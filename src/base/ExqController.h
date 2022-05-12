@@ -157,7 +157,8 @@ namespace exq {
         //TODO: Move this to another class along with sortItems, and assignRanking
         vector<double> _orgModWeights;
         vector<double> _modalityWeights;
-        vector<double> _normalizedModWeights;
+        vector<double> _rescaledModWeights;
+        double _orgWeightSum = 0.0;
         double _learningRate0;
         double _learningRate;
         std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();

@@ -85,10 +85,12 @@ ExqController<T>::ExqController(
     _vidProperties = vidProps;
 
     _learningRate0 = learningRate;
-    //TODO: Figure out what to do when modality weights are different
-    _learningRate = modWeights[0] * learningRate;
+    _learningRate = learningRate;
     _orgModWeights = vector<double>(modWeights);
-    _normalizedModWeights = vector<double>(modWeights);
+    for (int m = 0; m < (int)_orgModWeights.size(); m++) {
+        _orgWeightSum += _orgModWeights[m];
+    }
+    _rescaledModWeights = vector<double>(modWeights);
     _modalityWeights = std::move(modWeights);
 
     cout << "(CTRL) Loading data..." << endl;
@@ -207,7 +209,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
                                             _noms, _modalities, _handler, _functions, seenSet,
                                             results.totalTimePerSegment[currSegment],
                                             results.totalItemsConsideredPerSegment[currSegment], w,
-                                            usedFilters, _normalizedModWeights);
+                                            usedFilters, _rescaledModWeights);
                 });
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << "(CTRL) Running segment " << workerSegments[w] << endl;
@@ -246,7 +248,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             //items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
             itemsFromSegments[s].clear();
         }
-        _functions[0]->sortItems(items2Return, _modalities, _normalizedModWeights, true);
+        _functions[0]->sortItems(items2Return, _modalities, _rescaledModWeights, true);
 
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "Size of items2Return: " << items2Return.size() << endl;
@@ -307,50 +309,59 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
     auto nSuggs = (float) _retSuggs.size();
     if (nSuggs == 0) return true; // Sanity check, if no suggestions were returned, there is nothing more to show
 
-    auto modWeights = vector<double>(_modalityWeights);
+    auto modChange = vector<double>(_modalityWeights.size(),0.0);
 
-    float rel = 0;
+    //float rel = 0;
     bool found = false;
-    int flush = 0;
+    //int flush = 0;
     for (int i = 0; i < (int) ids.size(); i++) {
         if (_retSuggs.contains(ids[i])) {
             found = true;
-            if (labels[i] == 1.0) {
-                rel += 1;
-            }
+            //if (labels[i] == 1.0) {
+            //    rel += 1;
+            //}
             for (int m = 0; m < _modalities; m++) {
-                double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
-                double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
-                _modalityWeights[m] += labels[i] * suggRatio * rankRatio * _learningRate;
+                //double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
+                //double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
+                //_modalityWeights[m] += suggRatio * rankRatio * _learningRate;
+                //_modalityWeights[m] += _retSuggs[ids[i]].first[m] * _learningRate;
+                //modChange[m] += _retSuggs[ids[i]].first[m];// * _learningRate;
+                if (labels[i] == 1.0) {
+                    modChange[m] += _retSuggs[ids[i]].first[m] * 2;
+                } else {
+                    modChange[m] += _retSuggs[ids[i]].first[m];
+                }
             }
         }
     }
 
     for (int m = 0; m < _modalities; m++) {
-        if (_modalityWeights[m] < 0.0) {
-            _normalizedModWeights[m] = 0.0;
-            flush += 1;
-        } else {
-            _normalizedModWeights[m] = _modalityWeights[m];
-        }
+        _modalityWeights[m] += modChange[m]; //* _learningRate;
     }
-    if (flush == _modalities) {
-        reset_modality_weights();
-        return false;
+    // Rescale weights into original sum weight
+    double msum = 0.0;
+    for (int m = 0; m < _modalities; m++) {
+        msum += _modalityWeights[m];
     }
+    for (int m = 0; m < _modalities; m++) {
+        _rescaledModWeights[m] = _modalityWeights[m] * (_orgWeightSum/msum);
+    }
+    //if (flush == _modalities) {
+    //    reset_modality_weights();
+    //    return false;
+    //}
     if (found)  {
         cout << "Updated modality weights: [" <<
-        _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "], [" <<
-        _normalizedModWeights[0] << ", " << _normalizedModWeights[1] << ", " << _normalizedModWeights[2] << "], [" <<
-        endl;
-        if (rel > 0) {
-            // Decrease rate based on positive items and suggestions returned
-            _learningRate -= _learningRate * (rel/nSuggs);
-            if (_learningRate <= 0.0) _learningRate = _orgModWeights[0] * 0.01;
-        } else {
-            // Increase rate by original weight and rate
-            _learningRate += _orgModWeights[0] * _learningRate0;
-        }
+             _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "], [" <<
+             _rescaledModWeights[0] << ", " << _rescaledModWeights[1] << ", " << _rescaledModWeights[2] << "]" <<
+             endl;
+        //if (rel > 0) {
+        //    // Decrease rate based on positive items and suggestions returned
+        //    _learningRate -= _learningRate * (rel/nSuggs);
+        //} else {
+        //    // Increase rate by original weight and rate
+        //    _learningRate += _learningRate0/2;
+        //}
         _change = 1.0;
     }
     else {
@@ -364,9 +375,9 @@ template <typename T>
 void ExqController<T>::reset_modality_weights() {
     for (int m = 0; m < _modalities; m++) {
         _modalityWeights[m] = _orgModWeights[m];
-        _normalizedModWeights[m] = _orgModWeights[m];
+        _rescaledModWeights[m] = _orgModWeights[m];
     }
-    _learningRate = _orgModWeights[0] * _learningRate0;
+    _learningRate = _learningRate0;
     //cout << "Weights reset: [" <<
     //     _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "]" << endl;
 }
