@@ -24,11 +24,11 @@ exquisitor = Extension('exq',
                        include_dirs=[
                            '/Library/Frameworks/Python.framework/Versions/Current/include/python3.10',
                            '/usr/local/include/opencv4',
-                           '/usr/local/Cellar/hdf5/1.10.5_1/include/hdf5'
+                           '/usr/local/Cellar/hdf5/1.12.1_1/include/hdf5'
                        ],
                        library_dirs=[
                            '/Library/Frameworks/Python.framework/Versions/Current/lib',
-                           '/usr/local/Cellar/hdf5/1.10.5_1/lib',
+                           '/usr/local/Cellar/hdf5/1.12.1_1/lib',
                            '/usr/local/lib'
                        ],
                        libraries=['python3.10', 'hdf5', 'opencv_core', 'opencv_ml'],

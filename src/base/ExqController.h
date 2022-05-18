@@ -155,14 +155,21 @@ namespace exq {
         ItemFilter _activeFilters;
 
         //TODO: Move this to another class along with sortItems, and assignRanking
+
+        // Original weights of modality
         vector<double> _orgModWeights;
+        // Actual weights that are updated based on function
         vector<double> _modalityWeights;
+        // Rescaled weights to be between 0 and _orgWeightSum
         vector<double> _rescaledModWeights;
+        // Weight Changes in last x rounds
+        vector<double> _weightChanges;
+        int _pref_modality = 0;
         double _orgWeightSum = 0.0;
         double _learningRate0;
         double _learningRate;
         std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
-        double _change = 1.0;
+        double _change = 0.0;
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;

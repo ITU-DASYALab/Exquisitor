@@ -87,8 +87,10 @@ ExqController<T>::ExqController(
     _learningRate0 = learningRate;
     _learningRate = learningRate;
     _orgModWeights = vector<double>(modWeights);
+    _weightChanges = vector<double>(_modalities);
     for (int m = 0; m < (int)_orgModWeights.size(); m++) {
         _orgWeightSum += _orgModWeights[m];
+        _weightChanges[m] = 0.0;
     }
     _rescaledModWeights = vector<double>(modWeights);
     _modalityWeights = std::move(modWeights);
@@ -311,46 +313,81 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
 
     auto modChange = vector<double>(_modalityWeights.size(),0.0);
 
-    //float rel = 0;
+    float rel = 0;
     bool found = false;
     //int flush = 0;
     for (int i = 0; i < (int) ids.size(); i++) {
         if (_retSuggs.contains(ids[i])) {
             found = true;
-            //if (labels[i] == 1.0) {
-            //    rel += 1;
-            //}
-            for (int m = 0; m < _modalities; m++) {
-                //double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
-                //double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
-                //_modalityWeights[m] += suggRatio * rankRatio * _learningRate;
-                //_modalityWeights[m] += _retSuggs[ids[i]].first[m] * _learningRate;
-                //modChange[m] += _retSuggs[ids[i]].first[m];// * _learningRate;
-                if (labels[i] == 1.0) {
-                    modChange[m] += _retSuggs[ids[i]].first[m] * 2;
-                } else {
-                    modChange[m] += _retSuggs[ids[i]].first[m];
-                }
+            if (labels[i] == 1.0) {
+                rel += 1;
             }
+            //for (int m = 0; m < _modalities; m++) {
+            //    //double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
+            //    //double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
+            //    //_modalityWeights[m] += suggRatio * rankRatio * _learningRate;
+            //    //_modalityWeights[m] += _retSuggs[ids[i]].first[m] * _learningRate;
+            //    //modChange[m] += _retSuggs[ids[i]].first[m];// * _learningRate;
+            //    if (labels[i] == 1.0) {
+            //        modChange[m] += _retSuggs[ids[i]].first[m] * 2;
+            //    } else {
+            //        modChange[m] += _retSuggs[ids[i]].first[m];
+            //    }
+            //}
         }
     }
 
-    for (int m = 0; m < _modalities; m++) {
-        _modalityWeights[m] += modChange[m]; //* _learningRate;
+    //double max_change = -DBL_MAX;
+    //double min_change = DBL_MAX;
+    //int max = -1;
+    //int min = -1;
+    //for (int m = 0; m < _modalities; m++) {
+    //    if (max_change < modChange[m]) {
+    //        max = m;
+    //    }
+    //    if (min_change > modChange[m]) {
+    //        min = m;
+    //    }
+    //    _modalityWeights[m] += modChange[m]; //* _learningRate;
+    //}
+    if (rel < _change || rel == 0) {
+        _pref_modality = (_pref_modality + 1) % _modalities;
     }
     // Rescale weights into original sum weight
     double msum = 0.0;
     for (int m = 0; m < _modalities; m++) {
-        msum += _modalityWeights[m];
+        //if (m == max) {
+        //    msum += _modalityWeights[m] * _modalities;
+        //} else if (m == min) {
+        //    msum += _modalityWeights[m] * 0.5;
+        //} else {
+        //    msum += _modalityWeights[m] * ceil(_modalities / 2);
+        //}
+        if (m == _pref_modality) {
+            msum += _modalityWeights[m] * _modalities;
+        } else {
+            msum += _modalityWeights[m];
+        }
     }
     for (int m = 0; m < _modalities; m++) {
-        _rescaledModWeights[m] = _modalityWeights[m] * (_orgWeightSum/msum);
+        //if (m == max) {
+        //    _rescaledModWeights[m] = _modalityWeights[m] * _modalities * (_orgWeightSum/msum);
+        //} else if (m == min) {
+        //    _rescaledModWeights[m] = _modalityWeights[m] * 0.5 * (_orgWeightSum/msum);
+        //} else {
+        //    _rescaledModWeights[m] = _modalityWeights[m] * ceil(_modalities/2) * (_orgWeightSum/msum);
+        //}
+        if (m == _pref_modality) {
+            _rescaledModWeights[m] = _modalityWeights[m] * 2 * (_orgWeightSum/msum);
+        } else {
+            _rescaledModWeights[m] = _modalityWeights[m] * (_orgWeightSum/msum);
+        }
     }
     //if (flush == _modalities) {
     //    reset_modality_weights();
     //    return false;
     //}
-    if (found)  {
+    if (found) {
         cout << "Updated modality weights: [" <<
              _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "], [" <<
              _rescaledModWeights[0] << ", " << _rescaledModWeights[1] << ", " << _rescaledModWeights[2] << "]" <<
@@ -362,11 +399,11 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
         //    // Increase rate by original weight and rate
         //    _learningRate += _learningRate0/2;
         //}
-        _change = 1.0;
     }
-    else {
-        _change += 1.0;
-    }
+    _change = rel;
+    //} else {
+    //    _change = rel;
+    //}
     _retSuggs.clear();
     return true;
 }
