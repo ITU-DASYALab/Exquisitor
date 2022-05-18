@@ -123,7 +123,7 @@ def test_one_modality():
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 
@@ -141,7 +141,7 @@ def test_two_modalities():
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 
@@ -159,7 +159,7 @@ def test_two_modalities_different_compression():
     item_metadata = [[]]
     video_metadata = [[]]
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 
@@ -177,7 +177,7 @@ def test_three_modalities():
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 
@@ -201,7 +201,7 @@ def test_three_modalities_different_compression():
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
     return 0
 
@@ -252,7 +252,7 @@ def test_filters_one_collection():
     print(items_meta[2])
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 
@@ -270,7 +270,7 @@ def test_filters_two_collections():
     item_metadata = [[]]
     video_metadata = [[]]
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 
@@ -314,7 +314,7 @@ def test_filters_videos_one_collection(filters_file):
         ]
         video_metadata[0].append(vid)
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
     return 0
 
@@ -333,7 +333,7 @@ def test_filters_videos_two_collections():
     item_metadata = [[]]
     video_metadata = [[]]
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1, 0.0)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 

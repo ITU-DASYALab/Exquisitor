@@ -35,7 +35,8 @@ ExqController<T>::ExqController(
         const vector<ItemProperties>& itemProps,
         const vector<vector<Props>>& vidProps,
         vector<double> modWeights,
-        double learningRate
+        bool ffs,
+        int guaranteedSlots
     ) {
     cout << "(CTRL) Setting parameters" << endl;
     // Set standard fields
@@ -84,8 +85,6 @@ ExqController<T>::ExqController(
 #endif
     _vidProperties = vidProps;
 
-    _learningRate0 = learningRate;
-    _learningRate = learningRate;
     _orgModWeights = vector<double>(modWeights);
     _weightChanges = vector<double>(_modalities);
     for (int m = 0; m < (int)_orgModWeights.size(); m++) {
@@ -94,6 +93,9 @@ ExqController<T>::ExqController(
     }
     _rescaledModWeights = vector<double>(modWeights);
     _modalityWeights = std::move(modWeights);
+
+    _ffs = ffs;
+    _guaranteedSlots = guaranteedSlots;
 
     cout << "(CTRL) Loading data..." << endl;
     // Load data
@@ -195,6 +197,11 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     ItemFilter usedFilters;
     changeFilters ? usedFilters = ItemFilter(filters) : usedFilters = _activeFilters;
 
+    if (_ffs && _slotsUnset) {
+        int initSlots = (k/_modalities);
+        _slots = vector<int>(_modalities, initSlots);
+        _slotsUnset = false;
+    }
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(CTRL) Starting workers" << endl;
 #endif
@@ -211,7 +218,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
                                             _noms, _modalities, _handler, _functions, seenSet,
                                             results.totalTimePerSegment[currSegment],
                                             results.totalItemsConsideredPerSegment[currSegment], w,
-                                            usedFilters, _rescaledModWeights);
+                                            usedFilters, _rescaledModWeights, _slots, _ffs);
                 });
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << "(CTRL) Running segment " << workerSegments[w] << endl;
@@ -235,32 +242,56 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     if (!prevResults.suggs.empty()) {
         results.suggs = prevResults.suggs;
     }
+
     auto items2Return = vector<ExqItem>();
     items2Return.reserve(totalItemsReturned);
-    auto unique = unordered_set<uint32_t>();
     if (totalItemsReturned != 0) {
-        for (int s = 0; s < _segments; s++) {
-            for (int i = 0; i < (int)itemsFromSegments[s].size(); i++) {
-                if (!unique.contains(itemsFromSegments[s][i].itemId)) {
-                    itemsFromSegments[s][i].aggScore = 0.0;
-                    items2Return.push_back(itemsFromSegments[s][i]);
-                    unique.insert(itemsFromSegments[s][i].itemId);
+        if (_ffs) {
+            auto modItems = vector<vector<ExqItem>>(_modalities);
+            for (int m = 0; m < _modalities; m++) modItems[m] = vector<ExqItem>();
+            for (int s = 0; s < _segments; s++) {
+                for (int i = 0; i < (int) itemsFromSegments[s].size(); i++) {
+                    modItems[itemsFromSegments[s][i].fromModality].push_back(itemsFromSegments[s][i]);
                 }
             }
-            //items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
-            itemsFromSegments[s].clear();
-        }
-        _functions[0]->sortItems(items2Return, _modalities, _rescaledModWeights, true);
 
+            int start = 0;
+            for (int m = 0; m < _modalities; m++) {
+                std::sort(modItems[m].begin(), modItems[m].end(),
+                          [m](const ExqItem& lhs, const ExqItem& rhs) {
+                              return lhs.distance[m] > rhs.distance[m];
+                          });
+                int inserted = 0;
+                for (int i = 0; i < (int)modItems[m].size(); i++) {
+                    items2Return.push_back(modItems[m][i]);
+                    inserted++;
+                    if (inserted == _slots[m]) break;
+                }
+            }
+        } else {
+            auto unique = unordered_set<uint32_t>();
+            for (int s = 0; s < _segments; s++) {
+                for (int i = 0; i < (int) itemsFromSegments[s].size(); i++) {
+                    if (!unique.contains(itemsFromSegments[s][i].itemId)) {
+                        itemsFromSegments[s][i].aggScore = 0.0;
+                        items2Return.push_back(itemsFromSegments[s][i]);
+                        unique.insert(itemsFromSegments[s][i].itemId);
+                    }
+                }
+                //items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
+                itemsFromSegments[s].clear();
+            }
+            _functions[0]->sortItems(items2Return, _modalities, _rescaledModWeights, true);
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
-        cout << "Size of items2Return: " << items2Return.size() << endl;
-        if (items2Return.size() > 0 && _modalities > 1) {
-            cout << items2Return[0].modRank.size() << endl;
-            for (int m = 0; m < _modalities; m++)
-                cout << items2Return[0].modRank[m] << endl;
-            cout << items2Return[0].aggScore << endl;
-        }
+            cout << "Size of items2Return: " << items2Return.size() << endl;
+            if (items2Return.size() > 0 && _modalities > 1) {
+                cout << items2Return[0].modRank.size() << endl;
+                for (int m = 0; m < _modalities; m++)
+                    cout << items2Return[0].modRank[m] << endl;
+                cout << items2Return[0].aggScore << endl;
+            }
 #endif
+        }
         for (int i = 0; i < (int)items2Return.size(); i++) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
             cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
@@ -268,7 +299,10 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
 #endif
             results.suggs.push_back(items2Return[i].itemId);
             // To update mdoality weight, store the modality rank of k*numSegment and the position
-            _retSuggs[items2Return[i].itemId] = std::make_pair(vector<double>(items2Return[i].modRank),i);
+            if (_ffs)
+                _retSuggsFFS[items2Return[i].itemId] = std::make_pair(items2Return[i].fromModality,i);
+            else
+                _retSuggs[items2Return[i].itemId] = std::make_pair(vector<double>(items2Return[i].modRank),i);
             if ((int)results.suggs.size() == k) break;
         }
     }
@@ -308,6 +342,51 @@ void ExqController<T>::reset_model() {
 
 template <typename T>
 bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<float>& labels) {
+    if (_ffs) {
+        auto modPositives = vector<int>(_modalities, 0);
+        for (int i = 0; i < (int) ids.size(); i++) {
+            if (_retSuggsFFS.contains(ids[i])) {
+                if (labels[i] == 1.0) modPositives[_retSuggsFFS[ids[i]].first]++;
+            }
+        }
+        int mx = -INT32_MAX;
+        int mx_mod = -1;
+        for (int m = 1; m < _modalities; m++) {
+            if (mx < modPositives[m]) {
+                mx = modPositives[m];
+                mx_mod = m;
+            }
+        }
+        bool check = false;
+        auto mn_checked = unordered_set<int>();
+        mn_checked.insert(mx_mod); // Add max modality as it doesn't need to be checked
+        while (!check) {
+            int mn = INT32_MAX;
+            int mn_mod = -1;
+            for (int m = 0; m < _modalities; m++) {
+                if (mn_checked.contains(m)) continue;
+                if (mn > modPositives[m]) {
+                    mn = modPositives[m];
+                    mn_mod = m;
+                }
+            }
+            // Check if there is a difference
+            if (mx != mn) {
+                // Add 1 slot to max and reduce 1 slot from min if min has fight slots
+                if (_slots[mn_mod] > _guaranteedSlots) {
+                    _slots[mn_mod] -= 1;
+                    _slots[mx_mod] += 1;
+                    check = true;
+                }
+                mn_checked.insert(mn_mod);
+            }
+            if (mn_checked.size() == _modalities) check = true;
+        }
+
+        _retSuggsFFS.clear();
+        return true;
+    }
+
     auto nSuggs = (float) _retSuggs.size();
     if (nSuggs == 0) return true; // Sanity check, if no suggestions were returned, there is nothing more to show
 
@@ -315,95 +394,43 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
 
     float rel = 0;
     bool found = false;
-    //int flush = 0;
     for (int i = 0; i < (int) ids.size(); i++) {
         if (_retSuggs.contains(ids[i])) {
             found = true;
             if (labels[i] == 1.0) {
                 rel += 1;
             }
-            //for (int m = 0; m < _modalities; m++) {
-            //    //double suggRatio = ((float)(nSuggs-_retSuggs[ids[i]].second)/nSuggs);
-            //    //double rankRatio = suggRatio * _retSuggs[ids[i]].first[m];
-            //    //_modalityWeights[m] += suggRatio * rankRatio * _learningRate;
-            //    //_modalityWeights[m] += _retSuggs[ids[i]].first[m] * _learningRate;
-            //    //modChange[m] += _retSuggs[ids[i]].first[m];// * _learningRate;
-            //    if (labels[i] == 1.0) {
-            //        modChange[m] += _retSuggs[ids[i]].first[m] * 2;
-            //    } else {
-            //        modChange[m] += _retSuggs[ids[i]].first[m];
-            //    }
-            //}
+            for (int m = 0; m < _modalities; m++) {
+                if (labels[i] == 1.0) {
+                    modChange[m] += _retSuggs[ids[i]].first[m] * 2;
+                } else {
+                    modChange[m] += _retSuggs[ids[i]].first[m];
+                }
+            }
         }
     }
 
-    //double max_change = -DBL_MAX;
-    //double min_change = DBL_MAX;
-    //int max = -1;
-    //int min = -1;
-    //for (int m = 0; m < _modalities; m++) {
-    //    if (max_change < modChange[m]) {
-    //        max = m;
-    //    }
-    //    if (min_change > modChange[m]) {
-    //        min = m;
-    //    }
-    //    _modalityWeights[m] += modChange[m]; //* _learningRate;
-    //}
-    if (rel < _change || rel == 0) {
-        _pref_modality = (_pref_modality + 1) % _modalities;
+    for (int m = 0; m < _modalities; m++) {
+        _modalityWeights[m] += modChange[m];
     }
+
     // Rescale weights into original sum weight
     double msum = 0.0;
     for (int m = 0; m < _modalities; m++) {
-        //if (m == max) {
-        //    msum += _modalityWeights[m] * _modalities;
-        //} else if (m == min) {
-        //    msum += _modalityWeights[m] * 0.5;
-        //} else {
-        //    msum += _modalityWeights[m] * ceil(_modalities / 2);
-        //}
-        if (m == _pref_modality) {
-            msum += _modalityWeights[m] * _modalities;
-        } else {
-            msum += _modalityWeights[m];
-        }
+        msum += _modalityWeights[m];
     }
+
     for (int m = 0; m < _modalities; m++) {
-        //if (m == max) {
-        //    _rescaledModWeights[m] = _modalityWeights[m] * _modalities * (_orgWeightSum/msum);
-        //} else if (m == min) {
-        //    _rescaledModWeights[m] = _modalityWeights[m] * 0.5 * (_orgWeightSum/msum);
-        //} else {
-        //    _rescaledModWeights[m] = _modalityWeights[m] * ceil(_modalities/2) * (_orgWeightSum/msum);
-        //}
-        if (m == _pref_modality) {
-            _rescaledModWeights[m] = _modalityWeights[m] * 2 * (_orgWeightSum/msum);
-        } else {
-            _rescaledModWeights[m] = _modalityWeights[m] * (_orgWeightSum/msum);
-        }
+        _rescaledModWeights[m] = _modalityWeights[m] * (_orgWeightSum/msum);
     }
-    //if (flush == _modalities) {
-    //    reset_modality_weights();
-    //    return false;
-    //}
+
     if (found) {
         cout << "Updated modality weights: [" <<
              _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "], [" <<
              _rescaledModWeights[0] << ", " << _rescaledModWeights[1] << ", " << _rescaledModWeights[2] << "]" <<
              endl;
-        //if (rel > 0) {
-        //    // Decrease rate based on positive items and suggestions returned
-        //    _learningRate -= _learningRate * (rel/nSuggs);
-        //} else {
-        //    // Increase rate by original weight and rate
-        //    _learningRate += _learningRate0/2;
-        //}
     }
     _change = rel;
-    //} else {
-    //    _change = rel;
-    //}
     _retSuggs.clear();
     return true;
 }
@@ -414,7 +441,6 @@ void ExqController<T>::reset_modality_weights() {
         _modalityWeights[m] = _orgModWeights[m];
         _rescaledModWeights[m] = _orgModWeights[m];
     }
-    _learningRate = _learningRate0;
     //cout << "Weights reset: [" <<
     //     _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "]" << endl;
 }

@@ -124,7 +124,7 @@ def single_modality_initialize():
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
 
 def single_modality_initialize_with_metadata():
@@ -153,7 +153,7 @@ def single_modality_initialize_with_metadata():
     item_metadata = items_meta
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
 
 def two_modalities_initialize():
@@ -170,7 +170,7 @@ def two_modalities_initialize():
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
 
@@ -194,7 +194,7 @@ def three_modalities_initialize():
     item_metadata = []
     video_metadata = []
     exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
-                   func_type, func_objs, item_metadata, video_metadata, 0, 1)
+                   func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
     return 0
 

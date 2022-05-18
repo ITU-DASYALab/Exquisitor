@@ -67,7 +67,8 @@ namespace exq {
                 const vector<ItemProperties>& itemProps,
                 const vector<vector<Props>>& vidProps,
                 vector<double> modWeights,
-                double learningRate
+                bool ffs,
+                int guaranteedSlots
         );
 
 /**
@@ -166,10 +167,16 @@ namespace exq {
         vector<double> _weightChanges;
         int _pref_modality = 0;
         double _orgWeightSum = 0.0;
-        double _learningRate0;
-        double _learningRate;
+
         std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
         double _change = 0.0;
+
+        bool _ffs = false;
+        bool _slotsUnset = true;
+        int _guaranteedSlots = 0;
+        vector<int> _slots;
+        vector<int> _activeSlots;
+        std::map<uint32_t,pair<int,uint32_t>> _retSuggsFFS = std::map<uint32_t,pair<int,uint32_t>>();
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;

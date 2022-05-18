@@ -242,8 +242,12 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             expType = ExpansionType::ORIGINAL_CNT;
     }
     int statLevel = (int)PyLong_AsLong(PyTuple_GetItem(args, 13));
+    cout << "statLevel: " << statLevel << endl;
 
-    double learningRate = (double)PyFloat_AsDouble(PyTuple_GetItem(args, 14));
+    bool ffs = (bool)PyLong_AsLong(PyTuple_GetItem(args, 14));
+    cout << "ffs: " << ffs << endl;
+    int guaranteedSlots = (int)PyLong_AsLong(PyTuple_GetItem(args, 15));
+    cout << "guaranteedSlots: " << guaranteedSlots << endl;
 
     vector<string> cnfgFiles = vector<string>(PyList_Size(compCnfgFilesPy));
     for (int i = 0; i < PyList_Size(compCnfgFilesPy); i++) {
@@ -274,7 +278,8 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             itemProps,
             collVidProps,
             modalityWeights,
-            learningRate
+            ffs,
+            guaranteedSlots
             );
 
     cout << "Controller initialized. Exquisitor is ready!" << endl;

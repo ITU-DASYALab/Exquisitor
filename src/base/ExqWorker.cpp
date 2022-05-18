@@ -29,7 +29,8 @@ template<typename T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                            int currentSegment, int totalSegments, int noms, int modalities, ExqDataHandler<T>*& handler,
                            vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, double& time,
-                           int& totalItemsConsidered, int workerId, ItemFilter& filters, vector<double>& modWeights) {
+                           int& totalItemsConsidered, int workerId, ItemFilter& filters, vector<double>& modWeights,
+                           vector<int>& slots, bool ffs) {
 
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
     //time_point<high_resolution_clock> begin = high_resolution_clock::now();
@@ -112,34 +113,58 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 #endif
     if (totalItemsConsidered != 0) {
         vector<ExqItem> sortedCandidates = vector<ExqItem>();
+        vector<int> itemsPerMod = vector<int>(modalities, 0);
         for (int m = 0; m < modalities; m++) {
             sortedCandidates.insert(sortedCandidates.end(), candidateItems[m].begin(), candidateItems[m].end());
+            itemsPerMod[m] = (int)candidateItems[m].size();
             candidateItems[m].clear();
         }
         candidateItems.clear();
 
-        // rank aggregation
-        functions[0]->sortItems(sortedCandidates, modalities, modWeights);
-
-#if defined(DEBUG) || defined(DEBUG_SUGGEST)
-        cout << "(ExqWorker[" << workerId << "]) Removing duplicates in segment " << currentSegment << endl;
-#endif
-        int cnt = 0;
-        for (int i = 0; i < (int) sortedCandidates.size(); i++) {
-            if (sortedCandidates[i].aggScore != -1.0) {
-                sortedCandidates[i].segment = currentSegment;
-
-                itemsToReturn.push_back(sortedCandidates[i]);
-                cnt++;
-
-                for (int j = i; j < (int) sortedCandidates.size(); j++) {
-                    if (sortedCandidates[i].itemId == sortedCandidates[j].itemId) {
-                        sortedCandidates[j].aggScore = -1.0;
-                    }
+        if (ffs) {
+            // FFS
+            unordered_set<uint32_t> checked = unordered_set<uint32_t>();
+            int start = 0;
+            for (int m = 0; m < modalities; m++) {
+                if (m != 0) start += itemsPerMod[m-1];
+                std::sort(sortedCandidates.begin() + start, sortedCandidates.begin() + (start + itemsPerMod[m]),
+                          [m](const ExqItem& lhs, const ExqItem& rhs) {
+                    return lhs.distance[m] > rhs.distance[m];
+                });
+                int inserted = 0;
+                for (int i = start; i < (start + itemsPerMod[m]); i++) {
+                    if (checked.contains(sortedCandidates[i].itemId)) continue;
+                    checked.insert(sortedCandidates[i].itemId);
+                    itemsToReturn.push_back(sortedCandidates[i]);
+                    inserted++;
+                    if (inserted == slots[m]) break;
                 }
             }
-            if (cnt == k) {
-                break;
+            itemsPerMod.clear();
+        } else {
+            // rank aggregation
+            functions[0]->sortItems(sortedCandidates, modalities, modWeights);
+
+#if defined(DEBUG) || defined(DEBUG_SUGGEST)
+            cout << "(ExqWorker[" << workerId << "]) Removing duplicates in segment " << currentSegment << endl;
+#endif
+            int cnt = 0;
+            for (int i = 0; i < (int) sortedCandidates.size(); i++) {
+                if (sortedCandidates[i].aggScore != -1.0) {
+                    sortedCandidates[i].segment = currentSegment;
+
+                    itemsToReturn.push_back(sortedCandidates[i]);
+                    cnt++;
+
+                    for (int j = i; j < (int) sortedCandidates.size(); j++) {
+                        if (sortedCandidates[i].itemId == sortedCandidates[j].itemId) {
+                            sortedCandidates[j].aggScore = -1.0;
+                        }
+                    }
+                }
+                if (cnt == k) {
+                    break;
+                }
             }
         }
     }
