@@ -174,6 +174,7 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vect
     double rank = 0.0;
     items[0].aggScore += 0.0;
     items[0].modRank.push_back(0.0);
+    double score_position = 0.0;
 
     if (setModRank) {
         double position = 0.0;
@@ -181,8 +182,9 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vect
             if (items[i].distance[mod] == items[i - 1].distance[mod]) {
                 items[i].aggScore += rank;
             } else {
-                items[i].aggScore += i * modWeights[mod];
-                rank = i * modWeights[mod];
+                score_position++;
+                items[i].aggScore += score_position * modWeights[mod];
+                rank = score_position * modWeights[mod];
                 position = i;
             }
             items[i].modRank.push_back((((double)items.size()-position)/(double)items.size()));
@@ -192,8 +194,9 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vect
             if (items[i].distance[mod] == items[i - 1].distance[mod]) {
                 items[i].aggScore += rank;
             } else {
-                items[i].aggScore += i * modWeights[mod];
-                rank = i * modWeights[mod];
+                score_position++;
+                items[i].aggScore += score_position * modWeights[mod];
+                rank = score_position * modWeights[mod];
             }
 #if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
             cout << "(ExqFunc) Item " << items[i].itemId << " aggScore: " << items[i].aggScore << endl;
