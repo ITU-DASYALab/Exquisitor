@@ -185,13 +185,38 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
                 props.insert((uint16_t)PyLong_AsLong(PyList_GetItem(tmpPropsPy,k)));
 #if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
-                //cout << "Prop: "  << j << "." << k << ": " << arr.getItem(k) << endl;
+                //cout << "Prop: "  << j << "." << k << ": " << props.getItem(k) << endl;
 #endif
             }
             it.collProps.props[j] = props;
 #if defined (DEBUG_EXTRA) || defined(DEBUG_INIT_META)
             cout << "Prop " << j  << " set" << endl;
 #endif
+        }
+
+        PyObject* countPropsPy = PyList_GetItem(PyList_GetItem(itemMetadataPy,i),5);
+        it.countProps.props = vector<map<uint16_t,uint16_t>>((int) PyList_Size(countPropsPy));
+        for (int j = 0; j < PyList_Size(countPropsPy); j++) {
+            tmpPropsPy = PyList_GetItem(countPropsPy,j);
+            auto props = map<uint16_t,uint16_t>();
+            for (int k = 0; k < PyList_Size(tmpPropsPy); k++) {
+                PyObject* mapArrPy = PyList_GetItem(tmpPropsPy,k);
+                for (int l = 0; l < PyList_Size(mapArrPy); l++) {
+                    auto objectId = (uint16_t) PyLong_AsLong(PyList_GetItem(PyList_GetItem(mapArrPy,l),0));
+                    auto count = (uint16_t) PyLong_AsLong(PyList_GetItem(PyList_GetItem(mapArrPy,l),1));
+                    props[objectId] = count;
+                    if (i < 4) {
+                        cout << "Item: " << i << " | ObjectId: " << objectId << " | Count: " << count << endl;
+                    }
+                }
+                //PyObject* repr = PyObject_Repr();
+                //PyObject* str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
+                //const char *bytes = PyBytes_AS_STRING(str);
+                //printf("REPR: %s\n", bytes);
+                //Py_XDECREF(repr);
+                //Py_XDECREF(str);
+            }
+            it.countProps.props[j] = props;
         }
         itemProps[i] = it;
     }
@@ -325,7 +350,7 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
         extractFiltersFromPythonObject(filtersPy, filters);
         //cout << "Set filters" << endl;
     }
-
+    cout << "Modality weight option" << endl;
     //update modality fusion weights?
     bool updateModWeights = (bool) PyLong_AsLong(PyTuple_GetItem(args,4));
     bool modalityWeightsOk = true;
@@ -336,6 +361,7 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
     int returnSize = (_pyExqV1._controller->getNumModalites() * 2) + 2;
     PyObject* timeList = PyList_New(returnSize);
     if (modalityWeightsOk) {
+        cout << "(EXQ) Training" << endl;
         auto times = _pyExqV1._controller->train(trainIds, trainLabels, changeFilters, filters);
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
         cout << "Creating return object" << endl;

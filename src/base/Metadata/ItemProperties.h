@@ -21,6 +21,11 @@ namespace exq {
         vector<set<uint16_t>> props;
     };
 
+    struct CountProps {
+        // property -> value(s)
+        vector<map<uint16_t,uint16_t>> props;
+    };
+
     struct MetaPropsProbs {
         vector<map<int,float>> props;
     };
@@ -40,6 +45,7 @@ namespace exq {
         int vidId = 0;
         Props stdProps;
         Props collProps;
+        CountProps countProps;
     };
 
     /**

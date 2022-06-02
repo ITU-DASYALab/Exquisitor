@@ -62,7 +62,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
         candidateItems[m].reserve(noms);
         for (int i = 0; i < (int) descriptors[m].size(); i++) {
             ExqItem candItem = ExqItem();
-            candItem.fromModality = m;
+            candItem.fromModality.push_back(m);
             candItem.segment = currentSegment;
             candItem.itemId = descriptors[m][i].id;
             candItem.distance = vector<double>(modalities);
@@ -158,6 +158,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 
                     for (int j = i; j < (int) sortedCandidates.size(); j++) {
                         if (sortedCandidates[i].itemId == sortedCandidates[j].itemId) {
+                            sortedCandidates[i].fromModality.push_back(sortedCandidates[j].fromModality[0]);
                             sortedCandidates[j].aggScore = -1.0;
                         }
                     }

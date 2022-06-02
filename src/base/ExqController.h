@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <array>
 #include <vector>
+#include <numeric>
 #include <string>
 #include <future>
 
@@ -163,13 +164,14 @@ namespace exq {
         vector<double> _modalityWeights;
         // Rescaled weights to be between 0 and _orgWeightSum
         vector<double> _rescaledModWeights;
-        // Weight Changes in last x rounds
-        vector<double> _weightChanges;
-        int _pref_modality = 0;
+        // Positives from last x rounds
+        vector<double> _positivesFromMod;
+        int _pref_modality = -1;
+        int _update_cnt = 0;
         double _orgWeightSum = 0.0;
 
-        std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
-        double _change = 0.0;
+        std::map<uint32_t,pair<vector<double>,vector<int>>> _retSuggs = std::map<uint32_t,pair<vector<double>,vector<int>>>();
+        double _numPositives = 0.0;
 
         bool _ffs = false;
         bool _slotsUnset = true;
