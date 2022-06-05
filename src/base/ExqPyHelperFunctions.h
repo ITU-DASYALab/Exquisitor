@@ -35,11 +35,11 @@ namespace exq {
         }
         cout << "Extracting Neg Coll Id" << endl;
         for (int i = 0; i < (int)PyList_Size(negCollectionIdsPy); i++) {
-            filters.negCollection.insert((uint16_t) PyLong_AsLong(PyList_GetItem(collectionIdsPy,i)));
+            filters.negCollection.insert((uint16_t) PyLong_AsLong(PyList_GetItem(negCollectionIdsPy,i)));
         }
         cout << "Extracting Neg Vid Id" << endl;
         for (int i = 0; i < (int)PyList_Size(negVideoIdsPy); i++) {
-            filters.negVideo.insert((uint16_t) PyLong_AsLong(PyList_GetItem(videoIdsPy,i)));
+            filters.negVideo.insert((uint16_t) PyLong_AsLong(PyList_GetItem(negVideoIdsPy,i)));
         }
 
         cout << "Extracting Std" << endl;
@@ -76,6 +76,14 @@ namespace exq {
             int cSize = (int)PyList_Size(PyList_GetItem(collFiltersPy,i));
             if (cSize > 0) {
                 PyObject* tmpColl = PyList_GetItem(collFiltersPy,i);
+
+                PyObject* repr = PyObject_Repr(tmpColl);
+                PyObject* str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
+                const char *bytes = PyBytes_AS_STRING(str);
+                printf("REPR: %s\n", bytes);
+                Py_XDECREF(repr);
+                Py_XDECREF(str);
+
                 auto c = make_pair(i, vector<pair<int,set<uint16_t>>>());
                 filters.collFilters.push_back(c);
                 int collPos = (int) filters.collFilters.size()-1;
@@ -108,6 +116,14 @@ namespace exq {
             int cSize = (int)PyList_Size(PyList_GetItem(negCollFiltersPy,i));
             if (cSize > 0) {
                 PyObject* tmpColl = PyList_GetItem(negCollFiltersPy,i);
+
+                PyObject* repr = PyObject_Repr(tmpColl);
+                PyObject* str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
+                const char *bytes = PyBytes_AS_STRING(str);
+                printf("REPR: %s\n", bytes);
+                Py_XDECREF(repr);
+                Py_XDECREF(str);
+
                 auto c = make_pair(i, vector<pair<int,set<uint16_t>>>());
                 filters.negCollFilters.push_back(c);
                 int collPos = (int) filters.negCollFilters.size()-1;
@@ -141,10 +157,19 @@ namespace exq {
             int cSize = (int)PyList_Size(PyList_GetItem(vidFiltersPy,i));
             if (cSize > 0) {
                 PyObject* tmpColl = PyList_GetItem(vidFiltersPy,i);
+
+                PyObject* repr = PyObject_Repr(tmpColl);
+                PyObject* str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
+                const char *bytes = PyBytes_AS_STRING(str);
+                printf("REPR: %s\n", bytes);
+                Py_XDECREF(repr);
+                Py_XDECREF(str);
+
                 auto c = make_pair(i, vector<pair<int,set<uint16_t>>>());
                 filters.vidFilters.push_back(c);
                 for (int j = 0; j < cSize; j++) { // properties
                     int pSize = (int) PyList_Size(PyList_GetItem(tmpColl,j));
+
                     if (pSize > 0) {
                         PyObject* tmpProp = PyList_GetItem(tmpColl,j);
                         auto e = make_pair(j,set<uint16_t>());
@@ -185,7 +210,7 @@ namespace exq {
         // Range filters
         // Input: Coll[FilterProperty[FilterValues[ [key,op,v0,v1], ... ]]]
         for (int i = 0; i < (int)PyList_Size(rangeFiltersPy); i++) { // collections
-            int cSize = (int)PyList_Size(PyList_GetItem(negVidFiltersPy,i));
+            int cSize = (int)PyList_Size(PyList_GetItem(rangeFiltersPy,i));
             if (cSize > 0) {
                 PyObject* tmpColl = PyList_GetItem(rangeFiltersPy,i);
                 auto c = make_pair(i, vector<pair<int,map<uint16_t,array<uint16_t,3>>>>());
@@ -194,6 +219,14 @@ namespace exq {
                     int pSize = (int) PyList_Size(PyList_GetItem(tmpColl,j));
                     if (pSize > 0) {
                         PyObject* tmpProp = PyList_GetItem(tmpColl,j);
+
+                        PyObject* repr = PyObject_Repr(tmpProp);
+                        PyObject* str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
+                        const char *bytes = PyBytes_AS_STRING(str);
+                        printf("REPR: %s\n", bytes);
+                        Py_XDECREF(repr);
+                        Py_XDECREF(str);
+
                         auto e = make_pair(j,map<uint16_t,array<uint16_t,3>>());
                         filters.rangeFilters[i].second.push_back(e);
                         int pos = (int) filters.rangeFilters[i].second.size()-1;

@@ -329,20 +329,20 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     //TODO: Update session clusters in ECPQOP
 
     if ((int)results.suggs.size() < k) {
-        //cout << "Incremental Retrieval" << endl;
+        cout << "Incremental Retrieval" << endl;
         auto bPerMod = vector<int>(_modalities);
         bool done = true;
         for (int m = 0; m < _modalities; m++) {
             if (_pq_state[m])
                 bPerMod[m] = 0;
             else {
-                //cout << "mod " << m << " pq_state " << _pq_state[m] << endl;
+                cout << "mod " << m << " pq_state " << _pq_state[m] << endl;
                 done = false;
                 bPerMod[m] = _bClusters;
             }
         }
         if (!done) {
-            //cout << "In !done" << endl;
+            cout << "In !done" << endl;
             _pq_state = _handler->selectClusters(bPerMod, _classifiers, _activeFilters, true);
             results = suggest(k, seenItems, changeFilters, filters, results);
         }
@@ -357,6 +357,7 @@ template <typename T>
 void ExqController<T>::reset_model() {
     for (int m = 0; m < _modalities; m++)
         _classifiers[m]->resetClassifier();
+    _activeFilters = ItemFilter();
 }
 
 template <typename T>

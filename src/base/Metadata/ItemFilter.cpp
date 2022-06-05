@@ -177,11 +177,17 @@ bool ItemFilter::compare(ItemProperties& item, vector<vector<Props>>& vidProps) 
 
     // Check range filters (treated as an and filter)
     if (!_filters.rangeFilters.empty()) {
-        for (auto c: _filters.rangeFilters) {
-            for (auto prop: c.second) {
-                for (auto const& [key, val] : item.countProps.props[prop.first]) {
+        //cout << "Checking Range Filters" << endl;
+        for (const auto& c: _filters.rangeFilters) { // Collections
+            for (auto prop: c.second) { // Filters
+                //cout << "prop.first: " << prop.first << endl;
+                if (item.countProps.props[prop.first].empty())
+                    return false;
+                for (auto const& [key, val] : item.countProps.props[prop.first]) { // Items
+                    //cout << "key: " << key << ", val: " << val << endl;
                     if (prop.second.contains(key)) {
                         auto op = prop.second[key][0];
+                        //cout << "op = " << op << ", v0 = " << prop.second[key][1] << endl;
                         if (op == EQ && val != prop.second[key][1]) {
                             return false;
                         } else if (op == GTE && val < prop.second[key][1]) {
@@ -191,6 +197,8 @@ bool ItemFilter::compare(ItemProperties& item, vector<vector<Props>>& vidProps) 
                         } else if (op == RNG && (val < prop.second[key][1] || val > prop.second[key][2])) {
                             return false;
                         }
+                    } else {
+                        return false;
                     }
                 }
             }

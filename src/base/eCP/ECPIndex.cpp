@@ -186,8 +186,10 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
     for (int cnt = start; cnt < end; cnt++) {
         numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();
         for (int i = 0; i < numDesc; i++) {
+            //cout << "Check item " << _clusters[_bClusters[cnt]]->descriptorIds[i] << endl;
             if (!seenItems.contains(_clusters[_bClusters[cnt]]->descriptorIds[i])
             && filters.compare(_itemProperties[_clusters[_bClusters[cnt]]->descriptorIds[i]], _vidProperties)) {
+                //cout << "passed" << endl;
                 suggIds[j] = _clusters[_bClusters[cnt]]->descriptorIds[i];
                 suggToCluster[j] = _bClusters[cnt];
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)

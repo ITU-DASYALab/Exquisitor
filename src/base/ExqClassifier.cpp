@@ -47,7 +47,7 @@ void ExqClassifier::resetClassifier() {
     _svm->setMarginRegularization(0.01);
     _svm->setInitialStepSize(0.01);
     _svm->setStepDecreasingPower(0.75);
-    _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 100, 1));
+    _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 1000, 1));
 }
 
 std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {
