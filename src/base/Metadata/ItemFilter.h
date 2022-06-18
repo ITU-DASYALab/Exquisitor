@@ -20,7 +20,8 @@ namespace exq {
         EQ=0,
         GTE=1,
         LTE=2,
-        RNG=3
+        RNG=3,
+        ANY=4
     };
 
     /**

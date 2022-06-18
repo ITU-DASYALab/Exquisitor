@@ -181,8 +181,12 @@ bool ItemFilter::compare(ItemProperties& item, vector<vector<Props>>& vidProps) 
         for (const auto& c: _filters.rangeFilters) { // Collections
             for (auto prop: c.second) { // Filters
                 //cout << "prop.first: " << prop.first << endl;
-                if (item.countProps.props[prop.first].empty())
-                    return false;
+                if (item.countProps.props[prop.first].empty()) {
+                    for (auto const&[key, val]: prop.second) {
+                        if (val[0] == EQ && val[1] != 0) return false;
+                    }
+                    continue;
+                }
                 for (auto const& [key, val] : item.countProps.props[prop.first]) { // Items
                     //cout << "key: " << key << ", val: " << val << endl;
                     if (prop.second.contains(key)) {
