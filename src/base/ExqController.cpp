@@ -288,39 +288,33 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
         //}
 
         unique.clear();
-        for (int i = 0; i < (int)items2Return.size(); i++) {
+        if ((_guaranteedSlots*_modalities) != k) {
+            for (int i = 0; i < (int) items2Return.size(); i++) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
-            cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
-            << items2Return[i].distance[0] << endl;
+                cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
+                << items2Return[i].distance[0] << endl;
 #endif
-            unique[items2Return[i].itemId] = 1;
-            results.suggs.push_back(items2Return[i].itemId);
-            // To update mdoality weight, store the modality rank of k*numSegment and the position
-            //if (_ffs) {
-            //    cout << "Item " << items2Return[i].itemId << " from modality " << items2Return[i].fromModality << endl;
-            //    _retSuggsFFS[items2Return[i].itemId] = std::make_pair(items2Return[i].fromModality[0], i);
-            //} else {
-            //    _retSuggs[items2Return[i].itemId] =
-            //            std::make_pair(vector<double>(items2Return[i].modRank), vector<int>(items2Return[i].fromModality));
-            //}
-            if ((int)results.suggs.size() == k-(_guaranteedSlots*_modalities)) break;
+                unique[items2Return[i].itemId] = 1;
+                results.suggs.push_back(items2Return[i].itemId);
+                if ((int) results.suggs.size() == k - (_guaranteedSlots * _modalities) ||
+                    (int) results.suggs.size() == k)
+                    break;
+            }
         }
-        //for (int s = 0; s < _segments; s++) {
-        //    for (int i = 0; i < (int) itemsFromSegments[s].size(); i++) {
-        //    }
-        //}
 
-        for (int m = 0; m < _modalities; m++) {
-            std::sort(modItems[m].begin(), modItems[m].end(),
-                      [m](const ExqItem& lhs, const ExqItem& rhs) {
-                          return lhs.distance[m] > rhs.distance[m];
-                      });
-            int inserted = 0;
-            for (int i = 0; i < (int) modItems[m].size(); i++) {
-                if (!unique.contains(modItems[m][i].itemId)) {
-                    results.suggs.push_back(modItems[m][i].itemId);//items2Return.push_back(modItems[m][i]);
-                    inserted++;
-                    if (inserted == _guaranteedSlots) break;
+        if (_guaranteedSlots != 0) {
+            for (int m = 0; m < _modalities; m++) {
+                std::sort(modItems[m].begin(), modItems[m].end(),
+                          [m](const ExqItem &lhs, const ExqItem &rhs) {
+                              return lhs.distance[m] > rhs.distance[m];
+                          });
+                int inserted = 0;
+                for (int i = 0; i < (int) modItems[m].size(); i++) {
+                    if (!unique.contains(modItems[m][i].itemId)) {
+                        results.suggs.push_back(modItems[m][i].itemId);//items2Return.push_back(modItems[m][i]);
+                        inserted++;
+                        if (inserted == _guaranteedSlots) break;
+                    }
                 }
             }
         }
