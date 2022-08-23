@@ -94,6 +94,9 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
 
 template <typename T, typename U, typename V>
 void ECPQueryOptimisationPolicies<T,U,V>::addCombination(uint32_t clusterId, uint32_t descId) {
+    // Old method from research version of Exquisitor will not work for this version of Exquisitor
+    // TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
+
     //std::string collFilter = "F,";
     //if (globalItemIdFilter > 0 && globalItemIdFilter >= descId) {
     //    collFilter = "T,";
@@ -161,7 +164,31 @@ inline int ECPQueryOptimisationPolicies<T,U,V>::getFilterRemainingCount(uint32_t
 
 template <typename T, typename U, typename V>
 double ECPQueryOptimisationPolicies<T,U,V>::getEstimatedRemainingCount(uint32_t clusterId) {
-    //TODO: Implement function
+    // Old method from research version of Exquisitor will not work for this version of Exquisitor
+    // TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
+//    double fcount = 0.0;
+//    if (expandType == 3 || expandType == 7 || expandType == 4 || expandType == 8) {
+//        fcount = 0;
+//        if (filterInfo->f == 0 && globalItemIdFilter == 0) {
+//            //cout << "Count for cluster " << id << " is " << clusterCount[id] << endl;
+//            fcount = (double)sessionClusterCount[id];
+//        } else {
+//            if (sessionClusterCount[id] == 0) return 0.0;
+//            map<string,double>::iterator it;
+//            for (uint32_t j = 0; j < filterInfo->keys->size(); j++) {
+//                it = combinations[clusterToStats[id]].find(filterInfo->keys->at(j));
+//                if (it != combinations[clusterToStats[id]].end()) {
+//                    //cout << "Cluster " << id << " has " << clusterCount[id] << " items. For key " << filterInfo->keys->at(j) << " the probability cluster " << clusterToStats[id] << " has " << combinations[clusterToStats[id]].find(filterInfo->keys->at(j))->second << endl;
+//                    fcount += (double)sessionClusterCount[id] * it->second;
+//                }
+//                //cout << "fcount = " << fcount << endl;
+//            }
+//            //cout << "Total fcount = " << fcount << endl;
+//        }
+//        if (check) {
+//            return fcount;
+//        }
+//    }
     return 0.0;
 }
 
