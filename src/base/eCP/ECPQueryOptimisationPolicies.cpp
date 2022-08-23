@@ -71,7 +71,7 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
             ExqDescriptor<T,U,V>* desc;
             //cout << "Adding combinations for " << i << endl;
             while((desc = _clusters[i]->next()) != NULL) {
-                //addCombination(p, desc->id);
+                addCombination(p, desc->id);
                 clusterTotals[p]++;
             }
             _clusters[i]->close();
