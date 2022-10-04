@@ -35,13 +35,14 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
     //time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
-    vector<vector<ExqItem>> candidateItems = vector<vector<ExqItem>>(modalities);
-    vector<vector<T>> descriptors = vector<vector<T>>(modalities);
+    auto candidateItems = vector<vector<ExqItem>>(modalities);
+    auto descriptors = vector<vector<T>>(modalities);
     totalItemsConsidered = 0;
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " descriptors" << endl;
 #endif
-    handler->getSegmentDescriptors(currentSegment, totalSegments, modalities, descriptors, seenItems, filters);
+    handler->getSegmentDescriptors(currentSegment, totalSegments, modalities, descriptors,
+                                   seenItems, filters);
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Got segment " << currentSegment << " descriptors" << endl;
 #endif
@@ -62,7 +63,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
         candidateItems[m].reserve(noms);
         for (int i = 0; i < (int) descriptors[m].size(); i++) {
             ExqItem candItem = ExqItem();
-            candItem.fromModality.push_back(m);
+            candItem.fromModality.push_back(m); //push_back to check if item came from multiple modalities
             candItem.segment = currentSegment;
             candItem.itemId = descriptors[m][i].id;
             candItem.distance = vector<double>(modalities);

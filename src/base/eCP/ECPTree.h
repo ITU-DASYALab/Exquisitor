@@ -19,31 +19,54 @@ namespace exq {
     using std::tuple;
     using std::make_tuple;
 
+    /// Compare operator struct for priority queue
     struct PQ_Compare {
         bool operator()(const tuple<int,int,double>& lhs, const tuple<int,int,double>& rhs) {
             return std::get<2>(lhs) < std::get<2>(rhs);
         }
     };
 
+    /// The eCP index tree class
     template<typename T, typename U, typename V>
     class ECPTree {
     public:
+        /// Constructor
+        /// \param _cnfg
+        /// \param centroids
+        /// \param numClusters
+        /// \param func
+        /// \param featureDimensions
+        /// \param qop
         ECPTree(ECPConfig* _cnfg, vector<ExqDescriptor<T,U,V>*> centroids, int numClusters,
                 ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
                 ECPQueryOptimisationPolicies<T,U,V>*& qop);
 
         ~ECPTree();
 
-        // Search the tree to find farthest clusters
+        /// Search the tree to find farthest clusters
+        /// \param query
+        /// \param bias
+        /// \param k
+        /// \param clusters
+        /// \return
         ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint32_t k,
                                             vector<ECPCluster<T,U,V>*>& clusters);
 
+        ///
+        /// \return
         inline bool check_pq() { return _pq.empty(); }
 
+        ///
+        /// \param query
+        /// \param bias
+        /// \param b
+        /// \param clusters
+        /// \return
         ECPFarthestNeighbour<T,U,V>* search_pq(vector<double>& query, double bias, uint32_t b,
                                                vector<ECPCluster<T,U,V>*>& clusters);
-        // Sanity checks
+        /// Sanity checks
         void PrintTree();
+
     private:
         // The configuration of the tree
         ECPConfig* _cnfg;

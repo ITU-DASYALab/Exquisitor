@@ -18,7 +18,7 @@ namespace exq {
     struct ExqItem {
         uint32_t itemId;
         vector<int> fromModality;
-        uint64_t fromCluster;
+        vector<uint32_t> fromCluster;
         vector<double> distance;
         double aggScore;
         int segment;
@@ -28,7 +28,7 @@ namespace exq {
             itemId = UINT32_MAX;
             fromModality = vector<int>();
             aggScore = 0.0;
-            fromCluster = UINT64_MAX;
+            fromCluster = vector<uint32_t>();
             segment = -1;
             modRank = vector<double>();
         };

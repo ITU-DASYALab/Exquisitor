@@ -41,8 +41,8 @@ TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
     auto firstItem = this->dataHandler->getDescriptor(0);
     ASSERT_EQ(firstItem->getId(), 0);
     ASSERT_EQ(firstItem->getTop(), 2533274790396757);
-    ASSERT_EQ(firstItem->getFeatureIds(), 1125912792203265);
-    ASSERT_EQ(firstItem->getFeatureRatios(), 242353128979235512);
+    ASSERT_EQ(firstItem->getFeatureIds(0), 1125912792203265);
+    ASSERT_EQ(firstItem->getFeatureRatios(0), 242353128979235512);
 
     cout << "TEST firstItemRead in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }
@@ -52,8 +52,8 @@ TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
 
     ASSERT_EQ(lastItem->getId(), 4);
     ASSERT_EQ(lastItem->getTop(), 281474976711517);
-    ASSERT_EQ(lastItem->getFeatureIds(), 1407404948324356);
-    ASSERT_EQ(lastItem->getFeatureRatios(), 255864967252411121);
+    ASSERT_EQ(lastItem->getFeatureIds(0), 1407404948324356);
+    ASSERT_EQ(lastItem->getFeatureRatios(0), 255864967252411121);
 
     cout << "TEST lastItemRead in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }

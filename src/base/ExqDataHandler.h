@@ -46,8 +46,11 @@ namespace exq {
                                             ItemFilter& filters, bool resume=false) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                           vector<vector<T>>& descriptors, unordered_set<uint32_t>& seenItems,
+                                           vector<vector<T>>& descriptors,
+                                           unordered_set<uint32_t>& seenItems,
                                            ItemFilter& filters) = 0;
+
+        virtual void updateSessionInfo(vector<uint32_t> suggs) = 0;
     };
 
 }

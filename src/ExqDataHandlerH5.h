@@ -44,6 +44,8 @@ namespace exq {
                                    unordered_set<uint32_t>& seenItems,
                                    ItemFilter& filters) override;
 
+        void updateSessionInfo(vector<uint32_t> suggs) override;
+
         ~ExqDataHandlerH5();
 
     private:

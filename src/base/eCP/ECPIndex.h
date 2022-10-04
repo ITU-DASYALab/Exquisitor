@@ -26,7 +26,7 @@ namespace exq {
     class ECPIndex {
     public:
         ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions,
-                 vector<ItemProperties> itemProps=vector<ItemProperties>(),
+                 int modality, vector<ItemProperties> itemProps=vector<ItemProperties>(),
                  vector<vector<Props>> vidProps=vector<vector<Props>>(),
                  ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
 
@@ -34,10 +34,12 @@ namespace exq {
 
         void loadDescriptors(vector<ExqDescriptor<T,U,V>*>& desc);
 
-        void search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster,
+        void search(int chnk, int& totalData, vector<uint32_t>& suggIds,
                     int run, int segments, unordered_set<uint32_t>& seenItems, ItemFilter& filters);
 
         bool set_b_clusters(vector<double> query, double bias, int b, bool resume=false);
+
+        void updateSessionInfo(vector<uint32_t> suggs);
 
         void PrintIndex();
 

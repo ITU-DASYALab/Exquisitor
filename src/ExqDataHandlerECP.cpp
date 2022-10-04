@@ -19,7 +19,7 @@ ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modali
     _descriptors = vector<vector<ExqDescriptor<T,U,V>*>>(_modalities);
     for (int m = 0; m < modalities; m++) {
         _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m],
-                                       itemProps, vidProps, expType, statLevel);
+                                       m, itemProps, vidProps, expType, statLevel);
     }
 }
 
@@ -90,8 +90,7 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
     for (int m = 0; m < _modalities; m++) {
         int chnk = _b[m]/ totalSegments;
         suggIdsPerMod[m] = vector<uint32_t>();
-        clusterIdsPerMod[m] = vector<uint32_t>();
-        _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], clusterIdsPerMod[m], currentSegment,
+        _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], currentSegment,
                          totalSegments, seenItems, filters);
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "(ExqHandler) totalData[" << m << "]: " << totalData[m] << endl;
@@ -112,5 +111,14 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
 #endif
     }
 }
+
+
+template <typename T, typename U, typename V>
+void ExqDataHandlerECP<T,U,V>::updateSessionInfo(vector<uint32_t> suggs) {
+    for (int m = 0; m < _modalities; m++) {
+        _indx[m]->updateSessionInfo(suggs);
+    }
+}
+
 
 template class exq::ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>;

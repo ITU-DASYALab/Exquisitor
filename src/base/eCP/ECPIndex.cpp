@@ -10,8 +10,7 @@ using namespace exq;
 
 template <typename T, typename U, typename V>
 ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
-                          vector<ItemProperties> itemProps,
-                          vector<vector<Props>> vidProps,
+                          int modality, vector<ItemProperties> itemProps, vector<vector<Props>> vidProps,
                           ExpansionType expansionType, int statLevel) {
     _cnfg = cnfg;
     cout << "Descriptor size: " << func->getDescriptorSize() << endl;
@@ -71,7 +70,7 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
 
     cout << "(ECPIndx) Initializing QOP object" << endl;
     _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters,
-                                                   &_itemProperties, &_vidProperties);
+                                                   &_itemProperties, &_vidProperties, modality);
 
     cout << "Creating Tree object" << endl;
     // Create the tree from the cluster information
@@ -164,7 +163,7 @@ bool ECPIndex<T,U,V>::set_b_clusters(vector<double> query, double bias, int b, b
 }
 
 template <typename T, typename U, typename V>
-void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds, vector<uint32_t>& suggToCluster,
+void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds,
                              int run, int segments, unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
     int start = chnk * run;
     int end = start + chnk;
@@ -178,7 +177,6 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
     cout << "(ECPIndx) Segment " << run << ", Total data: " << totalData << endl;
 #endif
     suggIds = vector<uint32_t>(totalData);
-    suggToCluster = vector<uint32_t>(totalData);
     int j = 0;
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ECPIndx) Segment " << run << " suggestions: ";
@@ -186,16 +184,24 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
     for (int cnt = start; cnt < end; cnt++) {
         numDesc = _clusters[_bClusters[cnt]]->getNumDescriptors();
         for (int i = 0; i < numDesc; i++) {
+            int passed = 0;
             //cout << "Check item " << _clusters[_bClusters[cnt]]->descriptorIds[i] << endl;
             if (!seenItems.contains(_clusters[_bClusters[cnt]]->descriptorIds[i])
-            && filters.compare(_itemProperties[_clusters[_bClusters[cnt]]->descriptorIds[i]], _vidProperties)) {
+                && filters.compare(_itemProperties[_clusters[_bClusters[cnt]]->descriptorIds[i]], _vidProperties)) {
                 //cout << "passed" << endl;
                 suggIds[j] = _clusters[_bClusters[cnt]]->descriptorIds[i];
-                suggToCluster[j] = _bClusters[cnt];
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << suggIds[j] << ", ";
 #endif
+                passed++;
                 j++;
+            }
+
+            if (_qop->getExpType() == ExpansionType::FILTER_REMAINING_CNT ||
+                _qop->getExpType() == ExpansionType::ALL_REMAINING_CNT) {
+                if (passed <= _qop->getFilterRemainingCount(_bClusters[cnt])) {
+                    _qop->setFilterRemainingCount(_bClusters[cnt], passed);
+                }
             }
         }
     }
@@ -203,7 +209,6 @@ void ECPIndex<T,U,V>::search(int chnk, int& totalData, vector<uint32_t>& suggIds
     cout << endl;
 #endif
     suggIds.resize(j);
-    suggToCluster.resize(j);
 }
 
 template <typename T, typename U, typename V>
@@ -224,6 +229,11 @@ void ECPIndex<T,U,V>::saveClusterDistribution(uint64_t numC, ECPConfig* cnfg, FI
         centroids[i] = new ExqDescriptor<T,U,V>(indxFile);
     }
     myfile.close();
+}
+
+template <typename T, typename U, typename V>
+void ECPIndex<T,U,V>::updateSessionInfo(vector<uint32_t> suggs) {
+    _qop->updateSessionClusterCount(suggs);
 }
 
 template class exq::ECPIndex<uint64_t, uint64_t, uint64_t>;

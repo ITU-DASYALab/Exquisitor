@@ -123,9 +123,10 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
     cout << "Setting Filters" << endl;
-    if (changeFilters)
+    if (changeFilters) {
         _activeFilters.setFilters(filters);
         //TODO: Reset cache of frc in ECPQOP
+    }
 
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
@@ -320,7 +321,8 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
         }
     }
 
-    //TODO: Update session clusters in ECPQOP
+    // Update session clusters counts
+    _handler->updateSessionInfo(results.suggs);
 
     if ((int)results.suggs.size() < k) {
         cout << "Incremental Retrieval" << endl;

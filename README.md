@@ -5,7 +5,7 @@
 
 * python 3.10
 * cmake 3.10 or higher
-* opencv 4.5.5 (Link to installation guide)
+* opencv 4.5.5 (https://docs.opencv.org/4.x/d0/db2/tutorial_macos_install.html)
 * hdf5 10.0.2
 
 ## Compile
@@ -19,5 +19,10 @@
     ```
 * python3 setup.py install
 * Test if everything is working by running the three test script with argument 0. (example: python3 test_initialize.py 0)
+* If you encounter error relating to unavailable function for macOS use the following command to set the target macOS version to 12:
+  ```
+  export MACOSX_DEPLOYMENT_TARGET=12.0
+  ```
+  All features should be available for macOS 10.15 and above.
 
 Note: If you are using CLion set X_LIBRARY_PATH under Environment Variable in the run configuration

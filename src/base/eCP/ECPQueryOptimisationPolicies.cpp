@@ -3,6 +3,7 @@
 //
 
 #include "ECPQueryOptimisationPolicies.h"
+#include <filesystem>
 
 using namespace exq;
 
@@ -10,12 +11,15 @@ template <typename T, typename U, typename V>
 ECPQueryOptimisationPolicies<T,U,V>::ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel,
                                                                   vector<ECPCluster<T,U,V>*>& clusters,
                                                                   vector<ItemProperties>* itemProps,
-                                                                  vector<vector<Props>>* vidProps) {
+                                                                  vector<vector<Props>>* vidProps,
+                                                                  int modality) {
     _expansionType = expansionType;
     _statLevel = statLevel;
     _clusters = clusters;
     _itemProps = itemProps;
     _vidProps = vidProps;
+    _modality = modality;
+    _descMapFname = "exqData/descIdToClusterId_mod" + std::to_string(_modality) + ".dat";
     _originalCnt = nullptr;
     _sessionRemainingCnt = nullptr;
     _filterExactCnt = nullptr;
@@ -41,6 +45,7 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
         _filterExactCnt = new uint32_t[numClusters];
         _filterReturnedCnt = new uint32_t[numClusters];
     }
+    std::map<uint32_t,uint32_t> descToCluster = std::map<uint32_t,uint32_t>();
     for (int i = 0; i < numClusters; i++) {
         _originalCnt[i] = _clusters[i]->getNumDescriptors();
         _sessionRemainingCnt[i] = _clusters[i]->getNumDescriptors();
@@ -48,7 +53,30 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
             _filterExactCnt[i] = UINT32_MAX;
             _filterReturnedCnt = 0;
         }
+        _clusters[i]->open();
+        ExqDescriptor<T, U, V> *desc;
+        while ((desc = _clusters[i]->next()) != NULL) {
+            descToCluster[desc->id] = i;
+        }
     }
+    // check if data directory exists
+    if (!std::filesystem::exists("exqData")) {
+        std::filesystem::create_directory("exqData");
+    }
+    // check if file for descriptor id to cluster id exists, if not create and fill it
+    if (!std::filesystem::exists(_descMapFname)) {
+        cout << "Storing descriptorId to clusterId file (line number = descId)" << endl;
+        std::ofstream f;
+        f.open(_descMapFname);
+        for (int i = 0; i < (int) descToCluster.size(); i++) {
+            _descToCluster.push_back(descToCluster[i]);
+            f << std::to_string(descToCluster[i]) << "\n";
+        }
+        f.close();
+    }
+    // TODO: If the files exists load from them, which means moving the exist check up and come up with a way for
+    //  deletion/update as shifting modalities/collection/filters require this
+
     if (_expansionType == ESTIMATED_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
         _combinations = vector<map<string,double>> (levelSizes[_statLevel]);
         for (int i = 0; i < levelSizes[_statLevel]; i++) {
@@ -87,7 +115,7 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
             }
             totalCombinationSize += _combinations[i].size();
         }
-        cout << "Stored probabilities" << endl;
+        cout << "Done" << endl;
         cout << "Total combinations: " << totalCombinationSize << endl;
     }
 }
@@ -96,6 +124,18 @@ template <typename T, typename U, typename V>
 void ECPQueryOptimisationPolicies<T,U,V>::addCombination(uint32_t clusterId, uint32_t descId) {
     // Old method from research version of Exquisitor will not work for this version of Exquisitor
     // TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
+
+    //struct MetaProbabilities {
+    //    // collection -> probabiltiy
+    //    map<int,float> collectionIdProb;
+    //    // collection -> video -> probability
+    //    vector<map<int,float>> videoIdProb;
+    //    // property -> value(s) -> probability
+    //    MetaPropsProbs stdPropProbs;
+    //    MetaPropsProbs collPropProbs;
+    //    // collection -> video -> property -> value(s) -> probability
+    //    vector<map<int,MetaPropsProbs>> vidPropProbs;
+    //};
 
     //std::string collFilter = "F,";
     //if (globalItemIdFilter > 0 && globalItemIdFilter >= descId) {
@@ -151,7 +191,15 @@ double ECPQueryOptimisationPolicies<T,U,V>::getClusterCount(uint32_t clusterId) 
     if (_expansionType == FILTER_REMAINING_CNT) return getFilterRemainingCount(clusterId);
     if (_expansionType == ESTIMATED_REMAINING_CNT) return getEstimatedRemainingCount(clusterId);
     if (_expansionType == ALL_REMAINING_CNT) {
-        if (_sessionRemainingCnt == 0) return 0.0;
+        double est = getEstimatedRemainingCount(clusterId);
+        if (_sessionRemainingCnt[clusterId] == 0) return 0.0;
+        if (_filterExactCnt[clusterId] == UINT32_MAX) {
+            // FRC not cached
+            if (_sessionRemainingCnt[clusterId] < est) return _sessionRemainingCnt[clusterId];
+            return est;
+        }
+        // FRC cached
+        return getFilterRemainingCount(clusterId);
     }
     return _originalCnt[clusterId];
 }
@@ -159,7 +207,16 @@ double ECPQueryOptimisationPolicies<T,U,V>::getClusterCount(uint32_t clusterId) 
 template <typename T, typename U, typename V>
 inline int ECPQueryOptimisationPolicies<T,U,V>::getFilterRemainingCount(uint32_t clusterId) {
     if (_filterExactCnt[clusterId] == UINT32_MAX) return _sessionRemainingCnt[clusterId];
-    return _filterExactCnt[clusterId] - _filterReturnedCnt[clusterId];
+    if (_filterExactCnt[clusterId] == 0) return 0;
+    int frc = _filterExactCnt[clusterId] - _filterReturnedCnt[clusterId];
+    if (frc > 0) return frc;
+    return 0.0;
+}
+
+template <typename T, typename U, typename V>
+inline void ECPQueryOptimisationPolicies<T,U,V>::setFilterRemainingCount(uint32_t clusterId, int passed) {
+    _filterExactCnt[clusterId] = passed;
+    _filterReturnedCnt[clusterId] = 0;
 }
 
 template <typename T, typename U, typename V>
@@ -189,6 +246,7 @@ double ECPQueryOptimisationPolicies<T,U,V>::getEstimatedRemainingCount(uint32_t 
 //            return fcount;
 //        }
 //    }
+
     return 0.0;
 }
 
@@ -197,9 +255,26 @@ inline ExpansionType ECPQueryOptimisationPolicies<T,U,V>::getExpType() {
     return _expansionType;
 }
 
+
 template <typename T, typename U, typename V>
 inline int ECPQueryOptimisationPolicies<T,U,V>::getStatLevel() {
     return _statLevel;
 }
+
+
+template <typename T, typename U, typename V>
+inline void ECPQueryOptimisationPolicies<T,U,V>::updateSessionClusterCount(vector<uint32_t> suggs) {
+    for (auto s : suggs) {
+        if (_sessionRemainingCnt[_descToCluster[s]] > 0) {
+            // update session count
+            _sessionRemainingCnt[_descToCluster[s]]--;
+            // update filter returned count
+            if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
+                _filterReturnedCnt[_descToCluster[s]]++;
+            }
+        }
+    }
+}
+
 
 template class exq::ECPQueryOptimisationPolicies<uint64_t, uint64_t, uint64_t>;
