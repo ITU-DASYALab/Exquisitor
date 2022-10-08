@@ -59,6 +59,9 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
             descToCluster[desc->id] = i;
         }
     }
+    for (int i = 0; i < (int) descToCluster.size(); i++) {
+        _descToCluster.push_back(descToCluster[i]);
+    }
     // check if data directory exists
     if (!std::filesystem::exists("exqData")) {
         std::filesystem::create_directory("exqData");

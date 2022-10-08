@@ -245,6 +245,7 @@ ECPFarthestNeighbour<T,U,V>* ECPTree<T,U,V>::search_pq(vector<double>& query, do
             if ((bx*2) < (uint32_t)_numClusters) {
                 //Expand b by power of 2
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
+                cout << "Total Count/Threshold:" << total_count << "/" << thresh << endl;
                 cout << "Expanding b to " << (bx*2) << "/" << _numClusters<< endl;
 #endif
                 _expCounter++;

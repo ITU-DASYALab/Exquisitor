@@ -354,6 +354,7 @@ void ExqController<T>::reset_model() {
     for (int m = 0; m < _modalities; m++)
         _classifiers[m]->resetClassifier();
     _activeFilters = ItemFilter();
+    // TODO: Reset session cluster count and filter remaining counts in QOP
 }
 
 template <typename T>
