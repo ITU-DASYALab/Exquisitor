@@ -1,5 +1,15 @@
 # Exquisitor
 
+Exquisitor is a large scale interactive learning approach, and is capable of interacting with multimedia collections with 100+ million items in less than 0.3 seconds using modest hardware resources.
+
+```
+@inproceedings{khan2020interactive,
+  title={Interactive learning for multimedia at large},
+  author={Khan, Omar Shahbaz and J{\'o}nsson, Bj{\"o}rn {\TH}{\'o}r and Rudinac, Stevan and Zah{\'a}lka, Jan and Ragnarsd{\'o}ttir, Hanna and {\TH}orleiksd{\'o}ttir, {\TH}{\'o}rhildur and Gu{\dh}mundsson, Gylfi {\TH}{\'o}r and Amsaleg, Laurent and Worring, Marcel},
+  booktitle={European Conference on Information Retrieval},
+  year={2020},
+}
+```
 
 ## Requirements
 
