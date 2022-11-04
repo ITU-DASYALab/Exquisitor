@@ -29,7 +29,7 @@ exquisitor = Extension('exq',
                        library_dirs=[
                            '/Library/Frameworks/Python.framework/Versions/Current/lib',
                            '/usr/local/Cellar/hdf5/1.12.1_1/lib',
-                           '/usr/local/lib'
+                           '/usr/local/lib' #lib path where opencv_core and opencv_ml are
                        ],
                        libraries=['python3.10', 'hdf5', 'opencv_core', 'opencv_ml'],
                        extra_compile_args=['-O3', '-Wall', '-std=c++20',
