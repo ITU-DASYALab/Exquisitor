@@ -2,7 +2,7 @@
 
 Exquisitor is a large scale multimodal interactive learning approach.
 It uses an approximate high-dimensional index with a linear SVM classifier to facilitate rapid interactive feedback rounds
-for very large collections using modest computing resources.
+for large multimedia collections using modest computing resources.
 
 
 ```
