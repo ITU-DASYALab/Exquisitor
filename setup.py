@@ -22,18 +22,24 @@ exquisitor = Extension('exq',
                                 'src/ExqDataHandlerECP.cpp',
                                 'src/base/Metadata/ItemFilter.cpp'],
                        include_dirs=[
-                           '/Library/Frameworks/Python.framework/Versions/Current/include/python3.10',
-                           '/usr/local/include/opencv4',
-                           '/usr/local/Cellar/hdf5/1.12.1_1/include/hdf5'
+                            # '/Library/Frameworks/Python.framework/Versions/Current/include/python3.10', # Mac
+                            # '/usr/local/include/opencv4', # Mac/Linux
+                            # '/usr/local/Cellar/hdf5/1.12.1_1/include/hdf5' # Mac/Linux
+                            'C:/Program Files/WindowsApps/PythonSoftwareFoundation.Python3.10_1.10.2544.0_x64__qbz5n2kfra8p0/include', # Windows
+                            'C:/opencv/sources/build/install/include', # Windows
+                            'C:/Program Files/HDF_Group/HDF5/1.14.0/include' # Windows
                        ],
                        library_dirs=[
-                           '/Library/Frameworks/Python.framework/Versions/Current/lib',
-                           '/usr/local/Cellar/hdf5/1.12.1_1/lib',
-                           '/usr/local/lib' #lib path where opencv_core and opencv_ml are
+                            # '/Library/Frameworks/Python.framework/Versions/Current/lib', # Mac
+                            # '/usr/local/Cellar/hdf5/1.12.1_1/lib', # Mac/Linux
+                            # '/usr/local/lib' # Mac/Linux, lib path where opencv_core and opencv_ml are
+                            'C:/Program Files/WindowsApps/PythonSoftwareFoundation.Python3.10_1.10.2544.0_x64__qbz5n2kfra8p0/lib', # Windows
+                            'C:/opencv/sources/build/lib', # Windows
+                            'C:/Program Files/HDF_Group/HDF5/1.14.0/lib', # Windows
                        ],
                        libraries=['python3.10', 'hdf5', 'opencv_core', 'opencv_ml'],
                        extra_compile_args=['-O3', '-Wall', '-std=c++20',
-                                           '-D_LARGE_FILE_SOURCE', '-D_FILE_OFFSET_BITS=64',
+                                           # '-D_LARGE_FILE_SOURCE', '-D_FILE_OFFSET_BITS=64',
                                            # '-DDEBUG',
                                            # '-DDEBUG_EXTRA',
                                            # '-DDEBUG_INIT',
