@@ -39,6 +39,7 @@ ECPQueryOptimisationPolicies<T,U,V>::~ECPQueryOptimisationPolicies() {
 template <typename T, typename U, typename V>
 void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, ECPConfig*& cnfg,
                                                             vector<vector<ECPNode<T,U,V>*>>& nodes, int numClusters) {
+    cout << "Gathering information for QOP" << endl;
     _originalCnt = new uint32_t[numClusters];
     _sessionRemainingCnt = new uint32_t[numClusters];
     if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
@@ -62,6 +63,8 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
     for (int i = 0; i < (int) descToCluster.size(); i++) {
         _descToCluster.push_back(descToCluster[i]);
     }
+
+#ifdef STORE_QOP
     // check if data directory exists
     if (!std::filesystem::exists("exqData")) {
         std::filesystem::create_directory("exqData");
@@ -77,8 +80,11 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
         }
         f.close();
     }
-    // TODO: If the files exists load from them, which means moving the exist check up and come up with a way for
-    //  deletion/update as shifting modalities/collection/filters require this
+    /** 
+     * TODO: If the files exists load from them, which means moving the exist check up and come up with a way for
+     * deletion/update as shifting modalities/collection/filters require this
+     */
+#endif
 
     if (_expansionType == ESTIMATED_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
         _combinations = vector<map<string,double>> (levelSizes[_statLevel]);
@@ -125,8 +131,10 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
 
 template <typename T, typename U, typename V>
 void ECPQueryOptimisationPolicies<T,U,V>::addCombination(uint32_t clusterId, uint32_t descId) {
-    // Old method from research version of Exquisitor will not work for this version of Exquisitor
-    // TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
+    /**
+     * Old method from research version of Exquisitor will not work for this version of Exquisitor
+     * TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
+     */
 
     //struct MetaProbabilities {
     //    // collection -> probabiltiy
@@ -224,8 +232,10 @@ inline void ECPQueryOptimisationPolicies<T,U,V>::setFilterRemainingCount(uint32_
 
 template <typename T, typename U, typename V>
 double ECPQueryOptimisationPolicies<T,U,V>::getEstimatedRemainingCount(uint32_t clusterId) {
-    // Old method from research version of Exquisitor will not work for this version of Exquisitor
-    // TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
+    /**
+     * Old method from research version of Exquisitor will not work for this version of Exquisitor
+     * TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
+     */
 //    double fcount = 0.0;
 //    if (expandType == 3 || expandType == 7 || expandType == 4 || expandType == 8) {
 //        fcount = 0;
