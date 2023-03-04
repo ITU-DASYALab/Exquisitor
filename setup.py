@@ -1,3 +1,4 @@
+# TODO: Use setuptools instead of distutils
 import os
 from distutils.core import setup, Extension
 

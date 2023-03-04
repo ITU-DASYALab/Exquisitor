@@ -87,6 +87,8 @@ _deps
 # *.iml
 # *.ipr
 
+build/**
+
 # CMake
 cmake-build-*/
 
