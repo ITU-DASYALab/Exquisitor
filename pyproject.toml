@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Exquisitor"
+version = "1.0"
+authors = [
+    { name="Omar Shahbaz Khan", email="osk@oskhan.com" },
+]
+description = ""
+readme = "README.md"
+requires = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ITU-DASYALab/Exquisitor"
+
