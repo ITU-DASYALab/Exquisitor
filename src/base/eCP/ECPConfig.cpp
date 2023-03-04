@@ -34,6 +34,8 @@ void ECPConfig::SetParameter(string param, string value) {
         numLvls = strtol(value.c_str(), &ptr, 10);
     if (param == "page:")
         pgeSize = strtol(value.c_str(), &ptr, 10);
+    if (param == "ofst:")
+        numOfst = strtol(value.c_str(), &ptr, 10);
     if (param == "indx:")
         pathIdx = value;
     if (param == "data:")

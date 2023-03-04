@@ -39,7 +39,7 @@ namespace exq {
         /// \param qop
         ECPTree(ECPConfig* _cnfg, vector<ExqDescriptor<T,U,V>*> centroids, int numClusters,
                 ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
-                ECPQueryOptimisationPolicies<T,U,V>*& qop);
+                ECPQueryOptimisationPolicies<T,U,V>*& qop, vector<ExqDescriptor<T,U,V>*>* descs);
 
         ~ECPTree();
 
@@ -85,6 +85,8 @@ namespace exq {
         ECPQueryOptimisationPolicies<T,U,V>* _qop;
         // limit for accepting clusters
         int _clusterSizeLimit = 100000000;
+
+        vector<ExqDescriptor<T,U,V>*>* _descs;
 
         // Build the tree using the list of descriptors at the bottom
         void BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numClusters);

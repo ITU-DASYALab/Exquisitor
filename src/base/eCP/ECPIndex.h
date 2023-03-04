@@ -26,7 +26,7 @@ namespace exq {
     class ECPIndex {
     public:
         ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions,
-                 int modality, vector<ExqDescriptor<T,U,V>*>& desc, 
+                 int modality, vector<ExqDescriptor<T,U,V>*>* descs, 
                  vector<ItemProperties> itemProps=vector<ItemProperties>(),
                  vector<vector<Props>> vidProps=vector<vector<Props>>(),
                  ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
@@ -72,7 +72,7 @@ namespace exq {
         vector<vector<Props>> _vidProperties;
 
         // Pointer to descriptor list in ExqDataHandlerECP
-        vector<ExqDescriptor<T,U,V>*>* _descs = nullptr;
+        vector<ExqDescriptor<T,U,V>*>* _descs;
         // Data structures
         vector<ECPCluster<T,U,V>*> _clusters = vector<ECPCluster<T,U,V>*>();
         vector<uint32_t> _bClusters = vector<uint32_t>();

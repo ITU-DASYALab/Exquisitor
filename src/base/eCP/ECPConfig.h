@@ -20,6 +20,7 @@ class ECPConfig
         uint32_t numDims;  // dimensionality of descriptors
         uint32_t numClst;  // clusters in index
         uint32_t numLvls;  // levels of tree index
+        uint32_t numOfst;  // cluster offset
 
         uint32_t pgeSize;  // Size of each page
 
@@ -36,6 +37,7 @@ class ECPConfig
         uint32_t getNumDims()  { return numDims; };
         uint32_t getNumClst()  { return numClst; };
         uint32_t getNumLvls()  { return numLvls; };
+        uint32_t getNumOfst()  { return numOfst; };
 
         uint32_t getPgeSize()  { return pgeSize; };
 

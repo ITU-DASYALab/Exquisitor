@@ -10,7 +10,7 @@ using namespace exq;
 
 template <typename T, typename U, typename V>
 ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
-                          int modality, vector<ExqDescriptor<T,U,V>*>& descs, vector<ItemProperties> itemProps, vector<vector<Props>> vidProps,
+                          int modality, vector<ExqDescriptor<T,U,V>*>* descs, vector<ItemProperties> itemProps, vector<vector<Props>> vidProps,
                           ExpansionType expansionType, int statLevel) {
     _cnfg = cnfg;
     cout << "Descriptor size: " << func->getDescriptorSize() << endl;
@@ -52,8 +52,6 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     _itemProperties = std::move(itemProps);
     _vidProperties = std::move(vidProps);
 
-    _descs = descs;
-
     cout << "(ECPIndx) Initializing index data structure" << endl;
     // Initialize the data structure for the index file
     vector<ExqDescriptor<T,U,V>*> centroids = vector<ExqDescriptor<T,U,V>*>(_maxClusters);
@@ -71,16 +69,16 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     }
 
     cout << "(ECPIndx) Resize descriptor list" << endl;
-    _descs.resize(_totalItems);
-
+    _descs = descs;
+    _descs->resize(_totalItems);
+    
     cout << "(ECPIndx) Initializing QOP object" << endl;
     _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters,
                                                    &_itemProperties, &_vidProperties, modality);
 
     cout << "Creating Tree object" << endl;
     // Create the tree from the cluster information
-    this->_tree = new ECPTree(cnfg, centroids, _maxClusters, func, featureDimensions, _qop);
-
+    this->_tree = new ECPTree(cnfg, centroids, _maxClusters, func, featureDimensions, _qop, _descs);
 
     for (uint32_t i = 0; i < _maxClusters; i++) {
         delete centroids[i];
@@ -130,12 +128,21 @@ void ECPIndex<T,U,V>::loadDescriptors() {
 #endif
             uint32_t id = descriptor->id;
             _clusters[i]->setDescriptorId(indx, id);
-            _descs[id] = new ExqDescriptor<T,U,V>(descriptor);
+            _descs->at(id) = new ExqDescriptor<T,U,V>(descriptor);
             delete descriptor;
             indx++;
         }
         indx = 0;
     }
+
+    //cout << "Checking if cluster and desc offset match" << endl;
+    //uint32_t offset = _cnfg->getNumOfst();
+    //for (int i = 0; i < 10; i++) {
+    //    if (_clusters[i]->getNumDescriptors() > 0)
+    //        cout << "Desc " << _descs->at(offset*i)->id << " | Clst id is " << _clusters[i]->descriptorIds[0] << endl;
+    //    else
+    //        cout << "Desc " << _descs->at(offset*i)->id << " | Clst has no children" << endl;
+    //}
 }
 
 template <typename T, typename U, typename V>

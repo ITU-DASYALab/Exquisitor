@@ -20,7 +20,7 @@ ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modali
     for (int m = 0; m < modalities; m++) {
         _descriptors[m] = vector<ExqDescriptor<T,U,V>*>();
         _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m],
-                                       m, itemProps, vidProps, expType, statLevel);
+                                       m, &_descriptors[m], itemProps, vidProps, expType, statLevel);
     }
 }
 
@@ -35,7 +35,7 @@ template <typename T, typename U, typename V>
 void ExqDataHandlerECP<T,U,V>::loadData(int workers) {
     cout << "(ExqHandler) Loading data into index" << endl;
     for (int m = 0; m < this->_modalities; m++) {
-        _indx[m]->loadDescriptors(_descriptors[m]);
+        _indx[m]->loadDescriptors();
     }
     cout << "(ExqHandler) Done" << endl;
 }

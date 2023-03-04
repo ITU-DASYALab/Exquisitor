@@ -6,19 +6,20 @@ using namespace exq;
 template<typename T, typename U, typename V>
 ECPTree<T,U,V>::ECPTree(ECPConfig* cnfg, vector<ExqDescriptor<T,U,V>*> centroids, int numClusters,
                         ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
-                        ECPQueryOptimisationPolicies<T,U,V>*& qop) {
+                        ECPQueryOptimisationPolicies<T,U,V>*& qop,
+                        vector<ExqDescriptor<T,U,V>*>* descs) {
     _cnfg = cnfg;
     _functions = func;
     _featureDimensions = featureDimensions;
     _numClusters = numClusters;
     _levelsizes = new int[_cnfg->getNumLvls()];
+    _qop = qop;
+    _descs = descs;
 
     if (_cnfg->getNumLvls() < 2) {
         cout << "(ECPTree) Level 2 index is the mininum for the Tree (level = " << _cnfg->getNumLvls() << ")" << endl;
         exit(EXIT_FAILURE);
     }
-
-    _qop = qop;
 
     BuildTree(centroids, numClusters);
 }
@@ -46,10 +47,12 @@ void ECPTree<T,U,V>::BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numC
     // Allocate the internal node arrays
     // The last level will not be used in the search but including it makes the code cleaner
     _nodes = vector<vector<ECPNode<T,U,V>*>>(_cnfg->getNumLvls());
-    for (uint32_t i = 0; i < _cnfg->getNumLvls(); i++)
+    for (uint32_t i = 0; i < _cnfg->getNumLvls(); i++) {
+        cout << "Levelsize " << i << ": " << _levelsizes[i] << endl;
         _nodes[i] = vector<ECPNode<T,U,V>*>(_levelsizes[i]);
+    }
     // The cluster centroids form all the node centroids, so we start by propagating them up in the hierarchy
-    for (int i=0; i<numClusters; i++) {
+    for (int i = 0; i < numClusters; i++) {
         for (uint32_t l = 0; l < _cnfg->getNumLvls(); l++) {
             if (i < _levelsizes[l]) {
                 // Each descriptor is both the centroid of the node and a child of it (last parameter = 1)
