@@ -276,7 +276,42 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             //items2Return.insert(items2Return.end(), itemsFromSegments[s].begin(), itemsFromSegments[s].end());
             //itemsFromSegments[s].clear();
         }
+<<<<<<< HEAD
         _functions[0]->sortItems(items2Return, _modalities, _rescaledModWeights, true);
+=======
+        unique.clear();
+        // If more than 1 modality, use modality fusion, TODO but until ... == 0
+        // add top ranked items from each mod to suggestions as well as fused
+        // TODO: Need a check for incremental retrieval?
+        if (_modalities > 1 && _momentum) {
+            int modSuggs = 0;
+            if (k > (int) items2Return.size()) {
+                modSuggs = floor(items2Return.size()/_modalities);
+            } else {
+                modSuggs = floor(k/_modalities);
+            }
+            if (modSuggs > 0) {
+                for (int m = 0; m < _modalities; m++) {
+                    _functions[0]->sortItems(items2Return, m, _normalizedModWeights, false, true);
+                    int s = 0;
+                    for (int i = 0; i < (int) items2Return.size(); i++) {
+                        if (unique.contains(items2Return[i].itemId)) {
+                            continue;
+                        }
+                        results.suggs.push_back(items2Return[i].itemId);
+                        unique.insert(items2Return[i].itemId);
+                        auto vec = vector<double>(_modalities,-(_orgModWeights[m]/_learningRate));
+                        vec[m] = _orgModWeights[m]/_learningRate; // Add original weight
+                        _retSuggs[items2Return[i].itemId] = std::make_pair(vec,0); // guarantee suggRatio = 1.0
+                        s++;
+                        if (s == modSuggs) break;
+                    }
+                }
+            }
+        }
+        _functions[0]->sortItems(items2Return, _modalities, _normalizedModWeights, true);
+
+>>>>>>> origin/ModalityFusion
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "Size of items2Return: " << items2Return.size() << endl;
         if (items2Return.size() > 0 && _modalities > 1) {
@@ -286,11 +321,16 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             cout << items2Return[0].aggScore << endl;
         }
 #endif
+<<<<<<< HEAD
         //}
 
         unique.clear();
         if ((_guaranteedSlots*_modalities) != k) {
             for (int i = 0; i < (int) items2Return.size(); i++) {
+=======
+        for (int i = 0; i < (int)items2Return.size(); i++) {
+            if (unique.contains(items2Return[i].itemId)) continue;
+>>>>>>> origin/ModalityFusion
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
                 cout << "(CTRL) Return item " << items2Return[i].itemId << " " << items2Return[i].aggScore << " "
                 << items2Return[i].distance[0] << endl;
@@ -471,6 +511,7 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             //}
         }
     }
+<<<<<<< HEAD
     _numPositives += rel;
     _update_cnt++; // Number of times update weights has been called
 
@@ -478,6 +519,18 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
         cout << "_numPositives: " << _numPositives;
         for (int m = 0; m < _modalities; m++) {
             cout << " | Mod " << m << ": " << _positivesFromMod[m];
+=======
+    for (int m = 0; m < _modalities; m++) {
+        if (_momentum) {
+            _normalizedModWeights[m] = _orgModWeights[m];
+            continue;
+        }
+        if (_modalityWeights[m] < 0.0) {
+            _normalizedModWeights[m] = 0.0;
+            flush += 1;
+        } else {
+            _normalizedModWeights[m] = _modalityWeights[m];
+>>>>>>> origin/ModalityFusion
         }
         cout << endl;
         //_update_cnt = 0;
@@ -513,6 +566,7 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             _positivesFromMod[m] = 0;
             msum += _modalityWeights[m];
         }
+<<<<<<< HEAD
 
         for (int m = 0; m < _modalities; m++) {
             _rescaledModWeights[m] = _modalityWeights[m] * (_orgWeightSum / msum);
@@ -526,6 +580,19 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
             cout << "]" << endl;
         }
     //}
+=======
+    } else {
+        _change += 1.0;
+    }
+    if (_change > (_org_momentum_cnt*3)) {
+        _momentum = true;
+        _momentum_start = _org_momentum_cnt;
+        _change = 0.0;
+    }
+    if ((_momentum_start-=1) <= 0) {
+        _momentum = false;
+    }
+>>>>>>> origin/ModalityFusion
     _retSuggs.clear();
     return true;
 }

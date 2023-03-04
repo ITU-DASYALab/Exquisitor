@@ -135,10 +135,10 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
 }
 
 template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality, vector<double>& modWeights,
-                                       bool setModRank) {
-    if (modality > 1) {
-        for (int m = 0; m < modality; m++) {
+void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int numMods, vector<double>& modWeights,
+                                       bool setModRank, bool singleMod) {
+    if (numMods > 1 && !singleMod) {
+        for (int m = 0; m < numMods; m++) {
             std::sort(items2Rank.begin(), items2Rank.end(), [m](const ExqItem& lhs, const ExqItem& rhs) {
                 return lhs.distance[m] > rhs.distance[m];
             });
@@ -155,7 +155,7 @@ void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int modality
         }
         cout << endl;
 #endif
-        int mod = 0;
+        int mod = singleMod;
         std::sort(items2Rank.begin(), items2Rank.end(), [mod](const ExqItem& lhs, const ExqItem& rhs) {
             return lhs.distance[mod] > rhs.distance[mod];
         });

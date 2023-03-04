@@ -50,12 +50,12 @@ namespace exq {
          * @brief sort items using scores from each modality
          */
         virtual void sortItems(vector<ExqItem>& items2Rank, int modalities, vector<double>& modWeights,
-                               bool setModRank=false) = 0;
+                               bool setModRank=false, bool singleMod=false) = 0;
 
         /**
          * @brief assign aggregate score for multimodal items
          */
-        virtual void assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights,
+        virtual void assignRanking(vector<ExqItem>& items, int nMods, vector<double>& modWeights,
                                    bool setModRank=false) = 0;
 
 
