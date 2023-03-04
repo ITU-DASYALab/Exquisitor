@@ -22,7 +22,7 @@ namespace exq {
         vector<double> distance;
         double aggScore;
         int segment;
-        vector<double> modRank;
+        vector<double> modRank; // The rank for each modality an item got during aggregation, example: aggScore = 4, mod1Rank = 1, mod2Rank = 3 
 
         ExqItem() {
             itemId = UINT32_MAX;

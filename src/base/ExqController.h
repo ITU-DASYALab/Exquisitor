@@ -162,7 +162,6 @@ namespace exq {
         vector<double> _orgModWeights;
         // Actual weights that are updated based on function
         vector<double> _modalityWeights;
-<<<<<<< HEAD
         // Rescaled weights to be between 0 and _orgWeightSum
         vector<double> _rescaledModWeights;
         // Positives from last x rounds
@@ -180,16 +179,6 @@ namespace exq {
         vector<int> _slots;
         vector<int> _activeSlots;
         std::map<uint32_t,pair<int,uint32_t>> _retSuggsFFS = std::map<uint32_t,pair<int,uint32_t>>();
-=======
-        vector<double> _normalizedModWeights;
-        double _learningRate0;
-        double _learningRate;
-        std::map<uint32_t,pair<vector<double>,uint32_t>> _retSuggs = std::map<uint32_t,pair<vector<double>,uint32_t>>();
-        int _momentum_start = 3;
-        int _org_momentum_cnt = 3;
-        bool _momentum = true;
-        double _change = 1.0;
->>>>>>> origin/ModalityFusion
 
         vector<future<void>> _threads = vector<future<void>>();
         vector<int> _featureDimensions;
