@@ -26,13 +26,14 @@ namespace exq {
     class ECPIndex {
     public:
         ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions,
-                 int modality, vector<ItemProperties> itemProps=vector<ItemProperties>(),
+                 int modality, vector<ExqDescriptor<T,U,V>*>& desc, 
+                 vector<ItemProperties> itemProps=vector<ItemProperties>(),
                  vector<vector<Props>> vidProps=vector<vector<Props>>(),
                  ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
 
         ~ECPIndex();
 
-        void loadDescriptors(vector<ExqDescriptor<T,U,V>*>& desc);
+        void loadDescriptors();
 
         void search(int chnk, int& totalData, vector<uint32_t>& suggIds,
                     int run, int segments, unordered_set<uint32_t>& seenItems, ItemFilter& filters);
@@ -40,6 +41,7 @@ namespace exq {
         bool set_b_clusters(vector<double> query, double bias, int b, bool resume=false);
 
         void updateSessionInfo(vector<uint32_t> suggs);
+        void resetSessionInfo();
 
         void PrintIndex();
 
@@ -69,6 +71,8 @@ namespace exq {
         //collection -> video -> property -> value(s)
         vector<vector<Props>> _vidProperties;
 
+        // Pointer to descriptor list in ExqDataHandlerECP
+        vector<ExqDescriptor<T,U,V>*>* _descs = nullptr;
         // Data structures
         vector<ECPCluster<T,U,V>*> _clusters = vector<ECPCluster<T,U,V>*>();
         vector<uint32_t> _bClusters = vector<uint32_t>();

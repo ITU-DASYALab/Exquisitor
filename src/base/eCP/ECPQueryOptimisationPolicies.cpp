@@ -39,20 +39,21 @@ ECPQueryOptimisationPolicies<T,U,V>::~ECPQueryOptimisationPolicies() {
 template <typename T, typename U, typename V>
 void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, ECPConfig*& cnfg,
                                                             vector<vector<ECPNode<T,U,V>*>>& nodes, int numClusters) {
+    _numClusters = numClusters;
     cout << "Gathering information for QOP" << endl;
-    _originalCnt = new uint32_t[numClusters];
-    _sessionRemainingCnt = new uint32_t[numClusters];
+    _originalCnt = new uint32_t[_numClusters];
+    _sessionRemainingCnt = new uint32_t[_numClusters];
     if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
-        _filterExactCnt = new uint32_t[numClusters];
-        _filterReturnedCnt = new uint32_t[numClusters];
+        _filterExactCnt = new uint32_t[_numClusters];
+        _filterReturnedCnt = new uint32_t[_numClusters];
     }
     std::map<uint32_t,uint32_t> descToCluster = std::map<uint32_t,uint32_t>();
-    for (int i = 0; i < numClusters; i++) {
+    for (int i = 0; i < _numClusters; i++) {
         _originalCnt[i] = _clusters[i]->getNumDescriptors();
         _sessionRemainingCnt[i] = _clusters[i]->getNumDescriptors();
         if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
             _filterExactCnt[i] = UINT32_MAX;
-            _filterReturnedCnt = 0;
+            _filterReturnedCnt[i] = 0;
         }
         _clusters[i]->open();
         ExqDescriptor<T, U, V> *desc;
@@ -289,5 +290,25 @@ inline void ECPQueryOptimisationPolicies<T,U,V>::updateSessionClusterCount(vecto
     }
 }
 
+template <typename T, typename U, typename V>
+inline void ECPQueryOptimisationPolicies<T,U,V>::resetSession() {
+    for (int i = 0; i < _numClusters; i++) {
+        _sessionRemainingCnt[i] = _originalCnt[i];
+        if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
+            _filterExactCnt[i] = UINT32_MAX;
+            _filterReturnedCnt[i] = 0;
+        }
+    }
+}
+
+template <typename T, typename U, typename V>
+inline void ECPQueryOptimisationPolicies<T,U,V>::resetFilterCount() {
+    for (int i = 0; i < _numClusters; i++) {
+        if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
+            _filterExactCnt[i] = UINT32_MAX;
+            _filterReturnedCnt[i] = 0;
+        }
+    }
+}
 
 template class exq::ECPQueryOptimisationPolicies<uint64_t, uint64_t, uint64_t>;

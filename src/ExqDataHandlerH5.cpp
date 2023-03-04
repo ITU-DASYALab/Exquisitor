@@ -195,4 +195,7 @@ void ExqDataHandlerH5<T,U,V>::loadHdf5Dataset  (void** data,
 template <typename T, typename U, typename V>
 void ExqDataHandlerH5<T,U,V>::updateSessionInfo(vector<uint32_t> suggs) {}
 
+template <typename T, typename U, typename V>
+void ExqDataHandlerH5<T,U,V>::resetSessionInfo() {}
+
 template class exq::ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>;

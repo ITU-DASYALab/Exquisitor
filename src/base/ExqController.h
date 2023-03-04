@@ -126,7 +126,7 @@ namespace exq {
         /**
          * @brief reset the current SVM model
          */
-        void reset_model();
+        void reset_model(bool resetSession);
 
         /**
          * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation

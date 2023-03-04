@@ -47,6 +47,7 @@ namespace exq {
                                    ItemFilter& filters) override;
 
         void updateSessionInfo(vector<uint32_t> suggs) override;
+        void resetSessionInfo();
 
     private:
         int _modalities;

@@ -66,6 +66,10 @@ namespace exq {
         /// \param r
         void updateSessionClusterCount(vector<uint32_t> suggs);
 
+        void resetSession();
+
+        void resetFilterCount();
+
         ///
         /// \param clusterId
         /// \return
@@ -93,6 +97,7 @@ namespace exq {
         ExpansionType _expansionType;
         int _statLevel = 1;
         int _modality;
+        int _numClusters;
         std::string _descMapFname;
         vector<ECPCluster<T,U,V>*> _clusters;
         uint32_t* _originalCnt;

@@ -10,7 +10,7 @@ using namespace exq;
 
 template <typename T, typename U, typename V>
 ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
-                          int modality, vector<ItemProperties> itemProps, vector<vector<Props>> vidProps,
+                          int modality, vector<ExqDescriptor<T,U,V>*>& descs, vector<ItemProperties> itemProps, vector<vector<Props>> vidProps,
                           ExpansionType expansionType, int statLevel) {
     _cnfg = cnfg;
     cout << "Descriptor size: " << func->getDescriptorSize() << endl;
@@ -52,6 +52,8 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
     _itemProperties = std::move(itemProps);
     _vidProperties = std::move(vidProps);
 
+    _descs = descs;
+
     cout << "(ECPIndx) Initializing index data structure" << endl;
     // Initialize the data structure for the index file
     vector<ExqDescriptor<T,U,V>*> centroids = vector<ExqDescriptor<T,U,V>*>(_maxClusters);
@@ -67,6 +69,9 @@ ECPIndex<T,U,V>::ECPIndex(ECPConfig *cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& 
         cout << "(ECPIndx) Cluster " << i << " loaded" << endl;
 #endif
     }
+
+    cout << "(ECPIndx) Resize descriptor list" << endl;
+    _descs.resize(_totalItems);
 
     cout << "(ECPIndx) Initializing QOP object" << endl;
     _qop = new ECPQueryOptimisationPolicies<T,U,V>(expansionType, statLevel, _clusters,
@@ -90,20 +95,21 @@ ECPIndex<T,U,V>::~ECPIndex() {
 
     // Clean up memory
     delete _tree;
+    delete _descs;
     for (uint32_t i = 0; i < _maxClusters; i++) {
         delete _clusters[i];
     }
 }
 
 template <typename T, typename U, typename V>
-void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>& descs) {
+void ECPIndex<T,U,V>::loadDescriptors() {
     int indx = 0;
     int maxClusterSize = 100000000; //can be adjusted, this was to get rid of the huge clusters that were actually full of crap
 
 #if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPIndx) Loading descriptors" << endl;
 #endif
-    descs.resize(_totalItems);
+
 #if defined(DEBUG) || defined(DEBUG_INIT)
     printf("(ECPIndx) maxClusters: %u\n", _maxClusters);
 #endif
@@ -124,7 +130,7 @@ void ECPIndex<T,U,V>::loadDescriptors(vector<ExqDescriptor<T,U,V>*>& descs) {
 #endif
             uint32_t id = descriptor->id;
             _clusters[i]->setDescriptorId(indx, id);
-            descs[id] = new ExqDescriptor<T,U,V>(descriptor);
+            _descs[id] = new ExqDescriptor<T,U,V>(descriptor);
             delete descriptor;
             indx++;
         }
@@ -234,6 +240,11 @@ void ECPIndex<T,U,V>::saveClusterDistribution(uint64_t numC, ECPConfig* cnfg, FI
 template <typename T, typename U, typename V>
 void ECPIndex<T,U,V>::updateSessionInfo(vector<uint32_t> suggs) {
     _qop->updateSessionClusterCount(suggs);
+}
+
+template <typename T, typename U, typename V>
+void ECPIndex<T,U,V>::resetSessionInfo() {
+    _qop->resetSession();
 }
 
 template class exq::ECPIndex<uint64_t, uint64_t, uint64_t>;

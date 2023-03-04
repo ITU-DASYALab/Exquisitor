@@ -122,12 +122,13 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
-    cout << "Setting Filters" << endl;
+    cout << "(CTRL) Setting Filters" << endl;
     if (changeFilters) {
         _activeFilters.setFilters(filters);
         //TODO: Reset cache of frc in ECPQOP
     }
 
+    cout << "(CTRL) Training classifier(s)" << endl;
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
         for (uint32_t trainId : trainIds) {
@@ -352,11 +353,13 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
 }
 
 template <typename T>
-void ExqController<T>::reset_model() {
+void ExqController<T>::reset_model(bool resetSession) {
     for (int m = 0; m < _modalities; m++)
         _classifiers[m]->resetClassifier();
     _activeFilters = ItemFilter();
-    // TODO: Reset session cluster count and filter remaining counts in QOP
+    if (resetSession) {
+        _handler->resetSessionInfo();
+    }
 }
 
 template <typename T>

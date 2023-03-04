@@ -444,11 +444,12 @@ PyObject* exq::suggest_py([[maybe_unused]] PyObject* self, PyObject* args) {
 
 PyObject* exq::reset_model_py([[maybe_unused]] PyObject* self, [[maybe_unused]] PyObject* args) {
     //cout << "Resetting model" << endl;
-    bool resetModalityWeights = (bool) PyLong_AsLong(PyTuple_GetItem(args, 0));
+    bool resetSession = (bool) PyLong_AsLong(PyTuple_GetItem(args, 0));
+    bool resetModalityWeights = (bool) PyLong_AsLong(PyTuple_GetItem(args, 1));
     if (resetModalityWeights) {
         _pyExqV1._controller->reset_modality_weights();
     }
-    _pyExqV1._controller->reset_model();
+    _pyExqV1._controller->reset_model(resetSession);
 
     Py_IncRef(Py_None);
     return Py_None;

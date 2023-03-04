@@ -51,6 +51,7 @@ namespace exq {
                                            ItemFilter& filters) = 0;
 
         virtual void updateSessionInfo(vector<uint32_t> suggs) = 0;
+        virtual void resetSessionInfo() = 0;
     };
 
 }
