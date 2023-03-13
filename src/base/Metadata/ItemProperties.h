@@ -21,6 +21,7 @@ namespace exq {
         vector<set<uint16_t>> props;
     };
 
+    // Container for properties that have a count value, e.g. number of objects
     struct CountProps {
         // property -> value(s)
         vector<map<uint16_t,uint16_t>> props;
@@ -49,8 +50,9 @@ namespace exq {
     };
 
     /**
+     * TODO: Determine if this data structure is the best approach for Estimated Count
      * collectionIdProb - probability of items being from a collection
-     * videoIdProb - probability of items being from a video from a collection
+     * videoIdProb - probability of items being from a video of a collection
      * stdPropProbs - probabilities of items standard properties
      * collPropProbs - probabilities of items collection properties
      * vidPropProbs - probabilties of items video properties
