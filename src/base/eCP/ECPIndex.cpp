@@ -102,7 +102,6 @@ ECPIndex<T,U,V>::~ECPIndex() {
 template <typename T, typename U, typename V>
 void ECPIndex<T,U,V>::loadDescriptors() {
     int indx = 0;
-    int maxClusterSize = 100000000; //can be adjusted, this was to get rid of the huge clusters that were actually full of crap
 
 #if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPIndx) Loading descriptors" << endl;
@@ -117,11 +116,7 @@ void ECPIndex<T,U,V>::loadDescriptors() {
 #endif
         this->_clusters[i]->open();
         ExqDescriptor<T,U,V>* descriptor;
-        //skip clusters that are larger than maxClusterSize
-        if (this->_clusters[i]->getNumDescriptors() > maxClusterSize) {
-            //printf("Cluster %u skipped\n", i);
-            continue;
-        }
+
         while ((descriptor = _clusters[i]->next()) != nullptr) {
 #if defined(DEBUG) || defined(DEBUG_INIT)
             printf("(ECPIndx) Cluster %u indx %d descriptor id %u\n", i, indx, descriptor->id);

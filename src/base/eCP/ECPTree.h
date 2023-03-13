@@ -84,7 +84,7 @@ namespace exq {
         // query optimisation policies
         ECPQueryOptimisationPolicies<T,U,V>* _qop;
         // limit for accepting clusters
-        int _clusterSizeLimit = 100000000;
+        int _clusterSizeLimit = 1000000;
 
         vector<ExqDescriptor<T,U,V>*>* _descs;
 
