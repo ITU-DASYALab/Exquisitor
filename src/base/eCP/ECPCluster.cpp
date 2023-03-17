@@ -10,8 +10,7 @@
 
 using namespace exq;
 
-template <typename T, typename U, typename V>
-ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize, int iota) {
+ECPCluster::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, size_t descSize, int iota) {
     // Note the bookkeeping info for later
     _cnfg = cnfg;
     _datafile = datafile;
@@ -29,15 +28,13 @@ ECPCluster<T,U,V>::ECPCluster(ECPConfig *cnfg, FILE *indxfile, FILE *datafile, s
     _iota = iota;
 };
 
-template <typename T, typename U, typename V>
-ECPCluster<T,U,V>::~ECPCluster() {
+ECPCluster::~ECPCluster() {
     for (int i = 0; i < (int)descriptorList.size(); i++) {
         delete descriptorList[i];
     }
 };
 
-template <typename T, typename U, typename V>
-void ECPCluster<T,U,V>::open() {
+void ECPCluster::open() {
     // Seek to the start of the cluster
     fseeko(_datafile, ((off_t)_offset) * _cnfg->getPgeSize(), SEEK_SET);
 
@@ -45,27 +42,23 @@ void ECPCluster<T,U,V>::open() {
     _nextDescriptor = 0;
 }
 
-template <typename T, typename U, typename V>
-inline void ECPCluster<T,U,V>::close() {
+inline void ECPCluster::close() {
     _nextDescriptor = 0;
 };
 
-template <typename T, typename U, typename V>
-inline void ECPCluster<T,U,V>::setDescriptorId(int i, uint32_t id) {
+inline void ECPCluster::setDescriptorId(int i, uint32_t id) {
     this->descriptorIds[i] = id;
 }
 
-template <typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ECPCluster<T,U,V>::next() {
+ExqDescriptorR64* ECPCluster::next() {
     //cout << "(ECPClst) _descriptors: " << _descriptors << endl;
     if (_nextDescriptor == _descriptors)
         return NULL;
     _nextDescriptor++;
-    return new ExqDescriptor<T,U,V>(_datafile, _iota, 1);
+    return new ExqDescriptorR64(_datafile, _iota, 1);
 };
 
-template <typename T, typename U, typename V>
-inline void ECPCluster<T,U,V>::PrintCluster(string indent) {
+inline void ECPCluster::PrintCluster(string indent) {
     cout << indent << "Offset: " << _offset << endl;
     cout << indent << "Pages:  " << _pages << endl;
     cout << indent << "Descrs: " << _descriptors << endl;
@@ -73,6 +66,3 @@ inline void ECPCluster<T,U,V>::PrintCluster(string indent) {
     //    PrintDescriptor(descriptorList[i]);
     //}
 }
-
-template class exq::ECPCluster<uint64_t,uint64_t,uint64_t>;
-

@@ -2,15 +2,15 @@
 
 
 #include "ECPConfig.h"
-#include "../ExqDescriptor.h"
+#include "../r64/ExqDescriptorR64.h"
 
 #include <vector>
 
 namespace exq {
 
     using std::vector;
+
     // This class implements a cluster as part of a data file
-    template <typename T, typename U, typename V>
     class ECPCluster {
     private:
         // Bookkeeping info
@@ -33,7 +33,7 @@ namespace exq {
 
         ~ECPCluster();
 
-        vector<ExqDescriptor<T,U,V>*> descriptorList;
+        vector<ExqDescriptorR64*> descriptorList;
         vector<uint32_t> descriptorIds;
 
         // Map the cluster and prepare for reading
@@ -41,7 +41,7 @@ namespace exq {
 
         void setDescriptorId(int i, uint32_t id);
 
-        ExqDescriptor<T,U,V>* next();
+        ExqDescriptorR64* next();
 
         void close();
 

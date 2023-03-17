@@ -13,9 +13,10 @@
 
 #include <hdf5.h>
 
-#include "base/ExqDataHandler.h"
-#include "base/ExqDescriptor.h"
-#include "base/ExqFunctions.h"
+#include "base/IExqDataHandler.h"
+#include "base/IExqDescriptor.h"
+#include "base/IExqFunctions.h"
+#include "ExqDescriptorR64.h"
 
 namespace exq {
 
@@ -23,16 +24,15 @@ namespace exq {
     using std::array;
     using std::string;
 
-    template<typename T, typename U, typename V>
-    class ExqDataHandlerH5 : public ExqDataHandler<ExqDescriptor<T,U,V>> {
+    class ExqDataHandlerH5 : public IExqDataHandler<uint64_t> {
     public:
         ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities);
 
         void loadData(int workers) override;
 
-        ExqDescriptor<T,U,V>* getDescriptor(uint32_t i) override;
+        IExqDescriptor<uint64_t>* getDescriptor(uint32_t i) override;
 
-        ExqDescriptor<T,U,V>* getDescriptor(uint32_t i, int mod) override;
+        IExqDescriptor<uint64_t>* getDescriptor(uint32_t i, int mod) override;
 
         int getTotalItemsCount(int mod) override;
 
@@ -40,7 +40,7 @@ namespace exq {
                             ItemFilter& filters, bool resume=false) override;
 
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                   vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
+                                   vector<vector<IExqDescriptor<uint64_t>*>>& descriptors,
                                    unordered_set<uint32_t>& seenItems,
                                    ItemFilter& filters) override;
 
@@ -51,7 +51,7 @@ namespace exq {
 
     private:
         int _numModalities;
-        vector<vector<ExqDescriptor<T,U,V>*>> _descriptors;
+        vector<vector<ExqDescriptorR64*>> _descriptors;
         vector<string> _topFeatPaths;
         vector<string> _featIdsPaths;
         vector<string> _ratiosPaths;

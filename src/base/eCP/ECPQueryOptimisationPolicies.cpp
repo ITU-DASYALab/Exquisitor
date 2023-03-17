@@ -7,12 +7,11 @@
 
 using namespace exq;
 
-template <typename T, typename U, typename V>
-ECPQueryOptimisationPolicies<T,U,V>::ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel,
-                                                                  vector<ECPCluster<T,U,V>*>& clusters,
-                                                                  vector<ItemProperties>* itemProps,
-                                                                  vector<vector<Props>>* vidProps,
-                                                                  int modality) {
+ECPQueryOptimisationPolicies::ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel,
+                                                           vector<ECPCluster*>& clusters,
+                                                           vector<ItemProperties>* itemProps,
+                                                           vector<vector<Props>>* vidProps,
+                                                           int modality) {
     _expansionType = expansionType;
     _statLevel = statLevel;
     _clusters = clusters;
@@ -27,8 +26,8 @@ ECPQueryOptimisationPolicies<T,U,V>::ECPQueryOptimisationPolicies(ExpansionType 
     _clusterToStatLevel = nullptr;
 }
 
-template <typename T, typename U, typename V>
-ECPQueryOptimisationPolicies<T,U,V>::~ECPQueryOptimisationPolicies() {
+
+ECPQueryOptimisationPolicies::~ECPQueryOptimisationPolicies() {
     delete _originalCnt;
     delete _sessionRemainingCnt;
     delete _filterExactCnt;
@@ -36,9 +35,9 @@ ECPQueryOptimisationPolicies<T,U,V>::~ECPQueryOptimisationPolicies() {
     delete _clusterToStatLevel;
 }
 
-template <typename T, typename U, typename V>
-void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, ECPConfig*& cnfg,
-                                                            vector<vector<ECPNode<T,U,V>*>>& nodes, int numClusters) {
+
+void ECPQueryOptimisationPolicies::gatherInformation(int*& levelSizes, ECPConfig*& cnfg,
+                                                     vector<vector<ECPNode*>>& nodes, int numClusters) {
     _numClusters = numClusters;
     cout << "Gathering information for QOP" << endl;
     _originalCnt = new uint32_t[_numClusters];
@@ -56,9 +55,9 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
             _filterReturnedCnt[i] = 0;
         }
         _clusters[i]->open();
-        ExqDescriptor<T, U, V> *desc;
+        ExqDescriptorR64 *desc;
         while ((desc = _clusters[i]->next()) != NULL) {
-            descToCluster[desc->id] = i;
+            descToCluster[desc->getId()] = i;
         }
     }
     for (int i = 0; i < (int) descToCluster.size(); i++) {
@@ -106,10 +105,10 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
             //cout << i << "\t" << clusterToStats[i] << endl;
             // Add each items filter statistics to the rightful stat level cluster
             _clusters[i]->open();
-            ExqDescriptor<T,U,V>* desc;
+            ExqDescriptorR64* desc;
             //cout << "Adding combinations for " << i << endl;
             while((desc = _clusters[i]->next()) != NULL) {
-                addCombination(p, desc->id);
+                addCombination(p, desc->getId());
                 clusterTotals[p]++;
             }
             _clusters[i]->close();
@@ -130,8 +129,8 @@ void ECPQueryOptimisationPolicies<T,U,V>::gatherInformation(int*& levelSizes, EC
     }
 }
 
-template <typename T, typename U, typename V>
-void ECPQueryOptimisationPolicies<T,U,V>::addCombination(uint32_t clusterId, uint32_t descId) {
+
+void ECPQueryOptimisationPolicies::addCombination(uint32_t clusterId, uint32_t descId) {
     /**
      * Old method from research version of Exquisitor will not work for this version of Exquisitor
      * TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
@@ -197,8 +196,8 @@ void ECPQueryOptimisationPolicies<T,U,V>::addCombination(uint32_t clusterId, uin
     //}
 }
 
-template <typename T, typename U, typename V>
-double ECPQueryOptimisationPolicies<T,U,V>::getClusterCount(uint32_t clusterId) {
+
+double ECPQueryOptimisationPolicies::getClusterCount(uint32_t clusterId) {
     if (_expansionType == GLOBAL_REMAINING_CNT) return _sessionRemainingCnt[clusterId];
     if (_expansionType == FILTER_REMAINING_CNT) return getFilterRemainingCount(clusterId);
     if (_expansionType == ESTIMATED_REMAINING_CNT) return getEstimatedRemainingCount(clusterId);
@@ -216,8 +215,8 @@ double ECPQueryOptimisationPolicies<T,U,V>::getClusterCount(uint32_t clusterId) 
     return _originalCnt[clusterId];
 }
 
-template <typename T, typename U, typename V>
-inline int ECPQueryOptimisationPolicies<T,U,V>::getFilterRemainingCount(uint32_t clusterId) {
+
+inline int ECPQueryOptimisationPolicies::getFilterRemainingCount(uint32_t clusterId) {
     if (_filterExactCnt[clusterId] == UINT32_MAX) return _sessionRemainingCnt[clusterId];
     if (_filterExactCnt[clusterId] == 0) return 0;
     int frc = _filterExactCnt[clusterId] - _filterReturnedCnt[clusterId];
@@ -225,14 +224,14 @@ inline int ECPQueryOptimisationPolicies<T,U,V>::getFilterRemainingCount(uint32_t
     return 0.0;
 }
 
-template <typename T, typename U, typename V>
-inline void ECPQueryOptimisationPolicies<T,U,V>::setFilterRemainingCount(uint32_t clusterId, int passed) {
+
+inline void ECPQueryOptimisationPolicies::setFilterRemainingCount(uint32_t clusterId, int passed) {
     _filterExactCnt[clusterId] = passed;
     _filterReturnedCnt[clusterId] = 0;
 }
 
-template <typename T, typename U, typename V>
-double ECPQueryOptimisationPolicies<T,U,V>::getEstimatedRemainingCount(uint32_t clusterId) {
+
+double ECPQueryOptimisationPolicies::getEstimatedRemainingCount(uint32_t clusterId) {
     /**
      * Old method from research version of Exquisitor will not work for this version of Exquisitor
      * TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
@@ -264,20 +263,18 @@ double ECPQueryOptimisationPolicies<T,U,V>::getEstimatedRemainingCount(uint32_t 
     return 0.0;
 }
 
-template <typename T, typename U, typename V>
-inline ExpansionType ECPQueryOptimisationPolicies<T,U,V>::getExpType() {
+
+inline ExpansionType ECPQueryOptimisationPolicies::getExpType() {
     return _expansionType;
 }
 
 
-template <typename T, typename U, typename V>
-inline int ECPQueryOptimisationPolicies<T,U,V>::getStatLevel() {
+inline int ECPQueryOptimisationPolicies::getStatLevel() {
     return _statLevel;
 }
 
 
-template <typename T, typename U, typename V>
-inline void ECPQueryOptimisationPolicies<T,U,V>::updateSessionClusterCount(vector<uint32_t> suggs) {
+inline void ECPQueryOptimisationPolicies::updateSessionClusterCount(vector<uint32_t> suggs) {
     for (auto s : suggs) {
         if (_sessionRemainingCnt[_descToCluster[s]] > 0) {
             // update session count
@@ -290,8 +287,8 @@ inline void ECPQueryOptimisationPolicies<T,U,V>::updateSessionClusterCount(vecto
     }
 }
 
-template <typename T, typename U, typename V>
-inline void ECPQueryOptimisationPolicies<T,U,V>::resetSession() {
+
+inline void ECPQueryOptimisationPolicies::resetSession() {
     for (int i = 0; i < _numClusters; i++) {
         _sessionRemainingCnt[i] = _originalCnt[i];
         if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
@@ -301,8 +298,8 @@ inline void ECPQueryOptimisationPolicies<T,U,V>::resetSession() {
     }
 }
 
-template <typename T, typename U, typename V>
-inline void ECPQueryOptimisationPolicies<T,U,V>::resetFilterCount() {
+
+inline void ECPQueryOptimisationPolicies::resetFilterCount() {
     for (int i = 0; i < _numClusters; i++) {
         if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
             _filterExactCnt[i] = UINT32_MAX;
@@ -310,5 +307,3 @@ inline void ECPQueryOptimisationPolicies<T,U,V>::resetFilterCount() {
         }
     }
 }
-
-template class exq::ECPQueryOptimisationPolicies<uint64_t, uint64_t, uint64_t>;

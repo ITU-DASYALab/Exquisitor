@@ -9,23 +9,24 @@
 
 #include <string>
 
-#include "base/ExqDataHandler.h"
-#include "base/ExqDescriptor.h"
-#include "base/eCP/ECPIndex.h"
+#include "../IExqDataHandler.h"
+#include "../IExqDescriptor.h"
+#include "ExqDescriptorR64.h"
+
+#include "../eCP/ECPIndex.h"
 
 namespace exq {
 
     using std::string;
 
-    template<typename T, typename U, typename V>
-    class ExqDataHandlerECP : public ExqDataHandler<ExqDescriptor<T,U,V>>{
+    class ExqDataHandlerECP : public IExqDataHandler<uint64_t>{
     public:
         /**
          * Constructor for loading the eCP index
          * \param cnfgFile - Config file containing metadata information about the cluster index
          */
         ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
-                          vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions, vector<int>& featureDimensions,
+                          vector<IExqFunctions<uint64_t>*>& functions, vector<int>& featureDimensions,
                           vector<ItemProperties> itemProps, vector<vector<Props>> vidProps, ExpansionType expType,
                           int statLevel);
 
@@ -33,16 +34,17 @@ namespace exq {
 
         void loadData(int workers) override;
 
-        ExqDescriptor<T,U,V>* getDescriptor(uint32_t i) override;
+        IExqDescriptor<uint64_t>* getDescriptor(uint32_t i) override;
 
-        ExqDescriptor<T,U,V>* getDescriptor(uint32_t i, int mod) override;
+        IExqDescriptor<uint64_t>* getDescriptor(uint32_t i, int mod) override;
 
         int getTotalItemsCount(int mod) override;
 
         vector<bool> selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers, //vector<vector<double>>& model, vector<double>& bias,
                                     ItemFilter& filters, bool resume=false) override;
+
         void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                   vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
+                                   vector<vector<IExqDescriptor<uint64_t>*>>& descriptors,
                                    unordered_set<uint32_t>& seenItems,
                                    ItemFilter& filters) override;
 
@@ -52,8 +54,8 @@ namespace exq {
     private:
         int _modalities;
         vector<int> _b;
-        vector<ECPIndex<T,U,V>*> _indx;
-        vector<vector<ExqDescriptor<T,U,V>*>> _descriptors;
+        vector<ECPIndex*> _indx;
+        vector<vector<ExqDescriptorR64*>> _descriptors;
         vector<string> _topFeatPaths;
         vector<string> _featIdsPaths;
         vector<string> _ratiosPaths;

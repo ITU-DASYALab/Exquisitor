@@ -6,59 +6,52 @@
 
 using namespace exq;
 
-template <typename T, typename U, typename V>
-ExqDataHandlerECP<T,U,V>::ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
-                                            vector<ExqFunctions<ExqDescriptor<T,U,V>>*>& functions,
-                                            vector<int>& featureDimensions,
-                                            vector<ItemProperties> itemProps,
-                                            vector<vector<Props>> vidProps,
-                                            ExpansionType expType,
-                                            int statLevel) {
-    _indx = vector<ECPIndex<T,U,V>*>(modalities);
+ExqDataHandlerECP::ExqDataHandlerECP(vector<string> cnfgFiles, int modalities,
+                                     vector<IExqFunctions<uint64_t>*>& functions,
+                                     vector<int>& featureDimensions,
+                                     vector<ItemProperties> itemProps,
+                                     vector<vector<Props>> vidProps,
+                                     ExpansionType expType,
+                                     int statLevel) {
+    _indx = vector<ECPIndex*>(modalities);
     _modalities = modalities;
-    _descriptors = vector<vector<ExqDescriptor<T,U,V>*>>(_modalities);
+    _descriptors = vector<vector<ExqDescriptorR64*>>(_modalities);
     for (int m = 0; m < modalities; m++) {
-        _descriptors[m] = vector<ExqDescriptor<T,U,V>*>();
-        _indx[m] = new ECPIndex<T,U,V>(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m],
-                                       m, &_descriptors[m], itemProps, vidProps, expType, statLevel);
+        _descriptors[m] = vector<ExqDescriptorR64*>();
+        _indx[m] = new ECPIndex(new ECPConfig(cnfgFiles[m]), functions[m], featureDimensions[m],
+                                m, &_descriptors[m], itemProps, vidProps, expType, statLevel);
     }
 }
 
-template <typename T, typename U, typename V>
-ExqDataHandlerECP<T,U,V>::~ExqDataHandlerECP() {
+ExqDataHandlerECP::~ExqDataHandlerECP() {
     for (int m = 0; m < _modalities; m++) {
         delete _indx[m];
     }
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::loadData(int workers) {
-    cout << "(ExqHandler) Loading data into index" << endl;
+void ExqDataHandlerECP::loadData(int workers) {
+    cout << "(ExqHandler) Loading data into index...";
     for (int m = 0; m < this->_modalities; m++) {
         _indx[m]->loadDescriptors();
     }
-    cout << "(ExqHandler) Done" << endl;
+    cout << "Done!" << endl;
 }
 
 
-template <typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ExqDataHandlerECP<T,U,V>::getDescriptor(uint32_t i) {
-    return _descriptors[0][i];
+IExqDescriptor<uint64_t>* ExqDataHandlerECP::getDescriptor(uint32_t i) {
+    return (IExqDescriptor<uint64_t>*) _descriptors[0][i];
 }
 
-template <typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ExqDataHandlerECP<T,U,V>::getDescriptor(uint32_t i, int mod) {
-    return _descriptors[mod][i];
+IExqDescriptor<uint64_t>* ExqDataHandlerECP::getDescriptor(uint32_t i, int mod) {
+    return (IExqDescriptor<uint64_t>*) _descriptors[mod][i];
 }
 
-template <typename T, typename U, typename V>
-int ExqDataHandlerECP<T,U,V>::getTotalItemsCount(int mod) {
+int ExqDataHandlerECP::getTotalItemsCount(int mod) {
     return _descriptors[mod].size();
 }
 
-template <typename T, typename U, typename V>
-vector<bool> ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers,
-                                                      ItemFilter& filters, bool resume) {
+vector<bool> ExqDataHandlerECP::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers,
+                                               ItemFilter& filters, bool resume) {
     _b = b;
     vector<bool> empty = vector<bool>(_modalities);
     for (int m = 0; m < _modalities; m++) {
@@ -80,10 +73,9 @@ vector<bool> ExqDataHandlerECP<T,U,V>::selectClusters(vector<int> b, vector<ExqC
     return empty;
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                                     vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
-                                                     unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
+void ExqDataHandlerECP::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
+                                              vector<vector<IExqDescriptor<uint64_t>*>>& descriptors,
+                                              unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
     auto suggIdsPerMod = vector<vector<uint32_t>>(_modalities);
     auto clusterIdsPerMod = vector<vector<uint32_t>>(_modalities);
     auto totalData = vector<int>(_modalities);
@@ -97,7 +89,7 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
         cout << "(ExqHandler) suggIdsPerMod[" << m << "].size(): " << suggIdsPerMod[m].size() << endl;
         cout << "(ExqHandler) clusterIdsPerMod[" << m << "].size(): " << clusterIdsPerMod[m].size() << endl;
 #endif
-        descriptors[m] = vector<ExqDescriptor<T,U,V>>();
+        descriptors[m] = vector<IExqDescriptor<uint64_t>*>();
         for (int i = 0; i < (int)suggIdsPerMod[m].size(); i++) {
             descriptors[m].push_back(_descriptors[m][suggIdsPerMod[m][i]]);
         }
@@ -112,18 +104,14 @@ void ExqDataHandlerECP<T,U,V>::getSegmentDescriptors(int currentSegment, int tot
     }
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::updateSessionInfo(vector<uint32_t> suggs) {
+void ExqDataHandlerECP::updateSessionInfo(vector<uint32_t> suggs) {
     for (int m = 0; m < _modalities; m++) {
         _indx[m]->updateSessionInfo(suggs);
     }
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerECP<T,U,V>::resetSessionInfo() {
+void ExqDataHandlerECP::resetSessionInfo() {
     for (int m = 0; m < _modalities; m++) {
         _indx[m]->resetSessionInfo();
     }
 }
-
-template class exq::ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>;

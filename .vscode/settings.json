@@ -6,6 +6,7 @@
         "fstream": "cpp",
         "istream": "cpp",
         "streambuf": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "vector": "cpp"
     }
 }

@@ -10,19 +10,17 @@
 
 using namespace exq;
 
-template <typename T, typename U, typename V>
-ExqDataHandlerH5<T,U,V>::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities) {
+ExqDataHandlerH5::ExqDataHandlerH5(vector<vector<string>>& compCnfgFiles, int modalities) {
     this->_numModalities = modalities;
     for (int m = 0; m < modalities; m++) {
-        this->_descriptors.push_back(vector<ExqDescriptor<T,U,V>*>());
+        this->_descriptors.push_back(vector<ExqDescriptorR64*>());
         this->_topFeatPaths.push_back(compCnfgFiles[m][0]);
         this->_featIdsPaths.push_back(compCnfgFiles[m][1]);
         this->_ratiosPaths.push_back(compCnfgFiles[m][2]);
     }
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::loadData(int workers) {
+void ExqDataHandlerH5::loadData(int workers) {
     for (int m = 0; m < this->_numModalities; m++) {
         loadDescriptorsFromFiles(
                 this->_topFeatPaths[m],
@@ -34,33 +32,28 @@ void ExqDataHandlerH5<T,U,V>::loadData(int workers) {
     }
 }
 
-template <typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ExqDataHandlerH5<T,U,V>::getDescriptor(uint32_t i) {
+IExqDescriptor<uint64_t>* ExqDataHandlerH5::getDescriptor(uint32_t i) {
     return this->_descriptors[0][i];
 }
 
-template <typename T, typename U, typename V>
-ExqDescriptor<T,U,V>* ExqDataHandlerH5<T,U,V>::getDescriptor(uint32_t i, int mod) {
+IExqDescriptor<uint64>* ExqDataHandlerH5::getDescriptor(uint32_t i, int mod) {
     return this->_descriptors[mod][i];
 }
 
-template <typename T, typename U, typename V>
-int ExqDataHandlerH5<T,U,V>::getTotalItemsCount(int mod) {
+int ExqDataHandlerH5::getTotalItemsCount(int mod) {
     return this->_descriptors[mod].size();
 }
 
-template <typename T, typename U, typename V>
-vector<bool> ExqDataHandlerH5<T,U,V>::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers,//vector<vector<double>>& model, vector<double>& bias,
+vector<bool> ExqDataHandlerH5::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers,//vector<vector<double>>& model, vector<double>& bias,
                                                      ItemFilter& filters, bool resume) {
     return vector<bool>(1);
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                                    vector<vector<ExqDescriptor<T,U,V>>>& descriptors,
+void ExqDataHandlerH5::getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
+                                                    vector<vector<IExqDescriptor<uint64_t>*>>& descriptors,
                                                     unordered_set<uint32_t>& seenItems, ItemFilter& filters) {
     for (int m = 0; m < modalities; m++) {
-        vector<ExqDescriptor<T,U,V>> descs = vector<ExqDescriptor<T,U,V>>();
+        vector<IExqDescriptor<uint64_t>*> descs = vector<IExqDescriptor<uint64_t>*>();
         int segmentSize = this->getTotalItemsCount(m)/totalSegments;
         int startIndex = currentSegment * segmentSize;
         int stopIndex;
@@ -78,8 +71,7 @@ void ExqDataHandlerH5<T,U,V>::getSegmentDescriptors(int currentSegment, int tota
     }
 }
 
-template <typename T, typename U, typename V>
-ExqDataHandlerH5<T,U,V>::~ExqDataHandlerH5() {
+ExqDataHandlerH5::~ExqDataHandlerH5() {
     for(auto vecs : this->_descriptors) {
         for (auto desc : vecs) {
             delete desc;
@@ -87,13 +79,12 @@ ExqDataHandlerH5<T,U,V>::~ExqDataHandlerH5() {
     }
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile,
+void ExqDataHandlerH5::loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile,
         int modality, int workers) {
     //char script[1024];
-    vector<T> topFeats;
-    vector<U> featIds;
-    vector<V> featRatios;
+    vector<uint64_t> topFeats;
+    vector<uint64_t> featIds;
+    vector<uint64_t> featRatios;
 
     char topFeatureFileC[topFeatureFile.size() + 1];
     char featuresFileC[featuresFile.size() + 1];
@@ -127,7 +118,11 @@ void ExqDataHandlerH5<T,U,V>::loadDescriptorsFromFiles(string topFeatureFile, st
     //TODO: Add thread and chunk logic here
 
     for (uint32_t i = 0; i < totalItems; i++) {
-        this->_descriptors[modality].push_back(new ExqDescriptor<T,U,V>(i, topFeats[i], featIds[i], featRatios[i]));
+        auto featureIds = ExqArray<uint64_t>(1);
+        featureIds.setItem(featIds[i],0);
+        auto featureRatios = ExqArray<uint64_t>(1);
+        featureRatios.setItem(featRatios[i],0);
+        _descriptors[modality].push_back(new ExqDescriptorR64(i, topFeats[i], featIds[i], featRatios[i]));
     }
 }
 
@@ -138,8 +133,7 @@ _data_item_count()
 Checks the number of items in the HDF5 iota-I64 dataset.
 -------------------------------------------------------------------------------
 */
-template <typename T, typename U, typename V>
-uint32_t ExqDataHandlerH5<T,U,V>::dataItemCount    (char* filePath, const char* datasetName) {
+uint32_t ExqDataHandlerH5::dataItemCount    (char* filePath, const char* datasetName) {
     hid_t f, dSet, dSpace;
     uint64_t itemCount;
 
@@ -162,8 +156,7 @@ _load_hdf5_dataset()
 Loads a chunk of the iota-I64 HDF5 dataset.
 -------------------------------------------------------------------------------
 */
-template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::loadHdf5Dataset  (void** data,
+void ExqDataHandlerH5::loadHdf5Dataset  (void** data,
                                          char* filePath,
                                          hsize_t chunkOffset,
                                          hsize_t nChunk,
@@ -192,10 +185,6 @@ void ExqDataHandlerH5<T,U,V>::loadHdf5Dataset  (void** data,
     H5Fclose(f);
 }
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::updateSessionInfo(vector<uint32_t> suggs) {}
+void ExqDataHandlerH5::updateSessionInfo(vector<uint32_t> suggs) {}
 
-template <typename T, typename U, typename V>
-void ExqDataHandlerH5<T,U,V>::resetSessionInfo() {}
-
-template class exq::ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>;
+void ExqDataHandlerH5::resetSessionInfo() {}

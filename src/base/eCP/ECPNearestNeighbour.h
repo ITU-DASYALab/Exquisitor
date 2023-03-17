@@ -1,34 +1,35 @@
+
 #pragma once
+
 #include <float.h>
 #include <iostream>
 #include <fstream>
 #include <map>
 
-#include "../ExqDescriptor.h"
-#include "../ExqFunctions.h"
+#include "../r64/ExqDescriptorR64.h"
+#include "../IExqFunctions.h"
 
 namespace exq {
-    template<typename T, typename U, typename V>
     class ECPNearestNeighbour {
     public:
-        ECPNearestNeighbour(ExqDescriptor<T,U,V>* _query, uint32_t _k,
-                            ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions);
+        ECPNearestNeighbour(ExqDescriptorR64* _query, uint32_t _k,
+                            IExqFunctions<ExqDescriptorR64>*& functions, int featureDimensions);
 
         ECPNearestNeighbour(uint32_t _k,
-                            ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions);
+                            IExqFunctions<ExqDescriptorR64>*& functions, int featureDimensions);
 
         ~ECPNearestNeighbour();
 
         // Get info
-        ExqDescriptor<T,U,V>* getQuery() { return query; }
+        ExqDescriptorR64* getQuery() { return query; }
 
         uint32_t getK() { return k; }
 
         // Find distance to a descriptor
-        double Distance(ExqDescriptor<T,U,V> *data);
+        double Distance(ExqDescriptorR64* data);
 
         // The query processing interface is very simple:
-        void compareAndReplaceFarthest(ExqDescriptor<T,U,V>* data, uint32_t clusterId = -1);
+        void compareAndReplaceFarthest(ExqDescriptorR64* data, uint32_t clusterId = -1);
 
         void open();
 
@@ -44,10 +45,10 @@ namespace exq {
 
     private:
         // Query information
-        ExqDescriptor<T,U,V>* query;
+        ExqDescriptorR64* query;
         //int mod;
         uint32_t numdims{};
-        ExqFunctions<ExqDescriptor<T,U,V>>* _functions;
+        IExqFunctions<ExqDescriptorR64>* _functions;
         int _featureDimensions;
 
         // Query answer information
@@ -78,7 +79,6 @@ namespace exq {
         void setHelperArrayForDistance();
 
         int scanNext{};
-
 
     };
 }

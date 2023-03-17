@@ -11,9 +11,8 @@ using std::cout;
 using std::endl;
 
 
-template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor,
-                                        double ratiosDivisor) {
+ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor,
+                                 double ratiosDivisor) {
     this->iota = iota;
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
@@ -33,9 +32,8 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, i
     }
 }
 
-template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
-                                        double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
+ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
+                                 double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
     this->iota = iota;
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
@@ -55,20 +53,20 @@ ExqFunctionsR64<T,U,V>::ExqFunctionsR64(int nDescFeat, int iota, int topShift, i
     }
 }
 
-template <typename T, typename U, typename V>
-ExqFunctionsR64<T,U,V>::~ExqFunctionsR64() {
+ExqFunctionsR64::~ExqFunctionsR64() {
     delete this->idsBitShifts;
     delete this->ratiosBitShifts;
 }
 
-template <typename T, typename U, typename V>
-int ExqFunctionsR64<T, U, V>::getDescFeatCount() {
+int ExqFunctionsR64::getDescFeatCount() {
     return nDescFeatures;
 }
 
-template <typename T, typename U, typename V>
 /// Decompress item and return the results in an ExqArray
-inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformation(ExqDescriptor<T,U,V> &descriptor) {
+inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExqDescriptor<uint64_t> &descriptor) {
+    uint64_t top = descriptor.getTop();
+    ExqArray<uint64_t>* featureIds = descriptor.getFeatureIds();
+    ExqArray<uint64_t>* featureRatios = descriptor.getFeatureRatios();
 #ifdef DEBUG
     cout << "(ExqFncR64) Getting descriptor information for descriptor " << descriptor.id << endl;
     cout << "(ExqFncR64) Top: " << descriptor.getTop() << " Ids: " << descriptor.getFeatureIds() << " Ratio: "
@@ -76,11 +74,11 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 #endif
     auto exqArr = ExqArray<pair<int, float>>(this->nDescFeatures);
 
-    int featId = descriptor.getTop() >> this->topFeatureShift;
+    int featId = top >> this->topFeatureShift;
 #ifdef DEBUG
     cout << "(ExqFncR64) Top Feature ID: " << featId << endl;
 #endif
-    double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
+    double featVal = (top & this->topMask) / this->topDivisor;
 #ifdef DEBUG
     cout << "(ExqFncR64) Top Feature Value: " << featVal << endl;
 #endif
@@ -88,11 +86,11 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 
     for (int i = 0; i < iota; i++) {
         for (int j = 0; j < (this->nDescFeatures-1); j++) {
-            featId = (descriptor.getFeatureIds(i) >> this->idsBitShifts[j]) & this->idsMask;
+            featId = (featureIds->getItem(i) >> this->idsBitShifts[j]) & this->idsMask;
 #ifdef DEBUG
             cout << "(ExqFncR64) Feature ID: " << featId << endl;
 #endif
-            featVal *= ((descriptor.getFeatureRatios(i) >> this->ratiosBitShifts[j]) & \
+            featVal *= ((featureRatios->getItem(i) >> this->ratiosBitShifts[j]) & \
                        this->ratiosMask)/this->ratiosDivisor;
 #ifdef DEBUG
             cout << "(ExqFncR64) Feature Val: " << featVal << endl;
@@ -113,16 +111,19 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64<T,U,V>::getDescriptorInformati
 /// \param bias - Bias from SVM
 /// \param descriptor - Descriptor containing all feature information
 /// \return
-template <typename T, typename U, typename V>
-inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bias, ExqDescriptor<T,U,V> &descriptor) {
+inline double ExqFunctionsR64::distance(vector<double>& model, double bias, IExqDescriptor<uint64_t> &descriptor) {
+    uint64_t top = descriptor.getTop();
+    ExqArray<uint64_t>* featureIds = descriptor.getFeatureIds();
+    ExqArray<uint64_t>* featureRatios = descriptor.getFeatureRatios();
+
     double score = bias;
-    int featId = descriptor.getTop() >> this->topFeatureShift;
-    double featVal = (descriptor.getTop() & this->topMask) / this->topDivisor;
+    int featId = top >> this->topFeatureShift;
+    double featVal = (top & this->topMask) / this->topDivisor;
     score += model[featId] * featVal;
     for (int i = 0; i < iota; i++) {
         for (int j = 0; j < (this->nDescFeatures - 1); j++) {
-            featId = (descriptor.getFeatureIds(i) >> this->idsBitShifts[j]) & this->idsMask;
-            featVal *= ((descriptor.getFeatureRatios(i) >> this->ratiosBitShifts[j]) & this->ratiosMask) /
+            featId = (featureIds->getItem(i) >> this->idsBitShifts[j]) & this->idsMask;
+            featVal *= ((featureRatios->getItem(i) >> this->ratiosBitShifts[j]) & this->ratiosMask) /
                        this->ratiosDivisor;
             score += model[featId] * featVal;
         }
@@ -134,8 +135,7 @@ inline double ExqFunctionsR64<T,U,V>::distance(vector<double>& model, double bia
     return score;
 }
 
-template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int numMods, vector<double>& modWeights,
+void ExqFunctionsR64::sortItems(vector<ExqItem> &items2Rank, int numMods, vector<double>& modWeights,
                                        bool setModRank, bool singleMod) {
     if (numMods > 1 && !singleMod) {
         for (int m = 0; m < numMods; m++) {
@@ -168,8 +168,7 @@ void ExqFunctionsR64<T,U,V>::sortItems(vector<ExqItem> &items2Rank, int numMods,
     }
 }
 
-template <typename T, typename U, typename V>
-void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights,
+void ExqFunctionsR64::assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights,
                                            bool setModRank) {
     double rank = 0.0;
     items[0].aggScore += 0.0;
@@ -206,9 +205,6 @@ void ExqFunctionsR64<T,U,V>::assignRanking(vector<ExqItem>& items, int mod, vect
     }
 }
 
-template<typename T, typename U, typename V>
-int ExqFunctionsR64<T, U, V>::getDescriptorSize() {
-    return sizeof(T) + (iota * sizeof(U)) + (iota * sizeof(V));
+int ExqFunctionsR64::getDescriptorSize() {
+    return sizeof(uint64_t) + (iota * sizeof(uint64_t)) + (iota * sizeof(uint64_t));
 }
-
-template class exq::ExqFunctionsR64<uint64_t,uint64_t,uint64_t>;

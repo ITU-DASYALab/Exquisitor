@@ -5,7 +5,7 @@
 #include "ECPNearestNeighbour.h"
 #include "ECPCluster.h"
 #include "ECPQueryOptimisationPolicies.h"
-#include "../ExqFunctions.h"
+#include "../IExqFunctions.h"
 #include "../Metadata/ItemProperties.h"
 
 #include <queue>
@@ -27,7 +27,6 @@ namespace exq {
     };
 
     /// The eCP index tree class
-    template<typename T, typename U, typename V>
     class ECPTree {
     public:
         /// Constructor
@@ -37,9 +36,9 @@ namespace exq {
         /// \param func
         /// \param featureDimensions
         /// \param qop
-        ECPTree(ECPConfig* _cnfg, vector<ExqDescriptor<T,U,V>*> centroids, int numClusters,
-                ExqFunctions<ExqDescriptor<T,U,V>>*& func, int featureDimensions,
-                ECPQueryOptimisationPolicies<T,U,V>*& qop, vector<ExqDescriptor<T,U,V>*>* descs);
+        ECPTree(ECPConfig* _cnfg, vector<ExqDescriptorR64*> centroids, int numClusters,
+                IExqFunctions<ExqDescriptorR64>*& func, int featureDimensions,
+                ECPQueryOptimisationPolicies*& qop, vector<ExqDescriptorR64*>* descs);
 
         ~ECPTree();
 
@@ -49,8 +48,8 @@ namespace exq {
         /// \param k
         /// \param clusters
         /// \return
-        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint32_t k,
-                                            vector<ECPCluster<T,U,V>*>& clusters);
+        ECPFarthestNeighbour* search(vector<double>& query, double bias, uint32_t k,
+                                     vector<ECPCluster*>& clusters);
 
         ///
         /// \return
@@ -62,18 +61,18 @@ namespace exq {
         /// \param b
         /// \param clusters
         /// \return
-        ECPFarthestNeighbour<T,U,V>* search_pq(vector<double>& query, double bias, uint32_t b,
-                                               vector<ECPCluster<T,U,V>*>& clusters);
+        ECPFarthestNeighbour* search_pq(vector<double>& query, double bias, uint32_t b,
+                                        vector<ECPCluster*>& clusters);
         /// Sanity checks
         void PrintTree();
 
     private:
         // The configuration of the tree
         ECPConfig* _cnfg;
-        ExqFunctions<ExqDescriptor<T,U,V>>* _functions;
+        IExqFunctions<ExqDescriptorR64>* _functions;
         int _featureDimensions;
         // The two-dimensional array of nodes (level, node) and the size at each level
-        vector<vector<ECPNode<T,U,V>*>> _nodes;
+        vector<vector<ECPNode*>> _nodes;
         int* _levelsizes{};
         // pq for incremental retrieval
         int _expCounter = 0;
@@ -82,23 +81,23 @@ namespace exq {
         priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> _pq;
         set<uint32_t> _bfs;
         // query optimisation policies
-        ECPQueryOptimisationPolicies<T,U,V>* _qop;
+        ECPQueryOptimisationPolicies* _qop;
         // limit for accepting clusters
         int _clusterSizeLimit = 1000000;
 
-        vector<ExqDescriptor<T,U,V>*>* _descs;
+        vector<ExqDescriptorR64*>* _descs;
 
         // Build the tree using the list of descriptors at the bottom
-        void BuildTree(vector<ExqDescriptor<T,U,V>*> centroids, int numClusters);
+        void buildTree(vector<ExqDescriptorR64*> centroids, int numClusters);
 
-        void addChildAtLevel(ExqDescriptor<T,U,V>* centroid, int level);
+        void addChildAtLevel(ExqDescriptorR64* centroid, int level);
 
         // Find the proper node for a particular descriptor at a particular level
         // Used both for insertions and implementing the actual search
-        ECPFarthestNeighbour<T,U,V>* search(vector<double>& query, double bias, uint32_t b, uint32_t level,
-                                            vector<ECPCluster<T,U,V>*>& clusters);
+        ECPFarthestNeighbour* search(vector<double>& query, double bias, uint32_t b, uint32_t level,
+                                     vector<ECPCluster*>& clusters);
 
-        ECPNearestNeighbour<T,U,V>* search(ExqDescriptor<T,U,V>* query, uint32_t k, uint32_t level);
+        ECPNearestNeighbour* search(ExqDescriptorR64* query, uint32_t k, uint32_t level);
 
 
         //int getClusterCount(uint64_t id, vector<ECPCluster<T,U,V>*>& clusters, bool check=false);

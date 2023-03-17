@@ -3,8 +3,8 @@
 //
 
 #include "ExqPyInterface.h"
-#include "../ExqDataHandlerECP.h"
-#include "../ExqFunctionsR64.h"
+#include "r64/ExqDataHandlerECP.h"
+#include "r64/ExqFunctionsR64.h"
 #include "ExqPyHelperFunctions.h"
 
 using namespace exq;
@@ -47,7 +47,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     }
 
     // Sets the ExqFunctions for each modality
-    auto functions = vector<ExqFunctions<ExqDescriptor<uint64_t, uint64_t, uint64_t>>*>(numModalities);
+    auto functions = vector<IExqFunctions<uint64_t>*>(numModalities);
     int funcType = (int) PyLong_AsLong(PyTuple_GetItem(args, 8));
     cout << "funcType: " << funcType << endl;
     //funcType: 0 = same; 1 = different;
@@ -85,11 +85,10 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         auto modWeight = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
         modalityWeights = vector<double>(numModalities, modWeight);
         for (int m = 0; m < numModalities; m++) {
-            functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
-                                                                             ratiosShift,
-                                                                             topMask, topDivisor, idsMask,
-                                                                             ratiosMask,
-                                                                             ratiosDivisor);
+            functions[m] = new ExqFunctionsR64(nFeat, iota, topShift, idsShift,
+                                               ratiosShift,
+                                               topMask, topDivisor, idsMask,
+                                               ratiosMask, ratiosDivisor);
             cout << "Modality " << m << " weight: " << modalityWeights[m] << endl;
         }
     } else {
@@ -117,11 +116,10 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             cout << "ratiosDivisor: " << ratiosDivisor << endl;
             modalityWeights[m] = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
             cout << "Modality " << m << " weight: " << modalityWeights[m] << endl;
-            functions[m] = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(nFeat, iota, topShift, idsShift,
-                                                                             ratiosShift,
-                                                                             topMask, topDivisor, idsMask,
-                                                                             ratiosMask,
-                                                                             ratiosDivisor);
+            functions[m] = new ExqFunctionsR64(nFeat, iota, topShift, idsShift,
+                                               ratiosShift,
+                                               topMask, topDivisor, idsMask,
+                                               ratiosMask, ratiosDivisor);
         }
     }
     assert(!modalityWeights.empty());
@@ -143,7 +141,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         classifiers[m] = new ExqClassifier(modFeatureDimensions[m]);
     }
     cout << "Classifier(s) initialized" << endl;
-    auto worker = new ExqWorker<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
+    auto worker = new ExqWorker<uint64_t>();
     cout << "Worker(s) initialized" << endl;
 
     PyObject* itemMetadataPy = PyTuple_GetItem(args, 10);
@@ -281,14 +279,14 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     }
     cout << "Initializing DataHandler" << endl;
     auto dataHandler =
-            new ExqDataHandlerECP<uint64_t,uint64_t,uint64_t>(cnfgFiles, numModalities,
-                                                              functions, modFeatureDimensions,
-                                                              itemProps, collVidProps,
-                                                              expType, statLevel);
+            new ExqDataHandlerECP(cnfgFiles, numModalities,
+                                  functions, modFeatureDimensions,
+                                  itemProps, collVidProps,
+                                  expType, statLevel);
     cout << "DataHandler ready" << endl;
 
     cout << "Initializing Controller" << endl;
-    _pyExqV1._controller = new ExqController<ExqDescriptor<uint64_t,uint64_t,uint64_t>>(
+    _pyExqV1._controller = new ExqController(
             iota,
             noms,
             numWorkers,

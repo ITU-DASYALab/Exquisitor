@@ -29,7 +29,6 @@ namespace exq {
 
     /// This class contains the query optimisation policies used in the eCP index.
     /// There are 5 policies in total (see enum ExpansionType).
-    template<typename T, typename U, typename V>
     class ECPQueryOptimisationPolicies {
     public:
         /// Constructor
@@ -39,7 +38,7 @@ namespace exq {
         /// \param clusters - Vector of clusters
         /// \param itemProps - Item level properties
         /// \param vidProps - Video/Group level properties
-        ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel, vector<ECPCluster<T,U,V>*>& clusters,
+        ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel, vector<ECPCluster*>& clusters,
                                      vector<ItemProperties>* itemProps, vector<vector<Props>>* vidProps, int modality);
 
         ~ECPQueryOptimisationPolicies();
@@ -49,7 +48,7 @@ namespace exq {
         /// \param cnfg - ECPConfig object
         /// \param nodes - The index tree
         /// \param numClusters - Total number of clusters in index
-        void gatherInformation(int*& levelSizes, ECPConfig*& cnfg, vector<vector<ECPNode<T,U,V>*>>& nodes,
+        void gatherInformation(int*& levelSizes, ECPConfig*& cnfg, vector<vector<ECPNode*>>& nodes,
                                int numClusters);
 
         /// Add combination for statistics policy
@@ -99,7 +98,7 @@ namespace exq {
         int _modality;
         int _numClusters;
         std::string _descMapFname;
-        vector<ECPCluster<T,U,V>*> _clusters;
+        vector<ECPCluster*> _clusters;
         uint32_t* _originalCnt;
         uint32_t* _sessionRemainingCnt;
         uint32_t* _filterExactCnt;

@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
-#include "base/ExqDescriptor.h"
+#include "base/IExqDescriptor.h"
 #include "base/ExqClassifier.h"
 #include "base/ExqItem.h"
-#include "base/ExqFunctions.h"
+#include "base/IExqFunctions.h"
 
 namespace exq {
 
@@ -20,8 +20,7 @@ namespace exq {
      * @class ExqFunctions
      * @brief the class contains the scoring and ranking functions utilizing Ratio-i64 compression
      */
-    template <typename T, typename U, typename V>
-    class ExqFunctionsR64 : public ExqFunctions<ExqDescriptor<T,U,V>> {
+    class ExqFunctionsR64 : public IExqFunctions<uint64_t> {
     public:
         ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
         ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
@@ -35,12 +34,12 @@ namespace exq {
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return
          */
-        ExqArray<pair<int,float>> getDescriptorInformation(ExqDescriptor<T,U,V>& descriptor) override;
+        ExqArray<pair<int,float>> getDescriptorInformation(IExqDescriptor<uint64_t>& descriptor) override;
 
         /**
          * @brief calculates distance between hyperplane and item
          */
-        double distance(vector<double>& model, double bias, ExqDescriptor<T,U,V>& descriptor) override;
+        double distance(vector<double>& model, double bias, IExqDescriptor<uint64_t>& descriptor) override;
 
 
         /**

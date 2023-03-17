@@ -2,8 +2,8 @@
 // Created by Omar Shahbaz Khan on 13/03/2020.
 //
 
-#ifndef EXQUISITOR_EXQFUNCTIONS_H
-#define EXQUISITOR_EXQFUNCTIONS_H
+#ifndef EXQUISITOR_EXQFUNCTIONSINTERFACE_H
+#define EXQUISITOR_EXQFUNCTIONSINTERFACE_H
 
 #pragma once
 
@@ -11,7 +11,7 @@
 #include <vector>
 #include <utility>
 
-#include "ExqDescriptor.h"
+#include "IExqDescriptor.h"
 #include "ExqClassifier.h"
 #include "ExqItem.h"
 #include "ExqArray.h"
@@ -27,9 +27,9 @@ namespace exq {
      * @brief the class contains the scoring and ranking functions
      */
     template <class T>
-    class ExqFunctions {
+    class IExqFunctions {
     public:
-        ~ExqFunctions() {};
+        ~IExqFunctions() {};
 
         virtual int getDescFeatCount() = 0;
         virtual int getDescriptorSize() = 0;
@@ -39,12 +39,12 @@ namespace exq {
          * @brief convert compressed descriptor representation into actual feature id and value pairs
          * @return
          */
-        virtual ExqArray<pair<int,float>> getDescriptorInformation(T& descriptor) = 0;
+        virtual ExqArray<pair<int,float>> getDescriptorInformation(IExqDescriptor<T>& descriptor) = 0;
 
         /**
          * @brief calculates distance between hyperplane and item
          */
-        virtual double distance(vector<double>& model, double bias, T& descriptor) = 0;
+        virtual double distance(vector<double>& model, double bias, IExqDescriptor<T>& descriptor) = 0;
 
         /**
          * @brief sort items using scores from each modality
@@ -65,6 +65,4 @@ namespace exq {
 
 } //End of namespace exq
 
-template class exq::ExqFunctions<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
-
-#endif //EXQUISITOR_EXQFUNCTIONS_H
+#endif //EXQUISITOR_EXQFUNCTIONSINTERFACE_H

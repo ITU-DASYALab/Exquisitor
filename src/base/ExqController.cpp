@@ -19,7 +19,7 @@ using std::cout;
 using std::endl;
 
 
-template <typename T>
+template<class T>
 ExqController<T>::ExqController(
         int iota,
         int noms,
@@ -28,8 +28,8 @@ ExqController<T>::ExqController(
         int numberModalities,
         vector<int> modFeatureDimensions,
         int bClusters,
-        vector<ExqFunctions<T>*> functions,
-        ExqDataHandler<T>* handler,
+        vector<IExqFunctions<T>*> functions,
+        IExqDataHandler<T>* handler,
         vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker,
         const vector<ItemProperties>& itemProps,
@@ -104,14 +104,14 @@ ExqController<T>::ExqController(
     _threads.resize(_numWorkers);
 }
 
-template <typename T>
+template<class T>
 ExqController<T>::~ExqController() {
     for (int m = 0; m < _modalities; m++) {
         delete _classifiers[m];
     }
 }
 
-template <typename T>
+template<class T>
 vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels,
                                        bool changeFilters, Filters filters) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
@@ -132,8 +132,8 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     for (int m = 0; m < _modalities; m++) {
         vector<vector<double>> trainingItems = vector<vector<double>>();
         for (uint32_t trainId : trainIds) {
-            T desc = _handler->getDescriptor(trainId, m);
-            ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(desc);
+            ExqDescriptorR64* desc = _handler->getDescriptor(trainId, m);
+            ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(*desc);
             vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
             for (int j = 0; j < descVals.getSize(); j++) {
                 pair<int, float> item = descVals.getItem(j);
@@ -178,7 +178,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 }
 
 
-template <typename T>
+template<class T>
 TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, bool changeFilters,
                                      const Filters& filters, TopResults prevResults) {
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
@@ -352,7 +352,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     return results;
 }
 
-template <typename T>
+template<class T>
 void ExqController<T>::reset_model(bool resetSession) {
     for (int m = 0; m < _modalities; m++)
         _classifiers[m]->resetClassifier();
@@ -362,7 +362,7 @@ void ExqController<T>::reset_model(bool resetSession) {
     }
 }
 
-template <typename T>
+template<class T>
 bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<float>& labels) {
     if (_ffs) {
         auto nSuggs = (float) _retSuggsFFS.size();
@@ -536,7 +536,8 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
     return true;
 }
 
-template <typename T>
+
+template<class T>
 void ExqController<T>::reset_modality_weights() {
     for (int m = 0; m < _modalities; m++) {
         _modalityWeights[m] = _orgModWeights[m];
@@ -552,7 +553,7 @@ void ExqController<T>::reset_modality_weights() {
     //     _modalityWeights[0] << ", " << _modalityWeights[1] << ", " << _modalityWeights[2] << "]" << endl;
 }
 
-template <typename T>
+template<class T>
 vector<ExqArray<pair<int, float>>> ExqController<T>::get_descriptors(vector<int> ids, int mod) {
     auto res = vector<ExqArray<pair<int,float>>>(ids.size());
     for (int i = 0; i < (int)ids.size(); i++) {
@@ -560,7 +561,3 @@ vector<ExqArray<pair<int, float>>> ExqController<T>::get_descriptors(vector<int>
     }
     return res;
 }
-
-template class exq::ExqController<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
-
-

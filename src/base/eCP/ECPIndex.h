@@ -7,8 +7,8 @@
 #include "ECPQueryOptimisationPolicies.h"
 
 #include "../Metadata/ItemFilter.h"
-#include "../ExqDescriptor.h"
-#include "../ExqFunctions.h"
+#include "../r64/ExqDescriptorR64.h"
+#include "../IExqFunctions.h"
 
 #include <string>
 #include <cstdio>
@@ -22,11 +22,10 @@ namespace exq {
     using std::vector;
     using std::unordered_set;
 
-    template <typename T, typename U, typename V>
     class ECPIndex {
     public:
-        ECPIndex(ECPConfig* _cnfg, ExqFunctions<ExqDescriptor<T,U,V>>*& functions, int featureDimensions,
-                 int modality, vector<ExqDescriptor<T,U,V>*>* descs, 
+        ECPIndex(ECPConfig* _cnfg, IExqFunctions<uint64_t>*& functions, int featureDimensions,
+                 int modality, vector<ExqDescriptorR64*>* descs, 
                  vector<ItemProperties> itemProps=vector<ItemProperties>(),
                  vector<vector<Props>> vidProps=vector<vector<Props>>(),
                  ExpansionType expansionType=ORIGINAL_CNT, int statLevel=1);
@@ -57,7 +56,7 @@ namespace exq {
         size_t _indexEntrySize;
 
         // query optimisation policies
-        ECPQueryOptimisationPolicies<T,U,V>* _qop;
+        ECPQueryOptimisationPolicies* _qop;
 
         // File and mapping info about the index file
         FILE* _indxFile;
@@ -72,10 +71,10 @@ namespace exq {
         vector<vector<Props>> _vidProperties;
 
         // Pointer to descriptor list in ExqDataHandlerECP
-        vector<ExqDescriptor<T,U,V>*>* _descs;
+        vector<ExqDescriptorR64*>* _descs;
         // Data structures
-        vector<ECPCluster<T,U,V>*> _clusters = vector<ECPCluster<T,U,V>*>();
+        vector<ECPCluster*> _clusters = vector<ECPCluster*>();
         vector<uint32_t> _bClusters = vector<uint32_t>();
-        ECPTree<T,U,V>* _tree;
+        ECPTree* _tree;
     };
 }

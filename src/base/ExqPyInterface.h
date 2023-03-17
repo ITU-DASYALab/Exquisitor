@@ -11,7 +11,7 @@
 namespace exq {
 
     struct PyExquisitorV1 {
-        ExqController<ExqDescriptor<uint64_t, uint64_t, uint64_t>>* _controller;
+        ExqController<uint64_t>* _controller;
     };
     PyExquisitorV1 _pyExqV1;
 

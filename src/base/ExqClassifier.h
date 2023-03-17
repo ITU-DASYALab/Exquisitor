@@ -6,7 +6,6 @@
 #define EXQUISITOR_EXQCLASSIFIER_H
 
 #include <opencv2/ml.hpp>
-#include "ExqDescriptor.h"
 
 namespace exq {
 

@@ -20,15 +20,15 @@ using std::cout;
 using std::endl;
 
 
-template<typename T>
+template<class T>
 ExqWorker<T>::ExqWorker() {
 
 }
 
-template<typename T>
+template<class T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
-                           int currentSegment, int totalSegments, int noms, int modalities, ExqDataHandler<T>*& handler,
-                           vector<ExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, double& time,
+                           int currentSegment, int totalSegments, int noms, int modalities, IExqDataHandler<T>*& handler,
+                           vector<IExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, double& time,
                            int& totalItemsConsidered, int workerId, ItemFilter& filters, vector<double>& modWeights,
                            vector<int>& slots, bool ffs) {
 
@@ -36,7 +36,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     //time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
     auto candidateItems = vector<vector<ExqItem>>(modalities);
-    auto descriptors = vector<vector<T>>(modalities);
+    auto descriptors = vector<vector<ExqDescriptorR64>>(modalities);
     totalItemsConsidered = 0;
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " descriptors" << endl;
@@ -65,7 +65,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             ExqItem candItem = ExqItem();
             candItem.fromModality.push_back(m); //push_back to check if item came from multiple modalities
             candItem.segment = currentSegment;
-            candItem.itemId = descriptors[m][i].id;
+            candItem.itemId = descriptors[m][i].getId();
             candItem.distance = vector<double>(modalities);
 #if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
             cout << "(ExqWorker[" << workerId << "]) Getting distance for candidate item " << i << " descId ";
@@ -182,13 +182,10 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 #endif
 }
 
-template<typename T>
+template<class T>
 void ExqWorker<T>::logInfo(string info, int workerId) {
     string fname = "logs/workers/worker_" + to_string(workerId) + ".log";
     ofstream log(fname, std::ios_base::out | std::ios_base::app);
     log << info << "\n";
     log.close();
 }
-
-template class exq::ExqWorker<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
-

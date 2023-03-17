@@ -2,8 +2,8 @@
 // Created by Omar Shahbaz Khan on 16/03/2020.
 //
 
-#ifndef EXQUISITOR_EXQDESCRIPTOR_H
-#define EXQUISITOR_EXQDESCRIPTOR_H
+#ifndef EXQUISITOR_EXQDESCRIPTORR64_H
+#define EXQUISITOR_EXQDESCRIPTORR64_H
 
 #pragma once
 
@@ -14,7 +14,8 @@
 #include <cstdint>
 #include <cinttypes>
 
-#include "ExqArray.h"
+#include "../ExqArray.h"
+#include "../IExqDescriptor.h"
 
 namespace exq {
 
@@ -22,20 +23,19 @@ namespace exq {
      * @class ExqDescriptor
      * @brief the class that represents features
      */
-    template <typename T, typename U, typename V>
-    class ExqDescriptor {
+    class ExqDescriptorR64 : public IExqDescriptor<uint64_t> {
     public:
-        uint32_t id;
-        T topFeature;
-        ExqArray<U> featureIds;
-        ExqArray<V> featureRatios;
-        ExqDescriptor() = default;
+        uint64_t topFeature;
+        ExqArray<uint64_t> featureIds;
+        ExqArray<uint64_t> featureRatios;
+        ExqDescriptorR64() = default;
 
         /**
          * @brief constructs the Descriptor
          */
-        ExqDescriptor(uint32_t itemId, T top, ExqArray<U> featIds, ExqArray<V> ratios) {
-            id = itemId;
+        ExqDescriptorR64(uint32_t itemId, uint64_t top, ExqArray<uint64_t> featIds, ExqArray<uint64_t> ratios)
+        : IExqDescriptor<uint64_t>() {
+            _id = itemId;
             topFeature = top;
             featureIds = featIds;
             featureRatios = ratios;
@@ -44,8 +44,8 @@ namespace exq {
         /**
          * @brief copy a descriptor
          */
-        ExqDescriptor(ExqDescriptor *org) {
-            id = org->id;
+        ExqDescriptorR64(ExqDescriptorR64 *org) : IExqDescriptor<uint64_t>() {
+            _id = org->_id;
             topFeature = org->topFeature;
             featureIds = org->featureIds;
             featureRatios = org->featureRatios;
@@ -54,21 +54,21 @@ namespace exq {
         /**
          * @brief copy a descriptor and set a new id
          */
-        ExqDescriptor(ExqDescriptor *org, uint32_t new_id) {
-            id = new_id;
+        ExqDescriptorR64(ExqDescriptorR64 *org, uint32_t new_id) : IExqDescriptor<uint64_t>() {
+            _id = new_id;
             topFeature = org->topFeature;
             featureIds = org->featureIds;
             featureRatios = org->featureRatios;
         }
 
-        ExqDescriptor(FILE* file, int iota = 1, bool gobbleDist = 0) {
+        ExqDescriptorR64(FILE* file, int iota = 1, bool gobbleDist = 0) : IExqDescriptor<uint64_t>() {
             size_t res;
-            res = fread(&this->id, sizeof(int), 1, file);
+            res = fread(&this->_id, sizeof(int), 1, file);
             if (gobbleDist) {
                 res = fread(&this->topFeature, sizeof(int), 1, file);
             }
-            featureIds = ExqArray<U>(iota);
-            featureRatios = ExqArray<V>(iota);
+            featureIds = ExqArray<uint64_t>(iota);
+            featureRatios = ExqArray<uint64_t>(iota);
             res = fread(&this->topFeature, sizeof(uint64_t), 1, file);
             uint64_t featId;
             uint64_t ratios;
@@ -84,23 +84,23 @@ namespace exq {
         /**
          * @brief destroys the descriptor object
          */
-        ~ExqDescriptor() {}
+        ~ExqDescriptorR64() {}
 
-        void setItemId(uint32_t itemId) { id = itemId; }
+        inline void setItemId(uint32_t itemId) { _id = itemId; }
 
-        void setTop(T top) { topFeature = top; }
+        // void setTop(uint64_t top) { topFeature = top; }
 
-        void setFeatureIds(U ids) { featureIds = ids; }
+        // void setFeatureIds(uint64_t ids) { featureIds = ids; }
 
-        void setFeatureRatios(V ratios) { featureRatios = ratios; }
+        // void setFeatureRatios(uint64_t ratios) { featureRatios = ratios; }
 
-        uint32_t getId() { return id; }
+        inline uint32_t getId() { return _id; }
 
-        T getTop() { return this->topFeature; }
+        uint64_t getTop() override { return this->topFeature; }
 
-        U getFeatureIds(int i) { return this->featureIds.getItem(i); }
+        ExqArray<uint64_t>* getFeatureIds() override { return &this->featureIds; }
 
-        V getFeatureRatios(int i) { return this->featureRatios.getItem(i); }
+        ExqArray<uint64_t>* getFeatureRatios() { return &this->featureRatios; }
 
     }; //End of class ExqDescriptor
 

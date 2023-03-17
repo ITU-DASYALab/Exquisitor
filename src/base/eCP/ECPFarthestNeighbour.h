@@ -6,16 +6,16 @@
 #include <map>
 #include <vector>
 
-#include "../ExqDescriptor.h"
-#include "../ExqFunctions.h"
+#include "../r64/ExqDescriptorR64.h"
+#include "../IExqFunctions.h"
+
 namespace exq {
     using std::vector;
 
-    template<typename T, typename U, typename V>
     class ECPFarthestNeighbour {
     public:
         ECPFarthestNeighbour(vector<double>& query, double bias, uint32_t k,
-                             ExqFunctions<ExqDescriptor<T,U,V>>*& functions);
+                             IExqFunctions<ExqDescriptorR64>*& functions);
 
         ~ECPFarthestNeighbour();
 
@@ -29,14 +29,14 @@ namespace exq {
 
         vector<uint32_t> getTopIds();
 
-        void printDescriptor(ExqDescriptor<T,U,V>* data);
+        void printDescriptor(ExqDescriptorR64* data);
         void printStuff();
 
         // The query processing interface is very simple:
-        void compareAndReplaceFarthest(ExqDescriptor<T,U,V>* data, uint32_t clusterid = -1);
+        void compareAndReplaceFarthest(ExqDescriptorR64* data, uint32_t clusterid = -1);
 
         // Find distance to a descriptor
-        double distance(ExqDescriptor<T,U,V>* data);
+        double distance(ExqDescriptorR64* data);
 
         void open();
 
@@ -51,7 +51,7 @@ namespace exq {
         // Query information
         vector<double> _query;
         double _bias;
-        ExqFunctions<ExqDescriptor<T,U,V>>* _functions;
+        IExqFunctions<ExqDescriptorR64>* _functions;
 
         // Query answer information
         uint32_t _k;

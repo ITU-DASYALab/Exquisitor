@@ -18,8 +18,9 @@
 #include "Metadata/ItemProperties.h"
 #include "Metadata/ItemFilter.h"
 #include "ExqClassifier.h"
-#include "ExqFunctions.h"
-#include "ExqDataHandler.h"
+#include "IExqFunctions.h"
+#include "IExqDataHandler.h"
+#include "r64/ExqDescriptorR64.h"
 #include "ExqWorker.h"
 //#include <taskflow/taskflow.hpp>
 
@@ -47,7 +48,7 @@ namespace exq {
      * @class ExqController
      * @brief the class that controls the flow of Exquisitor
      */
-    template <typename T>
+    template <class T>
     class ExqController {
     public:
         /**
@@ -61,8 +62,8 @@ namespace exq {
                 int numberModalities,
                 vector<int> modFeatureDimensions,
                 int bClusters,
-                vector<ExqFunctions<T>*> functions,
-                ExqDataHandler<T>* handler,
+                vector<IExqFunctions<T>*> functions,
+                IExqDataHandler<T>* handler,
                 vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker,
                 const vector<ItemProperties>& itemProps,
@@ -72,7 +73,7 @@ namespace exq {
                 int guaranteedSlots
         );
 
-/**
+        /**
          * @brief destroys the controller object
          */
         ~ExqController();
@@ -139,6 +140,34 @@ namespace exq {
 
         vector<ExqArray<pair<int,float>>> get_descriptors(vector<int> ids, int mod);
 
+        inline void setIota(int iota) {
+            _iota = iota;
+        }
+
+        inline void setNominationsPerModality(int noms) {
+            _noms = noms;
+        }
+
+        inline void setNumModalities(int modalities) {
+            _modalities = modalities;
+        }
+
+        inline void setWorkers(int numWorkers) {
+            _numWorkers = numWorkers;
+        }
+
+        inline void setSegments(int segments) {
+            _segments = segments;
+        }
+
+        inline void setClusterScope(int b) {
+            _bClusters = b;
+        }
+
+        inline void set_modality_weights(vector<double> modWeights) {
+            _modalityWeights = std::move(modWeights);
+        }
+
     private:
         int _iota = 1;
         int _noms = 100;
@@ -147,8 +176,8 @@ namespace exq {
         int _modalities = 1;
         int _bClusters = 256;
 
-        vector<ExqFunctions<T>*> _functions;
-        ExqDataHandler<T>* _handler;
+        vector<IExqFunctions<T>*> _functions;
+        IExqDataHandler<T>* _handler;
         vector<ExqClassifier*> _classifiers;
         ExqWorker<T>* _worker;
         vector<ItemProperties> _itemProperties;
@@ -192,40 +221,6 @@ namespace exq {
 
     }; //End of class ExqController
 
-    template <typename T>
-    inline void ExqController<T>::setIota(int iota) {
-        _iota = iota;
-    }
-
-    template <typename T>
-    inline void ExqController<T>::setNominationsPerModality(int noms) {
-        _noms = noms;
-    }
-
-    template <typename T>
-    inline void ExqController<T>::setNumModalities(int modalities) {
-        _modalities = modalities;
-    }
-
-    template <typename T>
-    inline void ExqController<T>::setWorkers(int numWorkers) {
-        _numWorkers = numWorkers;
-    }
-
-    template <typename T>
-    inline void ExqController<T>::setSegments(int segments) {
-        _segments = segments;
-    }
-
-    template <typename T>
-    inline void ExqController<T>::setClusterScope(int b) {
-        _bClusters = b;
-    }
-
-    template <typename T>
-    inline void ExqController<T>::set_modality_weights(vector<double> modWeights) {
-        _modalityWeights = std::move(modWeights);
-    }
 } //End of namespace exq
 
 

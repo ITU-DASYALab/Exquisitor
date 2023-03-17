@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ECPConfig.h"
-#include "../ExqDescriptor.h"
+#include "../r64/ExqDescriptorR64.h"
 
 #include <vector>
 
@@ -9,27 +9,26 @@ namespace exq {
 
     using std::vector;
 
-    template<typename T, typename U, typename V>
     class ECPNode {
     public:
         int parent = -1;
-        ECPNode(ExqDescriptor<T,U,V>* _centroid, bool _addChild = 0);
+        ECPNode(ExqDescriptorR64* _centroid, bool _addChild = 0);
 
         ~ECPNode();
 
-        void addChild(ExqDescriptor<T,U,V>* child);
+        void addChild(ExqDescriptorR64* child);
 
         // Support for direct access
-        ExqDescriptor<T,U,V>* getCentroid() { return _centroid; };
+        ExqDescriptorR64* getCentroid() { return _centroid; };
 
         int getNumChildren() { return _children.size(); };
 
-        ExqDescriptor<T,U,V>* get(uint32_t i);
+        ExqDescriptorR64* get(uint32_t i);
 
         // Support for scanning
         void open();
 
-        ExqDescriptor<T,U,V>* next();
+        ExqDescriptorR64* next();
 
         void close();
 
@@ -38,8 +37,8 @@ namespace exq {
 
     private:
         // The structure of the node
-        ExqDescriptor<T,U,V>* _centroid;
-        vector<ExqDescriptor<T,U,V>*> _children;
+        ExqDescriptorR64* _centroid;
+        vector<ExqDescriptorR64*> _children;
 
         // Space is allocated up to maxChildren
         // If more space is needed, it must be reallocated

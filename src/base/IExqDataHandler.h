@@ -2,14 +2,14 @@
 // Created by Omar Shahbaz Khan on 16/03/2020.
 //
 
-#ifndef EXQUISITOR_EXQDATAHANDLER_H
-#define EXQUISITOR_EXQDATAHANDLER_H
+#ifndef EXQUISITOR_IEXQDATAHANDLER_H
+#define EXQUISITOR_IEXQDATAHANDLER_H
 
 #include <vector>
 #include <unordered_set>
 
-#include "ExqDescriptor.h"
-#include "ExqFunctions.h"
+#include "IExqDescriptor.h"
+#include "IExqFunctions.h"
 #include "ExqItem.h"
 #include "Metadata/ItemFilter.h"
 
@@ -19,9 +19,9 @@ namespace exq {
     using std::unordered_set;
 
     template<class T>
-    class ExqDataHandler {
+    class IExqDataHandler {
     public:
-        ExqDataHandler() {}
+        IExqDataHandler() {}
 
         virtual void loadData(int workers) = 0;
 
@@ -30,7 +30,7 @@ namespace exq {
          * @param i - item id
          * @return Descriptor for item i.
          */
-        virtual T* getDescriptor(uint32_t i) = 0;
+        virtual IExqDescriptor<T>* getDescriptor(uint32_t i) = 0;
 
         /**
          * Returns descriptor for item i from specific modality
@@ -38,7 +38,7 @@ namespace exq {
          * @param mod - modality
          * @return Descriptor for item i in modality mod
          */
-        virtual T* getDescriptor(uint32_t i, int mod) = 0;
+        virtual IExqDescriptor<T>* getDescriptor(uint32_t i, int mod) = 0;
 
         virtual int getTotalItemsCount(int mod) = 0;
 
@@ -46,7 +46,7 @@ namespace exq {
                                             ItemFilter& filters, bool resume=false) = 0;
 
         virtual void getSegmentDescriptors(int currentSegment, int totalSegments, int modalities,
-                                           vector<vector<T>>& descriptors,
+                                           vector<vector<IExqDescriptor<T>*>>& descriptors,
                                            unordered_set<uint32_t>& seenItems,
                                            ItemFilter& filters) = 0;
 
@@ -56,6 +56,4 @@ namespace exq {
 
 }
 
-template class exq::ExqDataHandler<exq::ExqDescriptor<uint64_t,uint64_t,uint64_t>>;
-
-#endif //EXQUISITOR_EXQDATAHANDLER_H
+#endif //EXQUISITOR_IEXQDATAHANDLER_H
