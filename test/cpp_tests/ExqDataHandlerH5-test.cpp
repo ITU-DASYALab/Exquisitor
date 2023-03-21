@@ -14,11 +14,11 @@ using std::string;
 using std::cout;
 using std::endl;
 
-class SingleModalityDataHandlerFixture: public ::testing::Test {
+class SingleModalityDataHandlerH5Fixture: public ::testing::Test {
 public:
     ExqDataHandlerH5* dataHandler;
 
-    SingleModalityDataHandlerFixture() {
+    SingleModalityDataHandlerH5Fixture() {
         vector<vector<string>> compFiles(1);
         vector<string> fileNames {"data/random_5_10/top.h5", "data/random_5_10/ids.h5", "data/random_5_10/ratios.h5"};
         compFiles[0] = fileNames;
@@ -32,12 +32,12 @@ public:
 
     void TearDown() {}
 
-    ~SingleModalityDataHandlerFixture() {
+    ~SingleModalityDataHandlerH5Fixture() {
         delete dataHandler;
     }
 };
 
-TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
+TEST_F(SingleModalityDataHandlerH5Fixture, firstItemRead) {
     auto firstItem = this->dataHandler->getDescriptor(0);
     ExqArray<uint64_t>* ids = firstItem->getFeatureIds();
     ExqArray<uint64_t>* ratios = firstItem->getFeatureRatios();
@@ -50,7 +50,7 @@ TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
     cout << "TEST firstItemRead in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }
 
-TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
+TEST_F(SingleModalityDataHandlerH5Fixture, lastitemRead) {
     auto lastItem = dataHandler->getDescriptor(4, 0);
     ExqArray<uint64_t>* ids = lastItem->getFeatureIds();
     ExqArray<uint64_t>* ratios = lastItem->getFeatureRatios();
@@ -63,13 +63,13 @@ TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
     cout << "TEST lastItemRead in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }
 
-TEST_F(SingleModalityDataHandlerFixture, count) {
+TEST_F(SingleModalityDataHandlerH5Fixture, count) {
     ASSERT_EQ(dataHandler->getTotalItemsCount(0), 5);
 
     cout << "TEST count in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }
 
-TEST_F(SingleModalityDataHandlerFixture, inheritance) {
+TEST_F(SingleModalityDataHandlerH5Fixture, inheritance) {
     IExqDataHandler<uint64_t>* dh = dataHandler;
 
     ASSERT_EQ(dh->getDescriptor(0)->getId(), 0);
