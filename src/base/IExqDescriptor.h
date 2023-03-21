@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <cinttypes>
 
+#include "ExqArray.h"
+
 namespace exq {
     /**
      * @class IExqDescriptor
@@ -24,11 +26,11 @@ namespace exq {
 
         virtual uint32_t getId() { return _id; }
 
-        virtual T getTop() = 0;
+        virtual T* getTop() = 0;
 
-        virtual ExqArray<T> getFeatureIds() = 0;
+        virtual ExqArray<T>* getFeatureIds() = 0;
 
-        virtual ExqArray<T> getFeatureRatios() = 0;
+        virtual ExqArray<T>* getFeatureRatios() = 0;
 
     };
 

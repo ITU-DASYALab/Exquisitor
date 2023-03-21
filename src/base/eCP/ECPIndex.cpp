@@ -8,7 +8,7 @@ using std::unordered_set;
 
 using namespace exq;
 
-ECPIndex::ECPIndex(ECPConfig *cnfg, IExqFunctions<ExqDescriptorR64>*& func, int featureDimensions,
+ECPIndex::ECPIndex(ECPConfig *cnfg, IExqFunctions<uint64_t>*& func, int featureDimensions,
                           int modality, vector<ExqDescriptorR64*>* descs, vector<ItemProperties> itemProps, vector<vector<Props>> vidProps,
                           ExpansionType expansionType, int statLevel) {
     _cnfg = cnfg;

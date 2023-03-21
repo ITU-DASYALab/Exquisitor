@@ -64,9 +64,10 @@ int ExqFunctionsR64::getDescFeatCount() {
 
 /// Decompress item and return the results in an ExqArray
 inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExqDescriptor<uint64_t> &descriptor) {
-    uint64_t top = descriptor.getTop();
-    ExqArray<uint64_t>* featureIds = descriptor.getFeatureIds();
-    ExqArray<uint64_t>* featureRatios = descriptor.getFeatureRatios();
+    uint64_t top = *(uint64_t*) descriptor.getTop();
+    auto featureIds = (ExqArray<uint64_t>*) descriptor.getFeatureIds();
+    auto featureRatios = (ExqArray<uint64_t>*) descriptor.getFeatureRatios();
+
 #ifdef DEBUG
     cout << "(ExqFncR64) Getting descriptor information for descriptor " << descriptor.id << endl;
     cout << "(ExqFncR64) Top: " << descriptor.getTop() << " Ids: " << descriptor.getFeatureIds() << " Ratio: "
@@ -112,9 +113,9 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExq
 /// \param descriptor - Descriptor containing all feature information
 /// \return
 inline double ExqFunctionsR64::distance(vector<double>& model, double bias, IExqDescriptor<uint64_t> &descriptor) {
-    uint64_t top = descriptor.getTop();
-    ExqArray<uint64_t>* featureIds = descriptor.getFeatureIds();
-    ExqArray<uint64_t>* featureRatios = descriptor.getFeatureRatios();
+    uint64_t top = *(uint64_t*) descriptor.getTop();
+    auto featureIds = (ExqArray<uint64_t>*) descriptor.getFeatureIds();
+    auto featureRatios = (ExqArray<uint64_t>*) descriptor.getFeatureRatios();
 
     double score = bias;
     int featId = top >> this->topFeatureShift;

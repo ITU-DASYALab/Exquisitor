@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -O3")
 
 # Python3
-find_package (Python3 COMPONENTS Interpreter Development)
+find_package (Python3 COMPONENTS Interpreter Development REQUIRED)
 link_directories(${Python3_LIBRARY_DIRS})
 include_directories(${Python3_INCLUDE_DIRS})
 

@@ -96,7 +96,7 @@ namespace exq {
 
         inline uint32_t getId() { return _id; }
 
-        uint64_t getTop() override { return this->topFeature; }
+        uint64_t* getTop() override { return &this->topFeature; }
 
         ExqArray<uint64_t>* getFeatureIds() override { return &this->featureIds; }
 

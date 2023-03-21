@@ -4,7 +4,7 @@
 using namespace exq;
 
 ECPTree::ECPTree(ECPConfig* cnfg, vector<ExqDescriptorR64*> centroids, int numClusters,
-                 IExqFunctions<ExqDescriptorR64>*& func, int featureDimensions,
+                 IExqFunctions<uint64_t>*& func, int featureDimensions,
                  ECPQueryOptimisationPolicies*& qop,
                  vector<ExqDescriptorR64*>* descs) {
     _cnfg = cnfg;

@@ -37,7 +37,7 @@ namespace exq {
         /// \param featureDimensions
         /// \param qop
         ECPTree(ECPConfig* _cnfg, vector<ExqDescriptorR64*> centroids, int numClusters,
-                IExqFunctions<ExqDescriptorR64>*& func, int featureDimensions,
+                IExqFunctions<uint64_t>*& func, int featureDimensions,
                 ECPQueryOptimisationPolicies*& qop, vector<ExqDescriptorR64*>* descs);
 
         ~ECPTree();
@@ -69,7 +69,7 @@ namespace exq {
     private:
         // The configuration of the tree
         ECPConfig* _cnfg;
-        IExqFunctions<ExqDescriptorR64>* _functions;
+        IExqFunctions<uint64_t>* _functions;
         int _featureDimensions;
         // The two-dimensional array of nodes (level, node) and the size at each level
         vector<vector<ECPNode*>> _nodes;

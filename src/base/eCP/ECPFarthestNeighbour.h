@@ -15,7 +15,7 @@ namespace exq {
     class ECPFarthestNeighbour {
     public:
         ECPFarthestNeighbour(vector<double>& query, double bias, uint32_t k,
-                             IExqFunctions<ExqDescriptorR64>*& functions);
+                             IExqFunctions<uint64_t>*& functions);
 
         ~ECPFarthestNeighbour();
 
@@ -51,7 +51,7 @@ namespace exq {
         // Query information
         vector<double> _query;
         double _bias;
-        IExqFunctions<ExqDescriptorR64>* _functions;
+        IExqFunctions<uint64_t>* _functions;
 
         // Query answer information
         uint32_t _k;

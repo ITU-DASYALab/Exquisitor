@@ -5,7 +5,7 @@ using std::endl;
 using namespace exq;
 
 ECPFarthestNeighbour::ECPFarthestNeighbour(vector<double>& query, double bias, uint32_t k,
-                                           IExqFunctions<ExqDescriptorR64>*& functions) {
+                                           IExqFunctions<uint64_t>*& functions) {
     // Copy the inputs
     _query           = query;
     _bias            = bias;

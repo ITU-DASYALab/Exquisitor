@@ -22,7 +22,6 @@
 #include "IExqDataHandler.h"
 #include "r64/ExqDescriptorR64.h"
 #include "ExqWorker.h"
-//#include <taskflow/taskflow.hpp>
 
 namespace exq {
 
@@ -78,34 +77,6 @@ namespace exq {
          */
         ~ExqController();
 
-        /**
-         * @brief sets the iota level for compression scheme
-         */
-        void setIota(int iota);
-        /**
-         * @brief sets number of items to check per modality before fusion
-         */
-        void setNominationsPerModality(int noms);
-        /**
-         * @brief sets the number of worker threads to use
-         */
-        void setWorkers(int workers);
-        /**
-         * @brief sets the number of modalities
-         */
-        void setNumModalities(int modalities);
-        /**
-         * @brief sets the modality to use, default is 0 which means use all
-         */
-        void setSegments(int segments);
-
-        /**
-         * @brief sets the number of clusters to check during train/suggest phase to b
-         */
-        void setClusterScope(int b);
-
-        int getNumModalites() { return _modalities; }
-
 
         /**
          * @brief train the Linear SVM model and select scope (clusters)
@@ -129,44 +100,61 @@ namespace exq {
          */
         void reset_model(bool resetSession);
 
-        /**
-         * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation
-         * @param modWeights
-         */
-        void set_modality_weights(vector<double> modWeights);
-
         bool update_modality_weights(vector<uint32_t>& ids, vector<float>& labels);
         void reset_modality_weights();
 
         vector<ExqArray<pair<int,float>>> get_descriptors(vector<int> ids, int mod);
 
+        /**
+         * @brief sets the iota level for compression scheme
+         */
         inline void setIota(int iota) {
             _iota = iota;
         }
 
+        /**
+         * @brief sets number of items to check per modality before fusion
+         */
         inline void setNominationsPerModality(int noms) {
             _noms = noms;
         }
 
+        /**
+         * @brief sets the number of modalities
+         */
         inline void setNumModalities(int modalities) {
             _modalities = modalities;
         }
 
+        /**
+         * @brief sets the number of worker threads to use
+         */
         inline void setWorkers(int numWorkers) {
             _numWorkers = numWorkers;
         }
 
+        /**
+         * @brief sets the modality to use, default is 0 which means use all
+         */
         inline void setSegments(int segments) {
             _segments = segments;
         }
 
+        /**
+         * @brief sets the number of clusters to check during train/suggest phase to b
+         */
         inline void setClusterScope(int b) {
             _bClusters = b;
         }
 
+        /**
+         * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation
+         */
         inline void set_modality_weights(vector<double> modWeights) {
             _modalityWeights = std::move(modWeights);
         }
+
+        inline int getNumModalites() { return _modalities; }
 
     private:
         int _iota = 1;

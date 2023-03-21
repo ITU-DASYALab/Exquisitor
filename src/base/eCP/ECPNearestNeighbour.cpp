@@ -6,7 +6,7 @@ using std::cout;
 using std::endl;
 
 ECPNearestNeighbour::ECPNearestNeighbour(ExqDescriptorR64* _query, uint32_t _k,
-                                         IExqFunctions<ExqDescriptorR64>*& functions,
+                                         IExqFunctions<uint64_t>*& functions,
                                          int featureDimensions) {
 #if defined(DEBUG) || defined(DEBUG_INIT)
     cout << "(ECPNN) Copy input" << endl;
@@ -59,7 +59,7 @@ ECPNearestNeighbour::ECPNearestNeighbour(ExqDescriptorR64* _query, uint32_t _k,
 #endif
 };
 
-ECPNearestNeighbour::ECPNearestNeighbour(uint32_t _k, IExqFunctions<ExqDescriptorR64>*& functions,
+ECPNearestNeighbour::ECPNearestNeighbour(uint32_t _k, IExqFunctions<uint64_t>*& functions,
                                          int featureDimensions) {
     k               = _k;
     _functions      = functions;
