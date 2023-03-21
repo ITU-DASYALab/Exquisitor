@@ -4,13 +4,15 @@
 
 #include "gtest/gtest.h"
 #include "base/ExqClassifier.h"
-#include "ExqFunctionsR64.h"
-#include "base/ExqDescriptor.h"
+#include "base/r64/ExqFunctionsR64.h"
+#include "base/r64/ExqDescriptorR64.h"
+#include "base/IExqDescriptor.h"
 #include "base/ExqArray.h"
 
 using exq::ExqClassifier;
 using exq::ExqFunctionsR64;
-using exq::ExqDescriptor;
+using exq::ExqDescriptorR64;
+using exq::IExqDescriptor;
 using exq::ExqArray;
 using std::cout;
 using std::endl;
@@ -23,17 +25,17 @@ TEST (SvmModel, trainModel) {
     vector<vector<double>> trainingItems;
     vector<float> trainingItemLabels;
     auto classifier = new ExqClassifier(12988);
-    auto functions = new ExqFunctionsR64<uint64_t, uint64_t, uint64_t>(5, 1, 48, 16, 16, 281474976710655,
-                                                                       200000000000000.0, 65535, 65535, 50000.0);
+    auto functions = new ExqFunctionsR64(5, 1, 48, 16, 16, 281474976710655,
+                                         200000000000000.0, 65535, 65535, 50000.0);
 
-    vector<ExqDescriptor<uint64_t, uint64_t, uint64_t>> pos = vector<ExqDescriptor<uint64_t,uint64_t,uint64_t>>();
-    pos.push_back(ExqDescriptor<uint64_t, uint64_t, uint64_t>(905584, 2489824311291099305U, 2502350455216022170U,12141593397245575683U));
-    pos.push_back(ExqDescriptor<uint64_t, uint64_t, uint64_t>(160763, 2489697280686021561U, 2487151180132000371U,13647243195524072278U));
+    vector<IExqDescriptor<uint64_t>> pos = vector<IExqDescriptor<uint64_t>>();
+    pos.push_back(ExqDescriptorR64(905584, 2489824311291099305U, 2502350455216022170U,12141593397245575683U));
+    pos.push_back(ExqDescriptorR64(160763, 2489697280686021561U, 2487151180132000371U,13647243195524072278U));
 
 
-    vector<ExqDescriptor<uint64_t, uint64_t, uint64_t>> neg;
-    neg.push_back(ExqDescriptor<uint64_t, uint64_t, uint64_t>(881441, 2794240416452107909U, 2655207976273320278U,12915398048199234038U));
-    neg.push_back(ExqDescriptor<uint64_t, uint64_t, uint64_t>(992166, 1407194997803292061U, 2784108933978589896U,14049841615536998960U));
+    vector<IExqDescriptor<uint64_t>> neg;
+    neg.push_back(ExqDescriptorR64(881441, 2794240416452107909U, 2655207976273320278U,12915398048199234038U));
+    neg.push_back(ExqDescriptorR64(992166, 1407194997803292061U, 2784108933978589896U,14049841615536998960U));
 
     for (int i = 0; i < pos.size() + neg.size(); i++) {
         if (i < pos.size()) {

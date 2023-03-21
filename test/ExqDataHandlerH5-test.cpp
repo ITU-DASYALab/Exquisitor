@@ -3,8 +3,8 @@
 //
 
 #include "gtest/gtest.h"
-#include "base/ExqDataHandler.h"
-#include "ExqDataHandlerH5.h"
+#include "base/IExqDataHandler.h"
+#include "base/r64/ExqDataHandlerH5.h"
 #include <vector>
 #include <string>
 
@@ -16,7 +16,7 @@ using std::endl;
 
 class SingleModalityDataHandlerFixture: public ::testing::Test {
 public:
-    ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>* dataHandler;
+    ExqDataHandlerH5* dataHandler;
 
     SingleModalityDataHandlerFixture() {
         vector<vector<string>> compFiles(1);
@@ -24,7 +24,7 @@ public:
         compFiles[0] = fileNames;
         vector<bool> activeModalities {true};
 
-        this->dataHandler = new ExqDataHandlerH5<uint64_t,uint64_t,uint64_t>(compFiles, 1);
+        this->dataHandler = new ExqDataHandlerH5(compFiles, 1);
         this->dataHandler->loadData(1);
     }
 
@@ -39,21 +39,26 @@ public:
 
 TEST_F(SingleModalityDataHandlerFixture, firstItemRead) {
     auto firstItem = this->dataHandler->getDescriptor(0);
+    ExqArray<uint64_t>* ids = firstItem->getFeatureIds();
+    ExqArray<uint64_t>* ratios = firstItem->getFeatureRatios();
+
     ASSERT_EQ(firstItem->getId(), 0);
     ASSERT_EQ(firstItem->getTop(), 2533274790396757);
-    ASSERT_EQ(firstItem->getFeatureIds(0), 1125912792203265);
-    ASSERT_EQ(firstItem->getFeatureRatios(0), 242353128979235512);
+    ASSERT_EQ(ids->getItem(0), 1125912792203265);
+    ASSERT_EQ(ratios->getItem(0), 242353128979235512);
 
     cout << "TEST firstItemRead in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }
 
 TEST_F(SingleModalityDataHandlerFixture, lastitemRead) {
     auto lastItem = dataHandler->getDescriptor(4, 0);
-
+    ExqArray<uint64_t>* ids = lastItem->getFeatureIds();
+    ExqArray<uint64_t>* ratios = lastItem->getFeatureRatios();
+ 
     ASSERT_EQ(lastItem->getId(), 4);
     ASSERT_EQ(lastItem->getTop(), 281474976711517);
-    ASSERT_EQ(lastItem->getFeatureIds(0), 1407404948324356);
-    ASSERT_EQ(lastItem->getFeatureRatios(0), 255864967252411121);
+    ASSERT_EQ(ids->getItem(0), 1407404948324356);
+    ASSERT_EQ(ratios->getItem(0), 255864967252411121);
 
     cout << "TEST lastItemRead in SingleModalityDataHandlerFixture SUCCEEDED!" << endl;
 }
@@ -65,7 +70,7 @@ TEST_F(SingleModalityDataHandlerFixture, count) {
 }
 
 TEST_F(SingleModalityDataHandlerFixture, inheritance) {
-    ExqDataHandler<ExqDescriptor<uint64_t,uint64_t,uint64_t>>* dh = dataHandler;
+    IExqDataHandler<uint64_t>* dh = dataHandler;
 
     ASSERT_EQ(dh->getDescriptor(0)->getId(), 0);
 
