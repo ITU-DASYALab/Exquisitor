@@ -28,14 +28,24 @@ TEST (SvmModel, trainModel) {
     auto functions = new ExqFunctionsR64(5, 1, 48, 16, 16, 281474976710655,
                                          200000000000000.0, 65535, 65535, 50000.0);
 
-    vector<IExqDescriptor<uint64_t>> pos = vector<IExqDescriptor<uint64_t>>();
-    pos.push_back(ExqDescriptorR64(905584, 2489824311291099305U, 2502350455216022170U,12141593397245575683U));
-    pos.push_back(ExqDescriptorR64(160763, 2489697280686021561U, 2487151180132000371U,13647243195524072278U));
+    vector<IExqDescriptor<uint64_t>*> pos = vector<IExqDescriptor<uint64_t>*>();
+    auto fids = ExqArray<uint64_t>(1);
+    auto frat = ExqArray<uint64_t>(1);
+    fids.setItem(2502350455216022170U,0);
+    frat.setItem(12141593397245575683U,0);
+    pos.push_back(new ExqDescriptorR64(905584, 2489824311291099305U, fids, frat));
+    fids.setItem(2487151180132000371U,0);
+    frat.setItem(13647243195524072278U,0);
+    pos.push_back(new ExqDescriptorR64(160763, 2489697280686021561U, fids, frat));
 
 
-    vector<IExqDescriptor<uint64_t>> neg;
-    neg.push_back(ExqDescriptorR64(881441, 2794240416452107909U, 2655207976273320278U,12915398048199234038U));
-    neg.push_back(ExqDescriptorR64(992166, 1407194997803292061U, 2784108933978589896U,14049841615536998960U));
+    vector<IExqDescriptor<uint64_t>*> neg = vector<IExqDescriptor<uint64_t>*>();
+    fids.setItem(2655207976273320278U,0);
+    frat.setItem(12915398048199234038U,0);
+    neg.push_back(new ExqDescriptorR64(881441, 2794240416452107909U, fids, frat));
+    fids.setItem(2784108933978589896U,0);
+    frat.setItem(14049841615536998960U,0);
+    neg.push_back(new ExqDescriptorR64(992166, 1407194997803292061U, fids, frat));
 
     for (int i = 0; i < pos.size() + neg.size(); i++) {
         if (i < pos.size()) {
@@ -47,7 +57,7 @@ TEST (SvmModel, trainModel) {
     }
 
     for (int i = 0; i < pos.size(); i++) {
-        ExqArray<pair<int, float>> descVals = functions->getDescriptorInformation(pos[i]);
+        ExqArray<pair<int, float>> descVals = functions->getDescriptorInformation(*pos[i]);
         vector<double> featVals = vector<double>();
         for (int j = 0; j < 12988; j++) {
             featVals.push_back(0.0);
@@ -61,7 +71,7 @@ TEST (SvmModel, trainModel) {
         trainingItems.push_back(featVals);
     }
     for (int i = 0; i < neg.size(); i++) {
-        ExqArray<pair<int, float>> descVals = functions->getDescriptorInformation(neg[i]);
+        ExqArray<pair<int, float>> descVals = functions->getDescriptorInformation(*neg[i]);
         vector<double> featVals = vector<double>();
         for (int j = 0; j < 12988; j++) {
             featVals.push_back(0.0);

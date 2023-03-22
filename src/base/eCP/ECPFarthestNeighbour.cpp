@@ -58,23 +58,7 @@ void ECPFarthestNeighbour::compareAndReplaceFarthest(ExqDescriptorR64* data, uin
     }
 };
 
-//simplified projection calculations from query vector (weight vector from SVM) and data vector
-inline double ECPFarthestNeighbour::distance(ExqDescriptorR64* data) {
-    return _functions->distance(_query, _bias, *data);
-};
-
-inline void ECPFarthestNeighbour::printStuff() {
-    cout << "count_ids is: " << _countIds << endl;
-    cout << "cound_zeros is: " << _countZeros << endl;
-}
-
-inline void ECPFarthestNeighbour::ReplaceFarthest(uint32_t id, uint32_t clusterid, double dist) {
-    _descriptorIDs[_farthest] = id;
-    _clusterIDs[_farthest]    = clusterid;
-    _distances[_farthest]     = dist;
-}
-
-inline void ECPFarthestNeighbour::FindFarthest() {
+void ECPFarthestNeighbour::FindFarthest() {
     // The idea is to maintain the lists in order, so that the farthest is always at the end of the list
     // Step one: Deal with the case where we have not found k neighbors
     if (_neighbors < _k-1) {
@@ -116,44 +100,7 @@ inline void ECPFarthestNeighbour::FindFarthest() {
     }
 }
 
-inline vector<double> ECPFarthestNeighbour::getTopDistances() {
-    return _distances;
-}
 
-inline vector<uint32_t> ECPFarthestNeighbour::getTopIds() {
-    return _descriptorIDs;
-}
-
-inline void ECPFarthestNeighbour::PrintAnswer() {
-    cout << _neighbors << " : " << _neighbors << endl;
-    for (uint64_t i = 0; i < _neighbors; i++) {
-        cout << i << ":" << _descriptorIDs[i] << ":" << _distances[i] << endl;
-    }
-}
-
-inline void ECPFarthestNeighbour::open() {
-    _scanNext = 0;
-}
-
-inline uint32_t* ECPFarthestNeighbour::nextClusterID() {
-    if ((uint32_t)_scanNext < _neighbors) {
-        return &(_clusterIDs[_scanNext]);
-    }
-    return NULL;
-}
-
-
-/* This is used for finding top clusters*/
-uint32_t* ECPFarthestNeighbour::next() {
-    if ((uint32_t)_scanNext < _neighbors) {
-        return &(_descriptorIDs[_scanNext++]);
-    }
-    return NULL;
-};
-
-inline void ECPFarthestNeighbour::close() {
-    _scanNext = -1;
-}
 
 //template<typename T, typename U, typename V>
 //void ECPFarthestNeighbour<T,U,V>::printDescriptor(ExqDescriptor<T,U,V> *data) {

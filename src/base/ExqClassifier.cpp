@@ -9,21 +9,11 @@
 using namespace exq;
 using std::cout;
 using std::endl;
+using std::vector;
 
 using cv::Ptr;
 using cv::ml::TrainData;
-
-ExqClassifier::ExqClassifier(int totalFeats) {
-    _svm = SVMSGD::create();
-    resetClassifier();
-//    _svm->setSvmsgdType(SVMSGD::ASGD);
-//    _svm->setOptimalParameters();
-//    _svm->setMarginType(SVMSGD::HARD_MARGIN);
-//    _svm->setMarginRegularization(0.0001);
-//    _svm->setInitialStepSize(0.0001);
-//    _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 100, 0.01));
-    _totalFeats = totalFeats;
-}
+using cv::ml::SVMSGD;
 
 ExqClassifier::~ExqClassifier() {
     if (_svm->isTrained()) {
@@ -33,24 +23,7 @@ ExqClassifier::~ExqClassifier() {
     }
 }
 
-void ExqClassifier::resetClassifier() {
-    if (_svm->isTrained()) {
-        _weights.clear();
-        _svm->clear();
-        _svm.release();
-        _svm = Ptr<SVMSGD>();
-        _svm = SVMSGD::create();
-    }
-    _svm->setSvmsgdType(SVMSGD::ASGD);
-    _svm->setOptimalParameters();
-    _svm->setMarginType(SVMSGD::HARD_MARGIN);
-    _svm->setMarginRegularization(0.01);
-    _svm->setInitialStepSize(0.01);
-    _svm->setStepDecreasingPower(0.75);
-    _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 1000, 1));
-}
-
-std::vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {
+vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     for (int i = 0; i < (int)data.size(); i++) {
         for (int j = 0; j < (int)data[i].size(); j++) {

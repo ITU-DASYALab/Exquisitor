@@ -149,13 +149,7 @@ double ECPNearestNeighbour::Distance(ExqDescriptorR64* data) {
     return dist;
 };
 
-inline void ECPNearestNeighbour::ReplaceFarthest(uint32_t id, uint64_t clusterId, double dist) {
-    descriptorIDs[farthest] = id;
-    clusterIDs[farthest]    = clusterId;
-    distances[farthest]     = dist;
-}
-
-inline void ECPNearestNeighbour::FindFarthest() {
+void ECPNearestNeighbour::FindFarthest() {
     // The idea is to maintain the lists in order, so that the farthest is always at the end of the list
 
     // Step one: Deal with the case where we have not found k neighbors
@@ -198,37 +192,3 @@ inline void ECPNearestNeighbour::FindFarthest() {
     }
 }
 
-inline void ECPNearestNeighbour::PrintAnswer(int queryId) {
-    cout << neighbors << " : " << neighbors << endl;
-    for (uint64_t i = 0; i < neighbors; i++)
-        cout << queryId << ":"
-            << i << ":"
-            << descriptorIDs[i] << ":"
-            << distances[i] << endl;
-}
-
-inline void ECPNearestNeighbour::open() {
-    scanNext = 0;
-}
-
-inline uint32_t* ECPNearestNeighbour::nextClusterID() {
-    if ((uint32_t)scanNext < neighbors) {
-        return &(clusterIDs[scanNext]);
-    }
-    return NULL;
-}
-
-inline uint32_t* ECPNearestNeighbour::next() {
-    if ((uint32_t)scanNext < neighbors) {
-        return &(descriptorIDs[scanNext++]);
-    }
-    return NULL;
-}
-
-inline double* ECPNearestNeighbour::getDistanceForDescriptor() {
-    return &(distances[scanNext-1]);
-}
-
-inline void ECPNearestNeighbour::close() {
-    scanNext = -1;
-}

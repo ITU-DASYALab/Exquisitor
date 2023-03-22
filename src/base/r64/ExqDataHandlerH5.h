@@ -13,9 +13,9 @@
 
 #include <hdf5.h>
 
-#include "base/IExqDataHandler.h"
-#include "base/IExqDescriptor.h"
-#include "base/IExqFunctions.h"
+#include "../IExqDataHandler.h"
+#include "../IExqDescriptor.h"
+#include "../IExqFunctions.h"
 #include "ExqDescriptorR64.h"
 
 namespace exq {

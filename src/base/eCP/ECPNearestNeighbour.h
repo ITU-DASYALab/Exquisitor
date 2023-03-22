@@ -31,17 +31,40 @@ namespace exq {
         // The query processing interface is very simple:
         void compareAndReplaceFarthest(ExqDescriptorR64* data, uint32_t clusterId = -1);
 
-        void open();
+        inline void PrintAnswer(int queryId) {
+            cout << neighbors << " : " << neighbors << endl;
+            for (uint64_t i = 0; i < neighbors; i++)
+                cout << queryId << ":"
+                    << i << ":"
+                    << descriptorIDs[i] << ":"
+                    << distances[i] << endl;
+        }
 
-        uint32_t* nextClusterID();  // NOTE: This does not advance the scan!
-        uint32_t* next();
+        inline void open() {
+            scanNext = 0;
+        }
 
-        double* getDistanceForDescriptor();
+        inline uint32_t* nextClusterID() {
+            if ((uint32_t)scanNext < neighbors) {
+                return &(clusterIDs[scanNext]);
+            }
+            return NULL;
+        }
 
-        void close();
+        inline uint32_t* next() {
+            if ((uint32_t)scanNext < neighbors) {
+                return &(descriptorIDs[scanNext++]);
+            }
+            return NULL;
+        }
 
-        // Output the answer
-        void PrintAnswer(int queryid);
+        inline double* getDistanceForDescriptor() {
+            return &(distances[scanNext-1]);
+        }
+
+        inline void close() {
+            scanNext = -1;
+        }
 
     private:
         // Query information
@@ -65,16 +88,14 @@ namespace exq {
         uint32_t farthest;
 
         // Replace the farthest neighbor info with this info
-        void ReplaceFarthest(uint32_t id, uint64_t clusterId, double dist);
+        inline void ReplaceFarthest(uint32_t id, uint64_t clusterId, double dist) {
+            descriptorIDs[farthest] = id;
+            clusterIDs[farthest]    = clusterId;
+            distances[farthest]     = dist;
+        }
 
         // Find the new farthest neigbor after replacing the old one
         void FindFarthest();
-
-        //Find length of vector
-        double len(unsigned char* v);
-
-        //Calculate cross product of two vectors of num_dim dimensions
-        void CrossProduct(unsigned char* v1, unsigned char* v2, unsigned char* res);
 
         void setHelperArrayForDistance();
 

@@ -10,7 +10,6 @@
 #include <vector>
 #include <string>
 
-#include "r64/ExqDescriptorR64.h"
 #include "IExqDataHandler.h"
 #include "IExqFunctions.h"
 #include "ExqItem.h"

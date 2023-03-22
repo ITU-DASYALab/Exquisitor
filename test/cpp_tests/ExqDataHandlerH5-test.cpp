@@ -43,7 +43,7 @@ TEST_F(SingleModalityDataHandlerH5Fixture, firstItemRead) {
     ExqArray<uint64_t>* ratios = firstItem->getFeatureRatios();
 
     ASSERT_EQ(firstItem->getId(), 0);
-    ASSERT_EQ(firstItem->getTop(), 2533274790396757);
+    ASSERT_EQ(*firstItem->getTop(), 2533274790396757);
     ASSERT_EQ(ids->getItem(0), 1125912792203265);
     ASSERT_EQ(ratios->getItem(0), 242353128979235512);
 
@@ -56,7 +56,7 @@ TEST_F(SingleModalityDataHandlerH5Fixture, lastitemRead) {
     ExqArray<uint64_t>* ratios = lastItem->getFeatureRatios();
  
     ASSERT_EQ(lastItem->getId(), 4);
-    ASSERT_EQ(lastItem->getTop(), 281474976711517);
+    ASSERT_EQ(*lastItem->getTop(), 281474976711517);
     ASSERT_EQ(ids->getItem(0), 1407404948324356);
     ASSERT_EQ(ratios->getItem(0), 255864967252411121);
 

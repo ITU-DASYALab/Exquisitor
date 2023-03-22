@@ -36,4 +36,7 @@ namespace exq {
 
 } // namespace exq
 
+
+template class exq::IExqDescriptor<uint64_t>;
+
 #endif // EXQUISITOR_EXQDESCRIPTOR_H

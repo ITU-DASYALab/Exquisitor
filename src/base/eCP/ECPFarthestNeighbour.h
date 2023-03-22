@@ -25,28 +25,60 @@ namespace exq {
         uint32_t getK() { return _k; }
         void updateK(uint32_t k);
 
-        vector<double> getTopDistances();
-
-        vector<uint32_t> getTopIds();
-
-        void printDescriptor(ExqDescriptorR64* data);
-        void printStuff();
-
         // The query processing interface is very simple:
         void compareAndReplaceFarthest(ExqDescriptorR64* data, uint32_t clusterid = -1);
 
+        void printDescriptor(ExqDescriptorR64* data);
+
+        inline uint32_t* nextClusterID() {
+            if ((uint32_t)_scanNext < _neighbors) {
+                return &(_clusterIDs[_scanNext]);
+            }
+            return NULL;
+        }
+
+        /* This is used for finding top clusters*/
+        inline uint32_t* next() {
+            if ((uint32_t)_scanNext < _neighbors) {
+                return &(_descriptorIDs[_scanNext++]);
+            }
+            return NULL;
+        };
+
+        inline void open() {
+            _scanNext = 0;
+        }
+
+        inline void close() {
+            _scanNext = -1;
+        }
+
+        inline void printStuff() {
+            cout << "count_ids is: " << _countIds << endl;
+            cout << "cound_zeros is: " << _countZeros << endl;
+        }
+
         // Find distance to a descriptor
-        double distance(ExqDescriptorR64* data);
-
-        void open();
-
-        uint32_t* nextClusterID();  // NOTE: This does not advance the scan!
-        uint32_t* next();
-
-        void close();
+        // simplified projection calculations from query vector (weight vector from SVM) and data vector
+        inline double distance(ExqDescriptorR64* data) {
+            return _functions->distance(_query, _bias, *data);
+        };
 
         // Output the answer
-        void PrintAnswer();
+        inline void PrintAnswer() {
+            cout << _neighbors << " : " << _neighbors << endl;
+            for (uint64_t i = 0; i < _neighbors; i++) {
+                cout << i << ":" << _descriptorIDs[i] << ":" << _distances[i] << endl;
+            }
+        }
+
+        inline vector<double> getTopDistances() {
+            return _distances;
+        }
+
+        inline vector<uint32_t> getTopIds() {
+            return _descriptorIDs;
+        }
     private:
         // Query information
         vector<double> _query;
@@ -64,21 +96,18 @@ namespace exq {
         // Index into the arrays where the farthest descriptor is found
         uint32_t _farthest;
 
-
-        // Replace the farthest neighbor info with this info
-        void ReplaceFarthest(uint32_t id, uint32_t clusterid, double dist);
+        int _scanNext;
+        int _countZeros;
+        int _countIds;
 
         // Find the new farthest neigbor after replacing the old one
         void FindFarthest();
 
-        //Find length of vector
-        double len();
-
-        //Calculate cross product of two vectors of num_dim dimensions
-        void CrossProduct(unsigned char *v1, unsigned char *v2, unsigned char *res);
-
-        int _scanNext;
-        int _countZeros;
-        int _countIds;
+        // Replace the farthest neighbor info with this info
+        inline void ReplaceFarthest(uint32_t id, uint32_t clusterid, double dist) {
+            _descriptorIDs[_farthest] = id;
+            _clusterIDs[_farthest]    = clusterid;
+            _distances[_farthest]     = dist;
+        }
     };
 }

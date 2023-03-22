@@ -37,18 +37,41 @@ namespace exq {
         vector<uint32_t> descriptorIds;
 
         // Map the cluster and prepare for reading
-        void open();
+        inline void open() {
+            // Seek to the start of the cluster
+            fseeko(_datafile, ((off_t)_offset) * _cnfg->getPgeSize(), SEEK_SET);
 
-        void setDescriptorId(int i, uint32_t id);
+            // Note that status of the scan
+            _nextDescriptor = 0;
+        }
 
-        ExqDescriptorR64* next();
+        inline void close() {
+            _nextDescriptor = 0;
+        };
 
-        void close();
+        inline ExqDescriptorR64* next() {
+            //cout << "(ECPClst) _descriptors: " << _descriptors << endl;
+            if (_nextDescriptor == _descriptors)
+                return NULL;
+            _nextDescriptor++;
+            return new ExqDescriptorR64(_datafile, _iota, 1);
+        };
 
-        int getNumDescriptors() { return _descriptors; }
+        inline void setDescriptorId(int i, uint32_t id) {
+            this->descriptorIds[i] = id;
+        }
+
+        inline int getNumDescriptors() { return _descriptors; }
 
         // Debugging
-        void PrintCluster(string indent = "");
+        inline void PrintCluster(string indent) {
+            cout << indent << "Offset: " << _offset << endl;
+            cout << indent << "Pages:  " << _pages << endl;
+            cout << indent << "Descrs: " << _descriptors << endl;
+            //for (int i = 0; i < descriptors; i++) {
+            //    PrintDescriptor(descriptorList[i]);
+            //}
+        }
     };
 }
 

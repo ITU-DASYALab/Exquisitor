@@ -56,4 +56,6 @@ namespace exq {
 
 }
 
+template class exq::IExqDataHandler<uint64_t>;
+
 #endif //EXQUISITOR_IEXQDATAHANDLER_H

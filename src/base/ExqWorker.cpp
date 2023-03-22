@@ -36,7 +36,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     //time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
     auto candidateItems = vector<vector<ExqItem>>(modalities);
-    auto descriptors = vector<vector<ExqDescriptorR64>>(modalities);
+    auto descriptors = vector<vector<IExqDescriptor<T>*>>(modalities);
     totalItemsConsidered = 0;
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " descriptors" << endl;
@@ -65,7 +65,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             ExqItem candItem = ExqItem();
             candItem.fromModality.push_back(m); //push_back to check if item came from multiple modalities
             candItem.segment = currentSegment;
-            candItem.itemId = descriptors[m][i].getId();
+            candItem.itemId = descriptors[m][i]->getId();
             candItem.distance = vector<double>(modalities);
 #if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
             cout << "(ExqWorker[" << workerId << "]) Getting distance for candidate item " << i << " descId ";
@@ -189,3 +189,5 @@ void ExqWorker<T>::logInfo(string info, int workerId) {
     log << info << "\n";
     log.close();
 }
+
+template class exq::ExqWorker<uint64_t>;

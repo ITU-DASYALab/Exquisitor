@@ -16,11 +16,36 @@ namespace exq {
 
     class ExqClassifier {
     public:
-        ExqClassifier(int totalFeats);
+        ExqClassifier(int totalFeats) {
+            _svm = SVMSGD::create();
+            resetClassifier();
+            // _svm->setSvmsgdType(SVMSGD::ASGD);
+            // _svm->setOptimalParameters();
+            // _svm->setMarginType(SVMSGD::HARD_MARGIN);
+            // _svm->setMarginRegularization(0.0001);
+            // _svm->setInitialStepSize(0.0001);
+            // _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER, 100, 0.01));
+            _totalFeats = totalFeats;
+        }
 
         ~ExqClassifier();
 
-        void resetClassifier();
+        void resetClassifier() {
+            if (_svm->isTrained()) {
+                _weights.clear();
+                _svm->clear();
+                _svm.release();
+                _svm = Ptr<SVMSGD>();
+                _svm = SVMSGD::create();
+            }
+            _svm->setSvmsgdType(SVMSGD::ASGD);
+            _svm->setOptimalParameters();
+            _svm->setMarginType(SVMSGD::HARD_MARGIN);
+            _svm->setMarginRegularization(0.01);
+            _svm->setInitialStepSize(0.01);
+            _svm->setStepDecreasingPower(0.75);
+            _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 1000, 1));
+        }
 
         vector<double> train(vector<vector<double>> data, vector<float> labels);
 
@@ -28,7 +53,7 @@ namespace exq {
 
         double getBias();
 
-        int getTotalFeats();
+        inline int getTotalFeats() { return _totalFeats; }
 
     protected:
         int _totalFeats;
@@ -37,7 +62,6 @@ namespace exq {
 
     }; //End of class ExqClassifier
 
-    inline int ExqClassifier::getTotalFeats() { return _totalFeats; }
 
 } //End of namespace exq
 

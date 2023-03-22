@@ -286,7 +286,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     cout << "DataHandler ready" << endl;
 
     cout << "Initializing Controller" << endl;
-    _pyExqV1._controller = new ExqController(
+    _pyExqV1._controller = new ExqController<uint64_t>(
             iota,
             noms,
             numWorkers,

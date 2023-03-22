@@ -215,22 +215,6 @@ double ECPQueryOptimisationPolicies::getClusterCount(uint32_t clusterId) {
     return _originalCnt[clusterId];
 }
 
-
-inline int ECPQueryOptimisationPolicies::getFilterRemainingCount(uint32_t clusterId) {
-    if (_filterExactCnt[clusterId] == UINT32_MAX) return _sessionRemainingCnt[clusterId];
-    if (_filterExactCnt[clusterId] == 0) return 0;
-    int frc = _filterExactCnt[clusterId] - _filterReturnedCnt[clusterId];
-    if (frc > 0) return frc;
-    return 0.0;
-}
-
-
-inline void ECPQueryOptimisationPolicies::setFilterRemainingCount(uint32_t clusterId, int passed) {
-    _filterExactCnt[clusterId] = passed;
-    _filterReturnedCnt[clusterId] = 0;
-}
-
-
 double ECPQueryOptimisationPolicies::getEstimatedRemainingCount(uint32_t clusterId) {
     /**
      * Old method from research version of Exquisitor will not work for this version of Exquisitor
@@ -261,49 +245,4 @@ double ECPQueryOptimisationPolicies::getEstimatedRemainingCount(uint32_t cluster
 //    }
 
     return 0.0;
-}
-
-
-inline ExpansionType ECPQueryOptimisationPolicies::getExpType() {
-    return _expansionType;
-}
-
-
-inline int ECPQueryOptimisationPolicies::getStatLevel() {
-    return _statLevel;
-}
-
-
-inline void ECPQueryOptimisationPolicies::updateSessionClusterCount(vector<uint32_t> suggs) {
-    for (auto s : suggs) {
-        if (_sessionRemainingCnt[_descToCluster[s]] > 0) {
-            // update session count
-            _sessionRemainingCnt[_descToCluster[s]]--;
-            // update filter returned count
-            if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
-                _filterReturnedCnt[_descToCluster[s]]++;
-            }
-        }
-    }
-}
-
-
-inline void ECPQueryOptimisationPolicies::resetSession() {
-    for (int i = 0; i < _numClusters; i++) {
-        _sessionRemainingCnt[i] = _originalCnt[i];
-        if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
-            _filterExactCnt[i] = UINT32_MAX;
-            _filterReturnedCnt[i] = 0;
-        }
-    }
-}
-
-
-inline void ECPQueryOptimisationPolicies::resetFilterCount() {
-    for (int i = 0; i < _numClusters; i++) {
-        if (_expansionType == FILTER_REMAINING_CNT || _expansionType == ALL_REMAINING_CNT) {
-            _filterExactCnt[i] = UINT32_MAX;
-            _filterReturnedCnt[i] = 0;
-        }
-    }
 }

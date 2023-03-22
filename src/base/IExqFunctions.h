@@ -65,4 +65,6 @@ namespace exq {
 
 } //End of namespace exq
 
+template class exq::IExqFunctions<uint64_t>;
+
 #endif //EXQUISITOR_EXQFUNCTIONSINTERFACE_H

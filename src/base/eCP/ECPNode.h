@@ -16,24 +16,49 @@ namespace exq {
 
         ~ECPNode();
 
-        void addChild(ExqDescriptorR64* child);
+        inline void addChild(ExqDescriptorR64* child) {
+            // Now there is enough space, so insert
+            _children.push_back(child);
+        };
+
+        inline ExqDescriptorR64* get(uint32_t i) {
+            if (i > _children.size()) {
+                return NULL;
+            }
+            return _children[i];
+        }
+
+        inline void open() {
+            _currChild = 0;
+        }
+
+        inline ExqDescriptorR64* next() {
+            if (_currChild < (int)_children.size()) {
+                return _children[_currChild++];
+            }
+            return NULL;
+        }
+
+        inline void close() {
+            _currChild = -1;
+        }
+
+        // For debugging/logging purposes
+        inline void PrintNode(string indent) {
+            cout << indent << "NODE: Centroid: ";
+            //PrintDescriptor(centroid);
+
+            cout << indent << "NODE: numChildren = " << _children.size() << " (maxChildren = " << _maxChildren << ")" << endl;
+            for (int i = 0; i < (int)_children.size(); i++) {
+                cout << indent << "NODE: Child " << i << ": ";
+                //PrintDescriptor(children[i]);
+            }
+        }
 
         // Support for direct access
-        ExqDescriptorR64* getCentroid() { return _centroid; };
+        inline ExqDescriptorR64* getCentroid() { return _centroid; };
 
-        int getNumChildren() { return _children.size(); };
-
-        ExqDescriptorR64* get(uint32_t i);
-
-        // Support for scanning
-        void open();
-
-        ExqDescriptorR64* next();
-
-        void close();
-
-        // Debug
-        void PrintNode(string indent = "");
+        inline int getNumChildren() { return _children.size(); };
 
     private:
         // The structure of the node

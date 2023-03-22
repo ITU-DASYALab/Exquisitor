@@ -33,36 +33,3 @@ ECPCluster::~ECPCluster() {
         delete descriptorList[i];
     }
 };
-
-void ECPCluster::open() {
-    // Seek to the start of the cluster
-    fseeko(_datafile, ((off_t)_offset) * _cnfg->getPgeSize(), SEEK_SET);
-
-    // Note that status of the scan
-    _nextDescriptor = 0;
-}
-
-inline void ECPCluster::close() {
-    _nextDescriptor = 0;
-};
-
-inline void ECPCluster::setDescriptorId(int i, uint32_t id) {
-    this->descriptorIds[i] = id;
-}
-
-ExqDescriptorR64* ECPCluster::next() {
-    //cout << "(ECPClst) _descriptors: " << _descriptors << endl;
-    if (_nextDescriptor == _descriptors)
-        return NULL;
-    _nextDescriptor++;
-    return new ExqDescriptorR64(_datafile, _iota, 1);
-};
-
-inline void ECPCluster::PrintCluster(string indent) {
-    cout << indent << "Offset: " << _offset << endl;
-    cout << indent << "Pages:  " << _pages << endl;
-    cout << indent << "Descrs: " << _descriptors << endl;
-    //for (int i = 0; i < descriptors; i++) {
-    //    PrintDescriptor(descriptorList[i]);
-    //}
-}

@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 set(BINARY ${CMAKE_PROJECT_NAME})
 
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true  base/*.h base/*.cpp base/*.hpp base/eCP/*.h base/eCP/*.cpp base/eCP/*.hpp
-      base/Metadata/*.h base/Metadata/*.cpp *.h *.hpp *.cpp base/r64/*.h base/r64/*.hpp base/r64/*.cpp) 
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES true base/*.h base/*.cpp base/*.hpp base/eCP/*.h base/eCP/*.cpp base/eCP/*.hpp
+      base/Metadata/*.h base/Metadata/*.cpp  base/r64/*.h base/r64/*.hpp base/r64/*.cpp *.h *.hpp *.cpp) 
 
 set(SOURCES ${SOURCES})
 
