@@ -14,6 +14,8 @@ namespace exq {
     using cv::ml::SVMSGD;
     using cv::ml::TrainData;
 
+    //TODO: Create an IExqClassifier that contains relevant virtual functions and rename this to ExqSVMClassifier
+    //TODO: Replace ExqClassifier with IExqClassifier in the relevant source files.
     class ExqClassifier {
     public:
         ExqClassifier(int totalFeats) {
@@ -28,7 +30,15 @@ namespace exq {
             _totalFeats = totalFeats;
         }
 
-        ~ExqClassifier();
+        ~ExqClassifier() {
+            if (_svm->isTrained()) {
+                _weights.clear();
+                _svm->clear();
+                _svm.release();
+            }
+        }
+
+        vector<double> train(vector<vector<double>> data, vector<float> labels);
 
         void resetClassifier() {
             if (_svm->isTrained()) {
@@ -47,11 +57,13 @@ namespace exq {
             _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 1000, 1));
         }
 
-        vector<double> train(vector<vector<double>> data, vector<float> labels);
+        inline vector<double> getWeights() {
+            return _weights;
+        }
 
-        vector<double> getWeights();
-
-        double getBias();
+        inline double getBias() {
+            return _svm->getShift();
+        }
 
         inline int getTotalFeats() { return _totalFeats; }
 

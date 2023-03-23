@@ -5,6 +5,8 @@
 #ifndef EXQUISITOR_EXQARRAY_H
 #define EXQUISITOR_EXQARRAY_H
 
+#pragma once
+
 #include <iostream>
 
 namespace exq {

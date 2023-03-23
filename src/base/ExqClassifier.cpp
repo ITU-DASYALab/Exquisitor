@@ -15,14 +15,6 @@ using cv::Ptr;
 using cv::ml::TrainData;
 using cv::ml::SVMSGD;
 
-ExqClassifier::~ExqClassifier() {
-    if (_svm->isTrained()) {
-        _weights.clear();
-        _svm->clear();
-        _svm.release();
-    }
-}
-
 vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     for (int i = 0; i < (int)data.size(); i++) {
@@ -81,12 +73,4 @@ vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> l
     cout << "bias: " << _svm->getShift() << endl;
 #endif
     return _weights;
-}
-
-vector<double> ExqClassifier::getWeights() {
-    return _weights;
-}
-
-double ExqClassifier::getBias() {
-    return _svm->getShift();
 }
