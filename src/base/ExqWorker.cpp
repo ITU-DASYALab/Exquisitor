@@ -10,9 +10,6 @@
 using namespace exq;
 using namespace std::chrono;
 using std::make_pair;
-using std::to_string;
-using std::ofstream;
-using std::ifstream;
 using std::vector;
 using std::array;
 using std::milli;
@@ -37,6 +34,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
     auto candidateItems = vector<vector<ExqItem>>(modalities);
     auto descriptors = vector<vector<IExqDescriptor<T>*>>(modalities);
+    _workerId = workerId;
     totalItemsConsidered = 0;
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " descriptors" << endl;
@@ -123,7 +121,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
         candidateItems.clear();
 
         if (ffs) {
-            // FFS
+            // FFS (set number of slots per modality in output set)
             unordered_set<uint32_t> checked = unordered_set<uint32_t>();
             int start = 0;
             for (int m = 0; m < modalities; m++) {
@@ -146,12 +144,15 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             // rank aggregation
             functions[0]->sortItems(sortedCandidates, modalities, modWeights);
 
+            logCandidates(sortedCandidates);
+
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
             cout << "(ExqWorker[" << workerId << "]) Removing duplicates in segment " << currentSegment << endl;
 #endif
             int cnt = 0;
             for (int i = 0; i < (int) sortedCandidates.size(); i++) {
-                if (sortedCandidates[i].aggScore != -1.0) {
+                // check for duplicates if multiple modalities are active
+                if (sortedCandidates[i].aggScore != -1.0 && modalities > 1) {
                     sortedCandidates[i].segment = currentSegment;
 
                     itemsToReturn.push_back(sortedCandidates[i]);
@@ -163,6 +164,9 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
                             sortedCandidates[j].aggScore = -1.0;
                         }
                     }
+                } else {
+                    itemsToReturn.push_back(sortedCandidates[i]);
+                    cnt++;
                 }
                 if (cnt == k) {
                     break;
@@ -180,14 +184,6 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     }
     cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " finished" << endl;
 #endif
-}
-
-template<class T>
-void ExqWorker<T>::logInfo(string info, int workerId) {
-    string fname = "logs/workers/worker_" + to_string(workerId) + ".log";
-    ofstream log(fname, std::ios_base::out | std::ios_base::app);
-    log << info << "\n";
-    log.close();
 }
 
 template class exq::ExqWorker<uint64_t>;

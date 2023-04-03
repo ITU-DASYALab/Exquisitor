@@ -8,6 +8,11 @@
 #include <future>
 #include <utility>
 
+#ifdef WRITE_MODEL
+#include <fstream>
+#include <iostream>
+#endif
+
 using namespace exq;
 using std::async;
 using std::future_status;
@@ -17,6 +22,7 @@ using std::chrono::high_resolution_clock;
 using std::chrono::time_point;
 using std::cout;
 using std::endl;
+using std::fstream;
 
 
 template<class T>
@@ -173,6 +179,17 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     times.push_back(duration<double, milli>(finish - begin).count());
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) Training done" << endl;
+#endif
+#ifdef WRITE_MODEL
+    fstream file;
+    file.open("svm.txt", ios_base::app);
+    for (int m = 0; m < _modalities; m++) {
+        file << "[";
+        for (int w = 0; w < weights[m].size()-1; w++) {
+            file << weights[m][w] << ",";
+        }
+        file << weights[m][weights[m].size()-1] << "] | " << _classifiers[m]->getBias() << endl;
+    }
 #endif
     return times;
 }

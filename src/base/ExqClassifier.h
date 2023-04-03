@@ -39,24 +39,8 @@ namespace exq {
         }
 
         vector<double> train(vector<vector<double>> data, vector<float> labels);
-
-        void resetClassifier() {
-            if (_svm->isTrained()) {
-                _weights.clear();
-                _svm->clear();
-                _svm.release();
-                _svm = Ptr<SVMSGD>();
-                _svm = SVMSGD::create();
-            }
-            _svm->setSvmsgdType(SVMSGD::ASGD);
-            _svm->setOptimalParameters();
-            _svm->setMarginType(SVMSGD::HARD_MARGIN);
-            _svm->setMarginRegularization(0.01);
-            _svm->setInitialStepSize(0.01);
-            _svm->setStepDecreasingPower(0.75);
-            _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 1000, 1));
-        }
-
+        void resetClassifier();
+        
         inline vector<double> getWeights() {
             return _weights;
         }
