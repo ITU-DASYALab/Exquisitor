@@ -15,13 +15,14 @@ namespace exq {
     using std::map;
     using std::vector;
 
-    // Container for properties
+
+    /// Container for properties   
     struct Props {
         // property -> value(s)
         vector<set<uint16_t>> props;
     };
 
-    // Container for properties that have a count value, e.g. number of objects
+    /// Container for properties that have a count value, e.g. number of objects
     struct CountProps {
         // property -> value(s)
         vector<map<uint16_t,uint16_t>> props;
@@ -71,3 +72,44 @@ namespace exq {
 }
 
 #endif //EXQUISITOR_ITEMPROPERTIES_H
+
+/** Idea 1 for refactoring
+    enum PropertyEnum {
+        SINGLEVALUE,
+        MULTIVALUE,
+        AMOUNTVALUE
+    };
+    
+    class Property {
+        public:
+        Property(const PropertyEnum propType) : _propType(propType) {}
+        virtual ~Property() {}
+        private:
+        PropertyEnum _propType;
+    };
+
+    template <typename T>
+    class TypedProperty : public Property {
+        public:
+        TypedProperty(const T data) : _data(data) {};
+
+        private:
+        T _data;
+    };
+
+    typedef vector<shared_ptr<Property>> property_list_type;
+
+*/
+
+/** Idea 2 for refactoring
+    enum PropType {SINGLE, MULTI, COUNT};
+    class Property {
+        union {
+            uint16_t single;
+            set<uint16_t> multi;
+            map<uint16_t,uint16_t> count;
+        }
+
+        PropType propType;
+    }
+*/
