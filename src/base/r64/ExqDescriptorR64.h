@@ -84,7 +84,7 @@ namespace exq {
         /**
          * @brief destroys the descriptor object
          */
-        ~ExqDescriptorR64() {}
+        virtual ~ExqDescriptorR64() {}
 
         inline void setItemId(uint32_t itemId) { _id = itemId; }
 

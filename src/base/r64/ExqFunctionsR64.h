@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
-#include "base/IExqDescriptor.h"
-#include "base/ExqClassifier.h"
-#include "base/ExqItem.h"
-#include "base/IExqFunctions.h"
+#include "../IExqDescriptor.h"
+#include "../ExqClassifier.h"
+#include "../ExqItem.h"
+#include "../IExqFunctions.h"
 
 namespace exq {
 
