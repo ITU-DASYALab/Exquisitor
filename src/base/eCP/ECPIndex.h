@@ -40,7 +40,7 @@ namespace exq {
         bool set_b_clusters(vector<double> query, double bias, int b, bool resume=false);
 
         void updateSessionInfo(vector<uint32_t> suggs);
-        void resetSessionInfo();
+        void resetSessionInfo(int level);
 
         void PrintIndex();
 

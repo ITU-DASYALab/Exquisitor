@@ -238,6 +238,9 @@ void ECPIndex::updateSessionInfo(vector<uint32_t> suggs) {
     _qop->updateSessionClusterCount(suggs);
 }
 
-void ECPIndex::resetSessionInfo() {
-    _qop->resetSession();
+void ECPIndex::resetSessionInfo(int level) {
+    if (level == 0) // Full reset
+        _qop->resetSession();
+    if (level == 1) // FRC reset
+        _qop->resetFilterCount();
 }

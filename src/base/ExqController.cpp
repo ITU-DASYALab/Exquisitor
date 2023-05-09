@@ -131,7 +131,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     cout << "(CTRL) Setting Filters" << endl;
     if (changeFilters) {
         _activeFilters.setFilters(filters);
-        //TODO: Reset cache of frc in ECPQOP
+        _handler->resetSessionInfo(1);
     }
 
     cout << "(CTRL) Training classifier(s)" << endl;

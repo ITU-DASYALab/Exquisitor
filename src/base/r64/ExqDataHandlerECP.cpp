@@ -110,8 +110,8 @@ void ExqDataHandlerECP::updateSessionInfo(vector<uint32_t> suggs) {
     }
 }
 
-void ExqDataHandlerECP::resetSessionInfo() {
+void ExqDataHandlerECP::resetSessionInfo(int level) {
     for (int m = 0; m < _modalities; m++) {
-        _indx[m]->resetSessionInfo();
+        _indx[m]->resetSessionInfo(level);
     }
 }
