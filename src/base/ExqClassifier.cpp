@@ -15,7 +15,7 @@ using cv::Ptr;
 using cv::ml::TrainData;
 using cv::ml::SVMSGD;
 
-vector<double> ExqClassifier::train(vector<vector<double>> data, vector<float> labels) {
+vector<float> ExqClassifier::train(vector<vector<float>> data, vector<float> labels) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     for (int i = 0; i < (int)data.size(); i++) {
         for (int j = 0; j < (int)data[i].size(); j++) {

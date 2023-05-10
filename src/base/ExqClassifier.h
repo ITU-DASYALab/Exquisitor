@@ -38,10 +38,10 @@ namespace exq {
             }
         }
 
-        vector<double> train(vector<vector<double>> data, vector<float> labels);
+        vector<float> train(vector<vector<float>> data, vector<float> labels);
         void resetClassifier();
         
-        inline vector<double> getWeights() {
+        inline vector<float> getWeights() {
             return _weights;
         }
 
@@ -54,7 +54,7 @@ namespace exq {
     protected:
         int _totalFeats;
         Ptr<SVMSGD> _svm;
-        vector<double> _weights;
+        vector<float> _weights;
 
     }; //End of class ExqClassifier
 

@@ -136,11 +136,11 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 
     cout << "(CTRL) Training classifier(s)" << endl;
     for (int m = 0; m < _modalities; m++) {
-        vector<vector<double>> trainingItems = vector<vector<double>>();
+        vector<vector<float>> trainingItems = vector<vector<float>>();
         for (uint32_t trainId : trainIds) {
             IExqDescriptor<T>* desc = _handler->getDescriptor(trainId, m);
             ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(*desc);
-            vector<double> featVals = vector<double>(_classifiers[m]->getTotalFeats(), 0.0);
+            vector<float> featVals = vector<float>(_classifiers[m]->getTotalFeats(), 0.0);
             for (int j = 0; j < descVals.getSize(); j++) {
                 pair<int, float> item = descVals.getItem(j);
                 featVals[item.first] = item.second;
