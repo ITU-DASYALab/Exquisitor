@@ -187,4 +187,4 @@ void ExqDataHandlerH5::loadHdf5Dataset  (void** data,
 
 void ExqDataHandlerH5::updateSessionInfo(vector<uint32_t> suggs) {}
 
-void ExqDataHandlerH5::resetSessionInfo() {}
+void ExqDataHandlerH5::resetSessionInfo(int level) {}

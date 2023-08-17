@@ -112,7 +112,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExq
 /// \param bias - Bias from SVM
 /// \param descriptor - Descriptor containing all feature information
 /// \return
-inline double ExqFunctionsR64::distance(vector<double>& model, double bias, IExqDescriptor<uint64_t> &descriptor) {
+inline double ExqFunctionsR64::distance(vector<float>& model, float bias, IExqDescriptor<uint64_t> &descriptor) {
     uint64_t top = *(uint64_t*) descriptor.getTop();
     auto featureIds = (ExqArray<uint64_t>*) descriptor.getFeatureIds();
     auto featureRatios = (ExqArray<uint64_t>*) descriptor.getFeatureRatios();

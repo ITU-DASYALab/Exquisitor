@@ -45,7 +45,7 @@ namespace exq {
             return _weights;
         }
 
-        inline double getBias() {
+        inline float getBias() {
             return _svm->getShift();
         }
 

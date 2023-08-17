@@ -123,8 +123,8 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) In train" << endl;
 #endif
-    vector<double> times = vector<double>();
-    vector<vector<double>> weights = vector<vector<double>>(_modalities, vector<double>());
+    auto times = vector<double>();
+    auto weights = vector<vector<float>>(_modalities, vector<float>());
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
 
@@ -375,7 +375,7 @@ void ExqController<T>::reset_model(bool resetSession) {
         _classifiers[m]->resetClassifier();
     _activeFilters = ItemFilter();
     if (resetSession) {
-        _handler->resetSessionInfo();
+        _handler->resetSessionInfo(0);
     }
 }
 

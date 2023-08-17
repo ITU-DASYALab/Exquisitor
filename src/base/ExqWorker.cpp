@@ -70,7 +70,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             cout << candItem.itemId << endl;
 #endif
             for (int mm = 0; mm < modalities; mm++) {
-                vector<double> model = classifiers[mm]->getWeights();
+                vector<float> model = classifiers[mm]->getWeights();
                 double bias = classifiers[mm]->getBias();
                 candItem.distance[mm] = functions[mm]->distance(model, bias,
                                                                 *handler->getDescriptor(candItem.itemId, mm));

@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <cstdio>
 #include <sys/types.h>
+#include <cstdint>
 
 using std::string;
 using std::cout;

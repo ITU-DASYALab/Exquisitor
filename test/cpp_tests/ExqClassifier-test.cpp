@@ -22,7 +22,7 @@ using std::pair;
 TEST (SvmModel, trainModel) {
     const float POS_L = 1.0;
     const float NEG_L = -1.0;
-    vector<vector<double>> trainingItems;
+    vector<vector<float>> trainingItems;
     vector<float> trainingItemLabels;
     auto classifier = new ExqClassifier(12988);
     auto functions = new ExqFunctionsR64(5, 1, 48, 16, 16, 281474976710655,
@@ -58,7 +58,7 @@ TEST (SvmModel, trainModel) {
 
     for (int i = 0; i < pos.size(); i++) {
         ExqArray<pair<int, float>> descVals = functions->getDescriptorInformation(*pos[i]);
-        vector<double> featVals = vector<double>();
+        vector<float> featVals = vector<float>();
         for (int j = 0; j < 12988; j++) {
             featVals.push_back(0.0);
         }
@@ -72,7 +72,7 @@ TEST (SvmModel, trainModel) {
     }
     for (int i = 0; i < neg.size(); i++) {
         ExqArray<pair<int, float>> descVals = functions->getDescriptorInformation(*neg[i]);
-        vector<double> featVals = vector<double>();
+        vector<float> featVals = vector<float>();
         for (int j = 0; j < 12988; j++) {
             featVals.push_back(0.0);
         }

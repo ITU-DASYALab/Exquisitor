@@ -39,7 +39,7 @@ namespace exq {
         /**
          * @brief calculates distance between hyperplane and item
          */
-        double distance(vector<double>& model, double bias, IExqDescriptor<uint64_t>& descriptor) override;
+        double distance(vector<float>& model, float bias, IExqDescriptor<uint64_t>& descriptor) override;
 
 
         /**

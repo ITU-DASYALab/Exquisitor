@@ -48,7 +48,7 @@ namespace exq {
         /// \param k
         /// \param clusters
         /// \return
-        ECPFarthestNeighbour* search(vector<double>& query, double bias, uint32_t k,
+        ECPFarthestNeighbour* search(vector<float>& query, float bias, uint32_t k,
                                      vector<ECPCluster*>& clusters);
 
         ///
@@ -61,7 +61,7 @@ namespace exq {
         /// \param b
         /// \param clusters
         /// \return
-        ECPFarthestNeighbour* search_pq(vector<double>& query, double bias, uint32_t b,
+        ECPFarthestNeighbour* search_pq(vector<float>& query, float bias, uint32_t b,
                                         vector<ECPCluster*>& clusters);
         /// Sanity checks
         void PrintTree();
@@ -78,7 +78,7 @@ namespace exq {
         int _expCounter = 0;
         int _skipCounter = 0;
         int _numClusters = 0;
-        priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare> _pq;
+        priority_queue<tuple<int,int,float>,vector<tuple<int,int,float>>,PQ_Compare> _pq;
         set<uint32_t> _bfs;
         // query optimisation policies
         ECPQueryOptimisationPolicies* _qop;
@@ -94,7 +94,7 @@ namespace exq {
 
         // Find the proper node for a particular descriptor at a particular level
         // Used both for insertions and implementing the actual search
-        ECPFarthestNeighbour* search(vector<double>& query, double bias, uint32_t b, uint32_t level,
+        ECPFarthestNeighbour* search(vector<float>& query, float bias, uint32_t b, uint32_t level,
                                      vector<ECPCluster*>& clusters);
 
         ECPNearestNeighbour* search(ExqDescriptorR64* query, uint32_t k, uint32_t level);

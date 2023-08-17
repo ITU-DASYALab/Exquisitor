@@ -37,7 +37,7 @@ namespace exq {
         void search(int chnk, int& totalData, vector<uint32_t>& suggIds,
                     int run, int segments, unordered_set<uint32_t>& seenItems, ItemFilter& filters);
 
-        bool set_b_clusters(vector<double> query, double bias, int b, bool resume=false);
+        bool set_b_clusters(vector<float> query, float bias, int b, bool resume=false);
 
         void updateSessionInfo(vector<uint32_t> suggs);
         void resetSessionInfo(int level);

@@ -1,5 +1,5 @@
 cmake_policy(SET CMP0048 NEW)
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.27)
 project(Exquisitor VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -12,20 +12,12 @@ link_directories(${Python3_LIBRARY_DIRS})
 include_directories(${Python3_INCLUDE_DIRS})
 
 # HDF5
-# if (WIN32)
-#     set(HDF5_DIR "C:/Program Files/HDF_Group/HDF5/1.14.0/cmake") # Points to HDF5Config.cmake
-# endif (WIN32)
-find_package(HDF5 COMPONENTS CXX REQUIRED)
-link_directories(${HDF5_LIBRARY_DIRS})
+find_package(HDF5 CONFIG REQUIRED)
 include_directories(${HDF5_INCLUDE_DIRS})
 
-# OpenCV
-# if (WIN32)
-#     set(OpenCV_DIR "C:/opencv/sources/build") # Points to OpenCVConfig.cmake 
-# endif (WIN32)
-find_package(OpenCV 4.5.5 REQUIRED)
+#OpenCV
+find_package(OpenCV CONFIG REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-link_directories(${OpenCV_LIBS})
 
 # Project Files
 include_directories(src)

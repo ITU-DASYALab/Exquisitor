@@ -44,7 +44,7 @@ namespace exq {
         /**
          * @brief calculates distance between hyperplane and item
          */
-        virtual double distance(vector<double>& model, double bias, IExqDescriptor<T>& descriptor) = 0;
+        virtual double distance(vector<float>& model, float bias, IExqDescriptor<T>& descriptor) = 0;
 
         /**
          * @brief sort items using scores from each modality

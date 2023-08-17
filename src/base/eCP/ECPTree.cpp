@@ -93,7 +93,7 @@ void ECPTree::addChildAtLevel(ExqDescriptorR64* centroid, int level) {
     delete qa;
 }
 
-ECPFarthestNeighbour* ECPTree::search(vector<double>& query, double bias, uint32_t b, uint32_t depth,
+ECPFarthestNeighbour* ECPTree::search(vector<float>& query, float bias, uint32_t b, uint32_t depth,
                                              vector<ECPCluster*>& clusters) {
     if (depth > _cnfg->getNumLvls())
         return NULL;
@@ -104,7 +104,7 @@ ECPFarthestNeighbour* ECPTree::search(vector<double>& query, double bias, uint32
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
     cout << "(ECPTree) Initializing PQ" << endl;
 #endif
-    _pq = priority_queue<tuple<int,int,double>,vector<tuple<int,int,double>>,PQ_Compare>();
+    _pq = priority_queue<tuple<int,int,float>,vector<tuple<int,int,float>>,PQ_Compare>();
     for (int i = 0; i < _levelsizes[0]; i++) {
         if( clusters[_nodes[0][i]->get(0)->getId()]->getNumDescriptors() == 0) {
             continue;
@@ -159,7 +159,7 @@ ECPFarthestNeighbour* ECPTree::search(vector<double>& query, double bias, uint32
     return result;
 }
 
-ECPFarthestNeighbour* ECPTree::search_pq(vector<double>& query, double bias, uint32_t b,
+ECPFarthestNeighbour* ECPTree::search_pq(vector<float>& query, float bias, uint32_t b,
                                          vector<ECPCluster*>& clusters) {
     auto res = new ECPFarthestNeighbour(query, bias, b, _functions);
     uint32_t k = 0;
@@ -327,7 +327,7 @@ ECPNearestNeighbour* ECPTree::search(ExqDescriptorR64* query, uint32_t k, uint32
     return result;
 }
 
-ECPFarthestNeighbour* ECPTree::search(vector<double>& query, double bias, uint32_t k,
+ECPFarthestNeighbour* ECPTree::search(vector<float>& query, float bias, uint32_t k,
                                       vector<ECPCluster*>& clusters) {
     return search(query, bias, k, _cnfg->getNumLvls() - 1, clusters);
 }

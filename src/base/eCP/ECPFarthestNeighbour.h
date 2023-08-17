@@ -14,13 +14,13 @@ namespace exq {
 
     class ECPFarthestNeighbour {
     public:
-        ECPFarthestNeighbour(vector<double>& query, double bias, uint32_t k,
+        ECPFarthestNeighbour(vector<float>& query, float bias, uint32_t k,
                              IExqFunctions<uint64_t>*& functions);
 
         ~ECPFarthestNeighbour();
 
         // Get info
-        vector<double> getQuery() { return _query; }
+        vector<float> getQuery() { return _query; }
 
         uint32_t getK() { return _k; }
         void updateK(uint32_t k);
@@ -72,7 +72,7 @@ namespace exq {
             }
         }
 
-        inline vector<double> getTopDistances() {
+        inline vector<float> getTopDistances() {
             return _distances;
         }
 
@@ -81,14 +81,14 @@ namespace exq {
         }
     private:
         // Query information
-        vector<double> _query;
-        double _bias;
+        vector<float> _query;
+        float _bias;
         IExqFunctions<uint64_t>* _functions;
 
         // Query answer information
         uint32_t _k;
         uint32_t _neighbors;
-        vector<double> _distances;
+        vector<float> _distances;
         vector<uint32_t> _descriptorIDs;
         vector<uint32_t> _clusterIDs;
 

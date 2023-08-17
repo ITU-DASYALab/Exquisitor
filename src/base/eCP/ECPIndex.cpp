@@ -137,7 +137,7 @@ void ECPIndex::loadDescriptors() {
     //}
 }
 
-bool ECPIndex::set_b_clusters(vector<double> query, double bias, int b, bool resume) {
+bool ECPIndex::set_b_clusters(vector<float> query, float bias, int b, bool resume) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
     cout << "(ECPIndx) Searching for farthest neighbor" << endl;
 #endif

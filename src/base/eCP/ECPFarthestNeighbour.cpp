@@ -4,7 +4,7 @@ using std::cout;
 using std::endl;
 using namespace exq;
 
-ECPFarthestNeighbour::ECPFarthestNeighbour(vector<double>& query, double bias, uint32_t k,
+ECPFarthestNeighbour::ECPFarthestNeighbour(vector<float>& query, float bias, uint32_t k,
                                            IExqFunctions<uint64_t>*& functions) {
     // Copy the inputs
     _query           = query;
@@ -15,7 +15,7 @@ ECPFarthestNeighbour::ECPFarthestNeighbour(vector<double>& query, double bias, u
     // Allocate space for the nearest neighbors
     _descriptorIDs = vector<uint32_t>(_k);
     _clusterIDs = vector<uint32_t>(_k);
-    _distances = vector<double>(_k);
+    _distances = vector<float>(_k);
 
     // Set the distances once to max distance
     for (uint32_t i = 0; i < _k; i++) {
@@ -50,7 +50,7 @@ void ECPFarthestNeighbour::updateK(uint32_t k) {
 
 void ECPFarthestNeighbour::compareAndReplaceFarthest(ExqDescriptorR64* data, uint32_t clusterid) {
     // Find the distance.  If new k-nn found, then replace the farthest one
-    double dist = _functions->distance(_query, _bias, *data);
+    float dist = _functions->distance(_query, _bias, *data);
     //printf("(MAIN) Distance: %f\n", dist);
     if (dist > _distances[_farthest]) { //now we want to maximize distance
         ReplaceFarthest(data->getId(), clusterid, dist);
