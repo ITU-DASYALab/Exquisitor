@@ -10,5 +10,6 @@
         "vector": "cpp",
         "utility": "cpp",
         "ostream": "cpp"
-    }
+    },
+    "cmake.generator": "MinGW Makefiles",
 }
