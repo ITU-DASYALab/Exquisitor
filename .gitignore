@@ -88,6 +88,8 @@ _deps
 # *.ipr
 
 build/**
+dist/**
+src/*.egg-info/
 
 # CMake
 cmake-build-*/

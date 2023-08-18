@@ -1,4 +1,3 @@
-# TODO: Use setuptools instead of distutils
 import os
 import sys
 from setuptools import Extension, setup
@@ -6,8 +5,8 @@ from setuptools import Extension, setup
 os.environ['CC'] = 'g++'
 vcpkg_libs = os.environ['VCPKG_ROOT'] + '/installed/' + os.environ['VCPKG_TRIPLET'] + '/lib'
 vcpkg_include = os.environ['VCPKG_ROOT'] + '/installed/' + os.environ['VCPKG_TRIPLET'] + '/include'
-py_libs = os.sys.exec_prefix + '/libs'
-py_include = os.sys.exec_prefix + '/include'
+py_libs = sys.exec_prefix + '/libs'
+py_include = sys.exec_prefix + '/include'
 print(os.environ['CC'])
 exquisitor = Extension(
                 name='exq',
