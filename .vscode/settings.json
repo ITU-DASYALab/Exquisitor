@@ -18,9 +18,8 @@
     "cmake.generator": "MinGW Makefiles",
     "cmake.configureArgs": [
         "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        // "-DVCPKG_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
         "-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic",
-        // "-DVCPKG_APPLOCAL_DEPS=ON",
-        // "-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON"
     ],
     "cmake.configureSettings": {},
 }
