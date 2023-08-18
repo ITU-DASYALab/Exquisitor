@@ -23,14 +23,15 @@ for large multimedia collections using modest computing resources.
 
 ### Windows
 
-* For development on Windows we have opted to use the MinGW environment, specifically ucrt64, along with vcpkg. 
-Using vcpkg install hdf5 and opencv. From this point it should compile and build.
+* For development on Windows we have opted to use MSVC Visual C++ 14 or higher along with vcpkg. 
+Using vcpkg install hdf5 and opencv (may need to install opencv using --host-triplet=x64-windows-static).
 
 # Installation
 
 Set the following environment variables:
-  * VCPKG_ROOT
-  * VCPKG_TRIPLET
+  * VCPKG_ROOT='C:\vcpkg'
+  * VCPKG_TRIPLET='x64-windows'
+  Examples for Windows
 
 Run the following commands:
 ```

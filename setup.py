@@ -7,7 +7,15 @@ vcpkg_libs = os.environ['VCPKG_ROOT'] + '/installed/' + os.environ['VCPKG_TRIPLE
 vcpkg_include = os.environ['VCPKG_ROOT'] + '/installed/' + os.environ['VCPKG_TRIPLET'] + '/include'
 py_libs = sys.exec_prefix + '/libs'
 py_include = sys.exec_prefix + '/include'
+compile_args = []
+if (os.name == 'nt'):
+    compile_args = ['/O2', '/std:c++20']
+else:
+    compile_args = ['-O3', '-Wall', '-std=c++20']
+
 print(os.environ['CC'])
+print(vcpkg_include)
+print(vcpkg_libs)
 exquisitor = Extension(
                 name='exq',
                 sources=[
@@ -47,9 +55,11 @@ exquisitor = Extension(
                     # 'C:/opencv/sources/build/lib', # Windows
                     # 'C:/Program Files/HDF_Group/HDF5/1.14.0/lib', # Windows
                 ],
-                libraries=['python3.11', 'hdf5::hdf5-shared', 'hdf5::hdf5_hl-shared', 'opencv_core', 'opencv_ml'],
-                extra_compile_args=[
-                    '-O3', '-Wall', '-std=c++20',
+                libraries=['python311', 'hdf5', 'hdf5_hl', 'opencv_core4', 'opencv_ml4'],
+                extra_compile_args=compile_args
+                # [
+                #     '/O2', '/std:c++20', # Windows
+                    # '-O3', '-Wall', '-std=c++20', # Linux
                     # '-D_LARGE_FILE_SOURCE', '-D_FILE_OFFSET_BITS=64',
                     # '-DDEBUG',
                     # '-DDEBUG_EXTRA',
@@ -59,7 +69,8 @@ exquisitor = Extension(
                     # '-DDEBUG_TRAIN_EXTRA',
                     # '-DDEBUG_SUGGEST',
                     # '-DDEBUG_SUGGEST_EXTRA',
-                ])
+                #]
+                )
 
 setup(name='exq',
       version='1.0',

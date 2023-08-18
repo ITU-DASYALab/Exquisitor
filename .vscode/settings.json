@@ -15,11 +15,11 @@
         "memory": "cpp",
         "random": "cpp"
     },
-    "cmake.generator": "MinGW Makefiles",
+    //"cmake.generator": "MinGW Makefiles",
+    "cmake.generator": "Visual Studio 17 2022",
     "cmake.configureArgs": [
         "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        // "-DVCPKG_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic",
+        "-DVCPKG_TARGET_TRIPLET=x64-windows",
     ],
     "cmake.configureSettings": {},
 }

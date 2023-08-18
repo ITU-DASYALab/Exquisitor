@@ -40,7 +40,7 @@ class ECPConfig
         uint32_t getNumLvls()  { return numLvls; };
         uint32_t getNumOfst()  { return numOfst; };
 
-        uint32_t getPgeSize()  { return pgeSize; };
+        uint32_t getPageSize()  { return pgeSize; };
 
         string getPathIdx()  { return pathIdx; };
         string getPathDat()  { return pathDat; };

@@ -39,7 +39,11 @@ namespace exq {
         // Map the cluster and prepare for reading
         inline void open() {
             // Seek to the start of the cluster
-            fseeko(_datafile, ((off_t)_offset) * _cnfg->getPgeSize(), SEEK_SET);
+#ifdef _MSC_VER
+            _fseeki64(_datafile, ((__int64)_offset) * _cnfg->getPageSize(), SEEK_SET);
+#else
+            fseeko(_datafile, ((off_t)_offset) * _cnfg->getPageSize(), SEEK_SET);
+#endif
 
             // Note that status of the scan
             _nextDescriptor = 0;

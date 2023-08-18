@@ -44,7 +44,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Got segment " << currentSegment << " descriptors" << endl;
 #endif
-    int modSize[modalities];
+    int* modSize = new int[modalities];
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " noms" << endl;
 #endif
@@ -174,6 +174,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             }
         }
     }
+    delete modSize;
     finish = high_resolution_clock::now();
     time = duration<double, milli>(finish - beginOverall).count();
 
@@ -184,6 +185,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     }
     cout << "(ExqWorker[" << workerId << "]) Segment " << currentSegment << " finished" << endl;
 #endif
+
 }
 
 template class exq::ExqWorker<uint64_t>;
