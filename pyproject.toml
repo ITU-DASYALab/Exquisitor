@@ -17,6 +17,12 @@ classifiers = [
     "Operating System :: OS Independent
 ]
 
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "exq.__version__"}
+readme = {file = "README.md", content-type = "text/markdown" }
+
 [project.urls]
 "Homepage" = "https://github.com/ITU-DASYALab/Exquisitor"
-

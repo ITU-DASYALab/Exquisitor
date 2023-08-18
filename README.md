@@ -16,7 +16,7 @@ for large multimedia collections using modest computing resources.
 
 ## Requirements
 
-* python 3.10 or higher
+* python 3.11 or higher
 * cmake 3.27 or higher
 * opencv 4.5.5 or higher
 * hdf5 1.14.0 or higher
@@ -28,7 +28,18 @@ Using vcpkg install hdf5 and opencv. From this point it should compile and build
 
 # Installation
 
-* Currently it uses the old setup.py format, in the future this will be updated to use the pyproject.toml way.
+Set the following environment variables:
+  * VCPKG_ROOT
+  * VCPKG_TRIPLET
+
+Run the following commands:
+```
+python -m build
+pip install --force-reinstall dist/*.whl
+```
+
+
+## Old setup.py installation
 * Update include and library directory paths in setup.py
 * Add library directory for opencv and hdf5 to $LD_LIBRARY_PATH (Linux) or $DYLD_LIBRARY_PATH (MacOS). Example for .bashrc:
     ```
