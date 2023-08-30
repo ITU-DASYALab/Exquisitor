@@ -85,36 +85,38 @@ void ExqDataHandlerH5::loadDescriptorsFromFiles(string topFeatureFile, string fe
     vector<uint64_t> topFeats;
     vector<uint64_t> featIds;
     vector<uint64_t> featRatios;
-
-    char topFeatureFileC[topFeatureFile.size() + 1];
-    char featuresFileC[featuresFile.size() + 1];
-    char ratiosFileC[ratiosFile.size() + 1];
+    const string top = topFeatureFile;
+    const string feat = featuresFile;
+    const string ratio = ratiosFile;
+    char* topFeatureFileC = new char[top.size() + 1];
+    char* featuresFileC = new char[feat.size() + 1];
+    char* ratiosFileC = new char[ratio.size() + 1];
     strcpy(topFeatureFileC, topFeatureFile.c_str());
     strcpy(featuresFileC, featuresFile.c_str());
     strcpy(ratiosFileC, ratiosFile.c_str());
 
     uint32_t totalItems = dataItemCount(topFeatureFileC, "/data");
     this->_descriptors[modality].reserve(totalItems);
-    topFeats.reserve(totalItems);
-    featIds.reserve(totalItems);
-    featRatios.reserve(totalItems);
+    topFeats.resize(totalItems);
+    featIds.resize(totalItems);
+    featRatios.resize(totalItems);
 
     const char* dataset = "/data";
-    loadHdf5Dataset((void**)&(topFeats),
-                       topFeatureFileC,
-                       0,
-                       (totalItems/workers),
-                       dataset);
-    loadHdf5Dataset((void**)&(featIds),
-                       featuresFileC,
-                       0,
-                       (totalItems/workers),
-                       dataset);
-    loadHdf5Dataset((void**)&(featRatios),
-                       ratiosFileC,
-                       0,
-                       (totalItems/workers),
-                       dataset);
+    loadHdf5Dataset(topFeats,
+                    topFeatureFileC,
+                    0,
+                    (totalItems/workers),
+                    dataset);
+    loadHdf5Dataset(featIds,
+                    featuresFileC,
+                    0,
+                    (totalItems/workers),
+                    dataset);
+    loadHdf5Dataset(featRatios,
+                    ratiosFileC,
+                    0,
+                    (totalItems/workers),
+                    dataset);
     //TODO: Add thread and chunk logic here
 
     for (uint32_t i = 0; i < totalItems; i++) {
@@ -124,6 +126,10 @@ void ExqDataHandlerH5::loadDescriptorsFromFiles(string topFeatureFile, string fe
         featureRatios.setItem(featRatios[i],0);
         _descriptors[modality].push_back(new ExqDescriptorR64(i, topFeats[i], featIds[i], featRatios[i]));
     }
+
+    delete topFeatureFileC;
+    delete featuresFileC;
+    delete ratiosFileC;
 }
 
 /*
@@ -156,7 +162,7 @@ _load_hdf5_dataset()
 Loads a chunk of the iota-I64 HDF5 dataset.
 -------------------------------------------------------------------------------
 */
-void ExqDataHandlerH5::loadHdf5Dataset  (void** data,
+void ExqDataHandlerH5::loadHdf5Dataset  (vector<uint64_t>& data,
                                          char* filePath,
                                          hsize_t chunkOffset,
                                          hsize_t nChunk,
@@ -176,9 +182,7 @@ void ExqDataHandlerH5::loadHdf5Dataset  (void** data,
     H5Sselect_hyperslab(dSpace, H5S_SELECT_SET, offset, NULL,
                         nData, NULL);
 
-    *data = malloc(nData[0] * sizeof(uint64_t));
-
-    H5Dread(dSet, dType, memSpace, dSpace, H5P_DEFAULT, *data);
+    H5Dread(dSet, dType, memSpace, dSpace, H5P_DEFAULT, data.data());
     H5Sclose(memSpace);
     H5Sclose(dSpace);
     H5Dclose(dSet);

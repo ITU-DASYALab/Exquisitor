@@ -13,7 +13,8 @@
         "algorithm": "cpp",
         "iterator": "cpp",
         "memory": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "xstring": "cpp"
     },
     //"cmake.generator": "MinGW Makefiles",
     "cmake.generator": "Visual Studio 17 2022",

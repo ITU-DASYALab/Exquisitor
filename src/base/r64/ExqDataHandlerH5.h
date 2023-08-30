@@ -58,7 +58,7 @@ namespace exq {
 
         void loadDescriptorsFromFiles(string topFeatureFile, string featuresFile, string ratiosFile, int modality, int workers);
         uint32_t dataItemCount(char* filePath, const char* datasetName);
-        void loadHdf5Dataset(void** data, char* filePath, hsize_t chunkOffset, hsize_t nChunk, const char* datasetName);
+        void loadHdf5Dataset(vector<uint64_t>& data, char* filePath, hsize_t chunkOffset, hsize_t nChunk, const char* datasetName);
     }; //End of class ExqDataHandler
 
 } //End of namespace exq

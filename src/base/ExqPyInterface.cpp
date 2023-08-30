@@ -55,10 +55,10 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
     //funcObj: 0 = nFeat, 1 = topShift, 2 = idsShift, 3 = ratiosShift, 4 = topMask,
     //         5 = topDivisor, 6 = idsMask, 7 = ratiosMask, 8 = ratiosDivisor
     int nFeat, topShift, idsShift, ratiosShift;
-    double topDivisor, ratiosDivisor;
+    float topDivisor, ratiosDivisor;
     uint64_t topMask, idsMask, ratiosMask;
     // TODO: This should be part of a helper class later on, but for now belongs in Controller
-    vector<double> modalityWeights;
+    vector<float> modalityWeights;
     cout << "Creating functions object" << endl;
     PyObject* funcObjPy;
     if (funcType) {
@@ -74,16 +74,16 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         cout << "ratiosShift: " << ratiosShift << endl;
         topMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 4));
         cout << "topMask: " << topMask << endl;
-        topDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 5));
+        topDivisor = (float) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 5));
         cout << "topDivisor: " << topDivisor << endl;
         idsMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 6));
         cout << "idsMask: " << idsMask << endl;
         ratiosMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 7));
         cout << "ratiosMask: " << ratiosMask << endl;
-        ratiosDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
+        ratiosDivisor = (float) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
         cout << "ratiosDivisor: " << ratiosDivisor << endl;
-        auto modWeight = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
-        modalityWeights = vector<double>(numModalities, modWeight);
+        auto modWeight = (float) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
+        modalityWeights = vector<float>(numModalities, modWeight);
         for (int m = 0; m < numModalities; m++) {
             functions[m] = new ExqFunctionsR64(nFeat, iota, topShift, idsShift,
                                                ratiosShift,
@@ -93,7 +93,7 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
         }
     } else {
         cout << "Different modality settings" << endl;
-        modalityWeights = vector<double>(numModalities);
+        modalityWeights = vector<float>(numModalities);
         for (int m = 0; m < numModalities; m++) {
             funcObjPy = PyList_GetItem(funcObjsPy, m);
             nFeat = (int) PyLong_AsLong(PyList_GetItem(funcObjPy, 0));
@@ -106,15 +106,15 @@ PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
             cout << "ratiosShift: " << ratiosShift << endl;
             topMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 4));
             cout << "topMask: " << topMask << endl;
-            topDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 5));
+            topDivisor = (float) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 5));
             cout << "topDivisor: " << topDivisor << endl;
             idsMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 6));
             cout << "idsMask: " << idsMask << endl;
             ratiosMask = (uint64_t) PyLong_AsLong(PyList_GetItem(funcObjPy, 7));
             cout << "ratiosMask: " << ratiosMask << endl;
-            ratiosDivisor = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
+            ratiosDivisor = (float) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 8));
             cout << "ratiosDivisor: " << ratiosDivisor << endl;
-            modalityWeights[m] = (double) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
+            modalityWeights[m] = (float) PyFloat_AsDouble(PyList_GetItem(funcObjPy, 9));
             cout << "Modality " << m << " weight: " << modalityWeights[m] << endl;
             functions[m] = new ExqFunctionsR64(nFeat, iota, topShift, idsShift,
                                                ratiosShift,
@@ -318,8 +318,8 @@ PyObject* exq::train_py([[maybe_unused]] PyObject* self, PyObject* args) {
     PyObject* trainIdsPy = PyTuple_GetItem(args, 0);
     PyObject* trainLabelsPy = PyTuple_GetItem(args, 1);
     for (int i = 0; i < PyList_Size(trainIdsPy); i++) {
-        trainIds.push_back((int)PyLong_AsLong(PyList_GetItem(trainIdsPy,i)));
-        trainLabels.push_back((float)PyFloat_AsDouble(PyList_GetItem(trainLabelsPy,i)));
+        trainIds.push_back((int) PyLong_AsLong(PyList_GetItem(trainIdsPy,i)));
+        trainLabels.push_back((float) PyFloat_AsDouble(PyList_GetItem(trainLabelsPy,i)));
     }
 
     // Input Check
@@ -476,7 +476,7 @@ PyObject* exq::get_descriptors_info_py([[maybe_unused]] PyObject *self, PyObject
         for (int j = 0; j < res[i].getSize(); j++) {
             PyObject* pair = PyTuple_New(2);
             PyTuple_SetItem(pair, 0, PyLong_FromUnsignedLong((unsigned long) res[i].getItem(j).first));
-            PyTuple_SetItem(pair, 1, PyFloat_FromDouble((double) res[i].getItem(j).second));
+            PyTuple_SetItem(pair, 1, PyFloat_FromDouble(res[i].getItem(j).second));
             PyList_SetItem(descInfo, j, pair);
         }
         PyList_SetItem(descListPy, i, descInfo);

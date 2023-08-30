@@ -44,18 +44,18 @@ namespace exq {
         /**
          * @brief calculates distance between hyperplane and item
          */
-        virtual double distance(vector<float>& model, float bias, IExqDescriptor<T>& descriptor) = 0;
+        virtual float distance(vector<float>& model, float bias, IExqDescriptor<T>& descriptor) = 0;
 
         /**
          * @brief sort items using scores from each modality
          */
-        virtual void sortItems(vector<ExqItem>& items2Rank, int modalities, vector<double>& modWeights,
+        virtual void sortItems(vector<ExqItem>& items2Rank, int modalities, vector<float>& modWeights,
                                bool setModRank=false, bool singleMod=false) = 0;
 
         /**
          * @brief assign aggregate score for multimodal items
          */
-        virtual void assignRanking(vector<ExqItem>& items, int nMods, vector<double>& modWeights,
+        virtual void assignRanking(vector<ExqItem>& items, int nMods, vector<float>& modWeights,
                                    bool setModRank=false) = 0;
 
 

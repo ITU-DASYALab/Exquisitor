@@ -60,7 +60,7 @@ namespace exq {
 
         // Find distance to a descriptor
         // simplified projection calculations from query vector (weight vector from SVM) and data vector
-        inline double distance(ExqDescriptorR64* data) {
+        inline float distance(ExqDescriptorR64* data) {
             return _functions->distance(_query, _bias, *data);
         };
 

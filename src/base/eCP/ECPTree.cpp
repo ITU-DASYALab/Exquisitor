@@ -35,7 +35,7 @@ ECPTree::~ECPTree() {
 }
 
 void ECPTree::buildTree(vector<ExqDescriptorR64*> centroids, int numClusters) {
-    uint32_t fanout = (uint64_t) ceil(pow((double)numClusters, (1.0/(_cnfg->getNumLvls())) ) );
+    uint32_t fanout = (uint64_t) ceil(pow((float)numClusters, (1.0/(_cnfg->getNumLvls())) ) );
     // Allocate and set the level sizes
     _levelsizes[0] = (int) fanout;
     for (uint32_t i = 1; i < _cnfg->getNumLvls()-1; i++)
@@ -147,7 +147,7 @@ ECPFarthestNeighbour* ECPTree::search(vector<float>& query, float bias, uint32_t
 #endif
     while ((clusterID = result->next()) != NULL) {
         _bfs.insert(*clusterID);
-        _pq.push(make_tuple(_cnfg->getNumLvls() - 1, *clusterID, DBL_MAX));
+        _pq.push(make_tuple(_cnfg->getNumLvls() - 1, *clusterID, FLT_MAX));
     }
     delete result;
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
@@ -164,8 +164,8 @@ ECPFarthestNeighbour* ECPTree::search_pq(vector<float>& query, float bias, uint3
     auto res = new ECPFarthestNeighbour(query, bias, b, _functions);
     uint32_t k = 0;
     uint32_t bx = b;
-    double thresh = b*100;
-    double total_count = 0.0;
+    float thresh = b*100;
+    float total_count = 0.0;
     int exp = 0;
     int statLevel = _qop->getStatLevel();
     ExpansionType expansionType = _qop->getExpType();
@@ -173,7 +173,7 @@ ECPFarthestNeighbour* ECPTree::search_pq(vector<float>& query, float bias, uint3
     while (1) {
         while (!_pq.empty() && k != bx) {
             // Level Id, Node Id, Distance Score
-            tuple<int,int,double> top = _pq.top();
+            tuple<int,int,float> top = _pq.top();
             _pq.pop();
             if (std::get<0>(top) == (int) _cnfg->getNumLvls() - 1) { // If cluster, add to res
                 int numDescriptors =
@@ -184,8 +184,8 @@ ECPFarthestNeighbour* ECPTree::search_pq(vector<float>& query, float bias, uint3
 #if defined(DEBUG_EXTRA) || defined(DEBUG_TRAIN_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
                 cout << "(ECPTree) Cluster " << _nodes[std::get<0>(top)][std::get<1>(top)]->get(0)->id << " " << std::get<2>(top) << endl;
 #endif
-                double count =
-                        _qop->getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(0)->getId());
+                float count =
+                    _qop->getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(0)->getId());
                 if (count > 0.0) {
                     total_count += count;
                     res->compareAndReplaceFarthest(_nodes[std::get<0>(top)][std::get<1>(top)]->get(0));
@@ -200,7 +200,7 @@ ECPFarthestNeighbour* ECPTree::search_pq(vector<float>& query, float bias, uint3
                 for (int i = 0; i < _nodes[std::get<0>(top)][std::get<1>(top)]->getNumChildren(); i++) {
                     if (expansionType == ESTIMATED_REMAINING_CNT || expansionType == ALL_REMAINING_CNT) {
                         if (std::get<0>(top) + 1 == statLevel) {
-                            double cnt = _qop->getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->getId());
+                            float cnt = _qop->getClusterCount(_nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->getId());
 #if defined(DEBUG_EXTRA) || defined(DEBUG_TRAIN_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
                             cout << _nodes[std::get<0>(top)][std::get<1>(top)]->get(i)->id << " count: " << cnt << endl;
 #endif

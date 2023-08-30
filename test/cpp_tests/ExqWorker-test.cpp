@@ -19,7 +19,7 @@ public:
     vector<IExqFunctions<uint64_t>*> _functionsR64 = {};
     vector<ExqClassifier*> _classifier = {};
     ExqWorker<uint64_t>* _worker;
-    vector<double> _weights;
+    vector<float> _weights;
 
     //TODO: Initialize all mock object and values to test suggest
     SingleModalityWorker() {
@@ -50,9 +50,9 @@ TEST_F(SingleModalityWorker, get_k_stuff) {
     int k;
     vector<ExqItem> items;
     unordered_set<uint32_t> seenItems = unordered_set<uint32_t>();
-    vector<double> times;
+    vector<float> times;
     vector<int> totalItemsConsidered;
-    vector<double> modWeights;
+    vector<float> modWeights;
     vector<int> slots;
     bool ffs = false;
     ItemFilter filter = ItemFilter();

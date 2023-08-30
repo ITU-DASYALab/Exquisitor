@@ -6,12 +6,12 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "_DEBUG",
+                // "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
             "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "C:/msys64/ucrt64/bin/g++.exe",
+            // "compilerPath": "C:/msys64/ucrt64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++20",
             "configurationProvider": "ms-vscode.cmake-tools"

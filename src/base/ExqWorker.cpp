@@ -25,8 +25,8 @@ ExqWorker<T>::ExqWorker() {
 template<class T>
 void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                            int currentSegment, int totalSegments, int noms, int modalities, IExqDataHandler<T>*& handler,
-                           vector<IExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, double& time,
-                           int& totalItemsConsidered, int workerId, ItemFilter& filters, vector<double>& modWeights,
+                           vector<IExqFunctions<T>*>& functions, unordered_set<uint32_t> seenItems, float& time,
+                           int& totalItemsConsidered, int workerId, ItemFilter& filters, vector<float>& modWeights,
                            vector<int>& slots, bool ffs) {
 
     time_point<high_resolution_clock> beginOverall = high_resolution_clock::now();
@@ -55,7 +55,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
         m << ": " << totalItemsConsidered << endl;
 #endif
         //(position,score)
-        pair<int, double> min = make_pair(-1, DBL_MAX);
+        pair<int, float> min = make_pair(-1, FLT_MAX);
         modSize[m] = 0;
         candidateItems[m] = vector<ExqItem>();
         candidateItems[m].reserve(noms);
@@ -64,14 +64,14 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
             candItem.fromModality.push_back(m); //push_back to check if item came from multiple modalities
             candItem.segment = currentSegment;
             candItem.itemId = descriptors[m][i]->getId();
-            candItem.distance = vector<double>(modalities);
+            candItem.distance = vector<float>(modalities);
 #if defined(DEBUG_EXTRA) || defined(DEBUG_SUGGEST_EXTRA)
             cout << "(ExqWorker[" << workerId << "]) Getting distance for candidate item " << i << " descId ";
             cout << candItem.itemId << endl;
 #endif
             for (int mm = 0; mm < modalities; mm++) {
                 vector<float> model = classifiers[mm]->getWeights();
-                double bias = classifiers[mm]->getBias();
+                float bias = classifiers[mm]->getBias();
                 candItem.distance[mm] = functions[mm]->distance(model, bias,
                                                                 *handler->getDescriptor(candItem.itemId, mm));
             }
@@ -83,7 +83,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
 #endif
                 if (candItem.distance[m] > min.second) {
                     candidateItems[m][min.first] = candItem;
-                    double newMin = DBL_MAX;
+                    float newMin = FLT_MAX;
                     for (int j = 0; j < (int) candidateItems[m].size(); j++) {
                         if (candidateItems[m][j].distance[m] < newMin) {
                             min.first = j;
@@ -176,7 +176,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     }
     delete modSize;
     finish = high_resolution_clock::now();
-    time = duration<double, milli>(finish - beginOverall).count();
+    time = duration<float, milli>(finish - beginOverall).count();
 
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
     if (itemsToReturn.size() > 0) {

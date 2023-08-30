@@ -19,10 +19,10 @@ namespace exq {
         uint32_t itemId;
         vector<int> fromModality;
         vector<uint32_t> fromCluster;
-        vector<double> distance;
+        vector<float> distance;
         double aggScore;
         int segment;
-        vector<double> modRank; // The rank for each modality an item got during aggregation, example: aggScore = 4, mod1Rank = 1, mod2Rank = 3 
+        vector<float> modRank; // The rank for each modality an item got during aggregation, example: aggScore = 4, mod1Rank = 1, mod2Rank = 3 
 
         ExqItem() {
             itemId = UINT32_MAX;
@@ -30,7 +30,7 @@ namespace exq {
             aggScore = 0.0;
             fromCluster = vector<uint32_t>();
             segment = -1;
-            modRank = vector<double>();
+            modRank = vector<float>();
         };
     }; //End of struct ExqItem
 

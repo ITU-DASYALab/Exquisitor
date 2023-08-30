@@ -11,8 +11,8 @@ using std::cout;
 using std::endl;
 
 
-ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor,
-                                 double ratiosDivisor) {
+ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, float topDivisor,
+                                 float ratiosDivisor) {
     this->iota = iota;
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
@@ -33,7 +33,7 @@ ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsS
 }
 
 ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
-                                 double topDivisor, uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor) {
+                                 float topDivisor, uint64_t idsMask, uint64_t ratiosMask, float ratiosDivisor) {
     this->iota = iota;
     this->nDescFeatures = nDescFeat;
     this->topFeatureShift = topShift;
@@ -79,7 +79,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExq
 #ifdef DEBUG
     cout << "(ExqFncR64) Top Feature ID: " << featId << endl;
 #endif
-    double featVal = (top & this->topMask) / this->topDivisor;
+    float featVal = (top & this->topMask) / this->topDivisor;
 #ifdef DEBUG
     cout << "(ExqFncR64) Top Feature Value: " << featVal << endl;
 #endif
@@ -112,14 +112,14 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExq
 /// \param bias - Bias from SVM
 /// \param descriptor - Descriptor containing all feature information
 /// \return
-inline double ExqFunctionsR64::distance(vector<float>& model, float bias, IExqDescriptor<uint64_t> &descriptor) {
+inline float ExqFunctionsR64::distance(vector<float>& model, float bias, IExqDescriptor<uint64_t> &descriptor) {
     uint64_t top = *(uint64_t*) descriptor.getTop();
     auto featureIds = (ExqArray<uint64_t>*) descriptor.getFeatureIds();
     auto featureRatios = (ExqArray<uint64_t>*) descriptor.getFeatureRatios();
 
-    double score = bias;
+    float score = bias;
     int featId = top >> this->topFeatureShift;
-    double featVal = (top & this->topMask) / this->topDivisor;
+    float featVal = (top & this->topMask) / this->topDivisor;
     score += model[featId] * featVal;
     for (int i = 0; i < iota; i++) {
         for (int j = 0; j < (this->nDescFeatures - 1); j++) {
@@ -136,8 +136,8 @@ inline double ExqFunctionsR64::distance(vector<float>& model, float bias, IExqDe
     return score;
 }
 
-void ExqFunctionsR64::sortItems(vector<ExqItem> &items2Rank, int numMods, vector<double>& modWeights,
-                                       bool setModRank, bool singleMod) {
+void ExqFunctionsR64::sortItems(vector<ExqItem> &items2Rank, int numMods, vector<float>& modWeights,
+                                bool setModRank, bool singleMod) {
     if (numMods > 1 && !singleMod) {
         for (int m = 0; m < numMods; m++) {
             std::sort(items2Rank.begin(), items2Rank.end(), [m](const ExqItem& lhs, const ExqItem& rhs) {
@@ -169,15 +169,15 @@ void ExqFunctionsR64::sortItems(vector<ExqItem> &items2Rank, int numMods, vector
     }
 }
 
-void ExqFunctionsR64::assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights,
-                                           bool setModRank) {
-    double rank = 0.0;
+void ExqFunctionsR64::assignRanking(vector<ExqItem>& items, int mod, vector<float>& modWeights,
+                                    bool setModRank) {
+    float rank = 0.0;
     items[0].aggScore += 0.0;
     items[0].modRank.push_back(0.0);
-    double score_position = 0.0;
+    float score_position = 0.0;
 
     if (setModRank) {
-        double position = 0.0;
+        float position = 0.0;
         for (int i = 1; i < (int) items.size(); i++) {
             if (items[i].distance[mod] == items[i - 1].distance[mod]) {
                 items[i].aggScore += rank;
@@ -185,7 +185,7 @@ void ExqFunctionsR64::assignRanking(vector<ExqItem>& items, int mod, vector<doub
                 score_position++;
                 items[i].aggScore += score_position * modWeights[mod];
                 rank = score_position * modWeights[mod];
-                position = (double)items.size()-score_position;
+                position = (float)items.size()-score_position;
             }
             items[i].modRank.push_back(position);
             //items[i].modRank.push_back((((double)items.size()-position)/(double)items.size()));

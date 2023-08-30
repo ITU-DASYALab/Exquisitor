@@ -22,9 +22,9 @@ namespace exq {
      */
     class ExqFunctionsR64 : public IExqFunctions<uint64_t> {
     public:
-        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, double topDivisor, double ratiosDivisor);
-        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, double topDivisor,
-                        uint64_t idsMask, uint64_t ratiosMask, double ratiosDivisor);
+        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor);
+        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, float topDivisor,
+                        uint64_t idsMask, uint64_t ratiosMask, float ratiosDivisor);
 
         ~ExqFunctionsR64();
 
@@ -39,19 +39,19 @@ namespace exq {
         /**
          * @brief calculates distance between hyperplane and item
          */
-        double distance(vector<float>& model, float bias, IExqDescriptor<uint64_t>& descriptor) override;
+        float distance(vector<float>& model, float bias, IExqDescriptor<uint64_t>& descriptor) override;
 
 
         /**
          * @brief rank aggregation using scores from each modality
          */
-        void sortItems(vector<ExqItem>& items2Rank, int numMods, vector<double>& modWeights,
+        void sortItems(vector<ExqItem>& items2Rank, int numMods, vector<float>& modWeights,
                        bool setModRank=false, bool singleMod=false) override;
 
         /**
          * @brief assign aggregate score for multimodal items
          */
-        void assignRanking(vector<ExqItem>& items, int mod, vector<double>& modWeights,
+        void assignRanking(vector<ExqItem>& items, int mod, vector<float>& modWeights,
                            bool setModRank) override;
 
         int getIota() override { return iota; };
@@ -66,10 +66,10 @@ namespace exq {
         uint64_t* idsBitShifts;
         uint64_t* ratiosBitShifts;
         uint64_t topMask;
-        double topDivisor;
+        float topDivisor;
         uint64_t idsMask;
         uint64_t ratiosMask;
-        double ratiosDivisor;
+        float ratiosDivisor;
 
     }; //End of class ExqFunctions
 

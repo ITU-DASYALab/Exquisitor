@@ -40,7 +40,7 @@ ExqController<T>::ExqController(
         ExqWorker<T>* worker,
         const vector<ItemProperties>& itemProps,
         const vector<vector<Props>>& vidProps,
-        vector<double> modWeights,
+        vector<float> modWeights,
         bool ffs,
         int guaranteedSlots
     ) {
@@ -91,12 +91,12 @@ ExqController<T>::ExqController(
 #endif
     _vidProperties = vidProps;
 
-    _orgModWeights = vector<double>(modWeights);
-    _positivesFromMod = vector<double>(_modalities, 0.0);
+    _orgModWeights = vector<float>(modWeights);
+    _positivesFromMod = vector<float>(_modalities, 0.0f);
     for (int m = 0; m < (int)_orgModWeights.size(); m++) {
         _orgWeightSum += _orgModWeights[m];
     }
-    _rescaledModWeights = vector<double>(modWeights);
+    _rescaledModWeights = vector<float>(modWeights);
     _modalityWeights = std::move(modWeights);
 
     _ffs = ffs;
@@ -118,12 +118,12 @@ ExqController<T>::~ExqController() {
 }
 
 template<class T>
-vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels,
+vector<float> ExqController<T>::train(const vector<uint32_t>& trainIds, const vector<float>& trainLabels,
                                        bool changeFilters, Filters filters) {
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) In train" << endl;
 #endif
-    auto times = vector<double>();
+    auto times = vector<float>();
     auto weights = vector<vector<float>>(_modalities, vector<float>());
     time_point<high_resolution_clock> begin = high_resolution_clock::now();
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
@@ -140,7 +140,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
         for (uint32_t trainId : trainIds) {
             IExqDescriptor<T>* desc = _handler->getDescriptor(trainId, m);
             ExqArray<pair<int, float>> descVals = _functions[m]->getDescriptorInformation(*desc);
-            vector<float> featVals = vector<float>(_classifiers[m]->getTotalFeats(), 0.0);
+            vector<float> featVals = vector<float>(_classifiers[m]->getTotalFeats(), 0.0f);
             for (int j = 0; j < descVals.getSize(); j++) {
                 pair<int, float> item = descVals.getItem(j);
                 featVals[item.first] = item.second;
@@ -148,19 +148,19 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
             trainingItems.push_back(featVals);
         }
         finish = high_resolution_clock::now();
-        times.push_back(duration<double, milli>(finish - begin).count());
+        times.push_back(duration<float, milli>(finish - begin).count());
         begin = high_resolution_clock::now();
         weights[m] = _classifiers[m]->train(trainingItems, trainLabels);
         //weights[m] = _classifiers[m]->getWeights();
         finish = high_resolution_clock::now();
-        times.push_back(duration<double, milli>(finish - begin).count());
+        times.push_back(duration<float, milli>(finish - begin).count());
     }
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) Classifier trained" << endl;
 #endif
     begin = high_resolution_clock::now();
     auto bPerMod = vector<int>(_modalities);
-    //vector<double> bias;
+    //vector<float> bias;
     for (int m = 0; m < _modalities; m++) {
         bPerMod[m] = _bClusters;
         //bias.push_back(_classifiers[m]->getBias());
@@ -176,7 +176,7 @@ vector<double> ExqController<T>::train(const vector<uint32_t>& trainIds, const v
     for (int m = 0; m < _modalities; m++) cout << "(CTRL) PQ state( " << m << "): " << _pq_state[m] << endl;
 #endif
     finish = high_resolution_clock::now();
-    times.push_back(duration<double, milli>(finish - begin).count());
+    times.push_back(duration<float, milli>(finish - begin).count());
 #if defined(DEBUG) || defined(DEBUG_TRAIN)
     cout << "(CTRL) Training done" << endl;
 #endif
@@ -275,7 +275,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
             for (int i = 0; i < (int) itemsFromSegments[s].size(); i++) {
                 uint32_t itemId = itemsFromSegments[s][i].itemId;
                 if (!unique.contains(itemId)) {
-                    itemsFromSegments[s][i].aggScore = 0.0;
+                    itemsFromSegments[s][i].aggScore = 0.0f;
                     modItems[itemsFromSegments[s][i].fromModality[0]].push_back(itemsFromSegments[s][i]);
                     items2Return.push_back(itemsFromSegments[s][i]);
                     unique[itemId] = items2Return.size()-1;
@@ -365,7 +365,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
     }
     //completedSegments = 0;
     time_point<high_resolution_clock> finish = high_resolution_clock::now();
-    results.overheadTime = duration<double, milli>(finish - begin).count();
+    results.overheadTime = duration<float, milli>(finish - begin).count();
     return results;
 }
 
@@ -440,7 +440,7 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
     auto nSuggs = (float) _retSuggs.size();
     if (nSuggs == 0) return true; // Sanity check, if no suggestions were returned, there is nothing more to show
 
-    auto modChange = vector<double>(_modalityWeights.size(),0.0);
+    auto modChange = vector<float>(_modalityWeights.size(),0.0f);
     //auto modPNcnt= vector<pair<float,float>>(_modalities, std::make_pair(0,0));
 
     float rel = 0;
@@ -530,7 +530,7 @@ bool ExqController<T>::update_modality_weights(vector<uint32_t>& ids, vector<flo
         //}
 
         // Rescale weights into original sum weight
-        double msum = 0.0;
+        float msum = 0.0f;
         for (int m = 0; m < _modalities; m++) {
             _positivesFromMod[m] = 0;
             msum += _modalityWeights[m];
@@ -578,5 +578,27 @@ vector<ExqArray<pair<int, float>>> ExqController<T>::get_descriptors(vector<int>
     }
     return res;
 }
+
+template<class T>
+void ExqController<T>::new_model() {
+    /// TODO: Create a new SVM model for the current session.
+    /// TODO: Need to change SVM models to not just be per modality but a list of SVM's per modality.
+    /// TODO: Possibly create a Model struct 
+    /// {
+    ///     modelId,
+    ///     svms[modalities],
+    ///     activeFilters
+    /// }
+}
+
+// template<class T>
+// void ExqController<T>::_init_filters() {
+//     /// TODO: Initialize filters (may only be needed when using multiple models)
+// }
+
+// template<class T>
+// void ExqController<T>::_init_workers() {
+//     /// TODO: Initialize WOrke
+// }
 
 template class exq::ExqController<uint64_t>;

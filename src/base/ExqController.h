@@ -33,14 +33,14 @@ namespace exq {
     struct TopResults {
         vector<uint32_t> suggs;
         vector<int> totalItemsConsideredPerSegment;
-        vector<double> totalTimePerSegment;
-        double overheadTime;
+        vector<float> totalTimePerSegment;
+        float overheadTime;
         TopResults(int segments) {
             suggs = vector<uint32_t>();
             totalItemsConsideredPerSegment = vector<int>(segments, 0);
             std::fill(totalItemsConsideredPerSegment.begin(), totalItemsConsideredPerSegment.end(), 0);
-            totalTimePerSegment = vector<double>(segments, 0.0);
-            std::fill(totalTimePerSegment.begin(), totalTimePerSegment.end(), 0.0);
+            totalTimePerSegment = vector<float>(segments, 0.0f);
+            std::fill(totalTimePerSegment.begin(), totalTimePerSegment.end(), 0.0f);
         }
     };
     /**
@@ -67,10 +67,12 @@ namespace exq {
                 ExqWorker<T>* worker,
                 const vector<ItemProperties>& itemProps,
                 const vector<vector<Props>>& vidProps,
-                vector<double> modWeights,
+                vector<float> modWeights,
                 bool ffs,
                 int guaranteedSlots
         );
+
+        ExqController() {};
 
         /**
          * @brief destroys the controller object
@@ -81,7 +83,7 @@ namespace exq {
         /**
          * @brief train the Linear SVM model and select scope (clusters)
          */
-        vector<double> train(const vector<uint>& trainIds, const vector<float>& trainLabels,
+        vector<float> train(const vector<uint>& trainIds, const vector<float>& trainLabels,
                              bool changeFilters, Filters filters);
 
         /**
@@ -92,6 +94,7 @@ namespace exq {
 
         /**
          * @brief create a new SVM model
+         * TODO: Need to change SVM models to not just be per modality but a list of SVM's per modality.
          */
         void new_model();
 
@@ -150,7 +153,7 @@ namespace exq {
         /**
          * @brief set initial modality weights - the lower the weight the less impact it has on rank aggregation
          */
-        inline void set_modality_weights(vector<double> modWeights) {
+        inline void set_modality_weights(vector<float> modWeights) {
             _modalityWeights = std::move(modWeights);
         }
 
@@ -176,19 +179,19 @@ namespace exq {
         //TODO: Move this to another class along with sortItems, and assignRanking
 
         // Original weights of modality
-        vector<double> _orgModWeights;
+        vector<float> _orgModWeights;
         // Actual weights that are updated based on function
-        vector<double> _modalityWeights;
+        vector<float> _modalityWeights;
         // Rescaled weights to be between 0 and _orgWeightSum
-        vector<double> _rescaledModWeights;
+        vector<float> _rescaledModWeights;
         // Positives from last x rounds
-        vector<double> _positivesFromMod;
+        vector<float> _positivesFromMod;
         int _pref_modality = -1;
         int _update_cnt = 0;
-        double _orgWeightSum = 0.0;
+        float _orgWeightSum = 0.0f;
 
-        std::map<uint32_t,pair<vector<double>,vector<int>>> _retSuggs = std::map<uint32_t,pair<vector<double>,vector<int>>>();
-        double _numPositives = 0.0;
+        std::map<uint32_t,pair<vector<float>,vector<int>>> _retSuggs = std::map<uint32_t,pair<vector<float>,vector<int>>>();
+        float _numPositives = 0.0f;
 
         bool _ffs = false;
         bool _slotsUnset = true;
@@ -203,9 +206,8 @@ namespace exq {
 
         vector<bool> _pq_state;
 
-        void _init_filters();
-        void _init_workers();
-        void _print_feature_vec();
+        // void _init_filters();
+        // void _init_workers();
 
     }; //End of class ExqController
 

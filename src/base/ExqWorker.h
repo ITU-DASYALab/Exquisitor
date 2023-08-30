@@ -34,8 +34,8 @@ namespace exq {
         void suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqClassifier*>& classifiers,
                      int currentSegment, int totalSegments, int noms, int modalities,
                      IExqDataHandler<T>*& handler, vector<IExqFunctions<T>*>& functions,
-                     unordered_set<uint32_t> seenItems, double& times, int& totalItemsConsidered, 
-                     int workerId, ItemFilter& filters, vector<double>& modWeights, vector<int>& slots, bool ffs);
+                     unordered_set<uint32_t> seenItems, float& times, int& totalItemsConsidered, 
+                     int workerId, ItemFilter& filters, vector<float>& modWeights, vector<int>& slots, bool ffs);
 
     private:
         int _workerId = -1;
