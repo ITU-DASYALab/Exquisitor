@@ -49,7 +49,7 @@ void ExqWorker<T>::suggest(int& k, vector<ExqItem>& itemsToReturn, vector<ExqCla
     cout << "(ExqWorker[" << workerId << "]) Getting segment " << currentSegment << " noms" << endl;
 #endif
     for (int m = 0; m < modalities; m++) {
-        totalItemsConsidered += descriptors[m].size();
+        totalItemsConsidered += (int) descriptors[m].size();
 #if defined(DEBUG) || defined(DEBUG_SUGGEST)
         cout << "(ExqWorker[" << workerId << "]) Total items considered for segment " << currentSegment << " mod " <<
         m << ": " << totalItemsConsidered << endl;

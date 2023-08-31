@@ -278,7 +278,7 @@ TopResults ExqController<T>::suggest(int k, const vector<uint32_t>& seenItems, b
                     itemsFromSegments[s][i].aggScore = 0.0f;
                     modItems[itemsFromSegments[s][i].fromModality[0]].push_back(itemsFromSegments[s][i]);
                     items2Return.push_back(itemsFromSegments[s][i]);
-                    unique[itemId] = items2Return.size()-1;
+                    unique[itemId] = (int) items2Return.size()-1;
                 } else {
                     for (int j = 0; j < (int) itemsFromSegments[s][i].fromModality.size(); j++) {
                         bool add = true;

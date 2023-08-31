@@ -7,6 +7,8 @@
 #include "r64/ExqFunctionsR64.h"
 #include "ExqPyHelperFunctions.h"
 
+#include <cstdlib>
+
 using namespace exq;
 using std::milli;
 using std::chrono::duration;
@@ -17,9 +19,9 @@ using std::endl;
 using std::unordered_set;
 
 PyObject* exq::initialize_py([[maybe_unused]] PyObject* self, PyObject* args) {
-    _pyExqV1 = PyExquisitorV1();
-
     cout << "Initializing Exquisitor... " << endl;
+
+    _pyExqV1 = PyExquisitorV1();
 
     vector<vector<string>> compCnfgFiles = vector<vector<string>>();
 
@@ -486,6 +488,12 @@ PyObject* exq::get_descriptors_info_py([[maybe_unused]] PyObject *self, PyObject
 }
 
 PyMODINIT_FUNC exq::PyInit_exq(void) {
-    Py_Initialize();
-    return PyModule_Create(&exquisitor_definition);
+    // cout << "Initializing exq module" << endl;
+    // cout << std::getenv("PYTHONLIBS") << endl;
+    // Py_Initialize();
+    if (!Py_IsInitialized()) {
+        cout << "Initializing Python Interpreter" << endl;
+        Py_Initialize();
+    }
+    return PyModule_Create(&exq_definition);
 }

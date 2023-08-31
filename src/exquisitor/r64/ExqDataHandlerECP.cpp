@@ -47,7 +47,7 @@ IExqDescriptor<uint64_t>* ExqDataHandlerECP::getDescriptor(uint32_t i, int mod) 
 }
 
 int ExqDataHandlerECP::getTotalItemsCount(int mod) {
-    return _descriptors[mod].size();
+    return (int) _descriptors[mod].size();
 }
 
 vector<bool> ExqDataHandlerECP::selectClusters(vector<int> b, vector<ExqClassifier*>& classifiers,

@@ -59,14 +59,14 @@ namespace exq {
         ///
         /// \param clusterId
         /// \return
-        double getClusterCount(uint32_t clusterId);
+        float getClusterCount(uint32_t clusterId);
 
         inline int getFilterRemainingCount(uint32_t clusterId) {
             if (_filterExactCnt[clusterId] == UINT32_MAX) return _sessionRemainingCnt[clusterId];
             if (_filterExactCnt[clusterId] == 0) return 0;
             int frc = _filterExactCnt[clusterId] - _filterReturnedCnt[clusterId];
             if (frc > 0) return frc;
-            return 0.0;
+            return 0;
         }
 
 
@@ -76,7 +76,7 @@ namespace exq {
         }
 
 
-        double getEstimatedRemainingCount(uint32_t clusterId);
+        float getEstimatedRemainingCount(uint32_t clusterId);
 
         inline ExpansionType getExpType() {
             return _expansionType;

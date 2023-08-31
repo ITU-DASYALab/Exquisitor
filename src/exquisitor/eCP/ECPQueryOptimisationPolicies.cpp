@@ -122,7 +122,7 @@ void ECPQueryOptimisationPolicies::gatherInformation(int*& levelSizes, ECPConfig
                 //cout << i << "\t" << iter->first << "\t" << iter->second << "\t" << clusterTotals[i]  << "\t" << iter->second/clusterTotals[i] << endl;
                 iter->second = iter->second/clusterTotals[i];
             }
-            totalCombinationSize += _combinations[i].size();
+            totalCombinationSize += (int) _combinations[i].size();
         }
         cout << "Done" << endl;
         cout << "Total combinations: " << totalCombinationSize << endl;
@@ -197,25 +197,25 @@ void ECPQueryOptimisationPolicies::addCombination(uint32_t clusterId, uint32_t d
 }
 
 
-double ECPQueryOptimisationPolicies::getClusterCount(uint32_t clusterId) {
-    if (_expansionType == GLOBAL_REMAINING_CNT) return _sessionRemainingCnt[clusterId];
-    if (_expansionType == FILTER_REMAINING_CNT) return getFilterRemainingCount(clusterId);
+float ECPQueryOptimisationPolicies::getClusterCount(uint32_t clusterId) {
+    if (_expansionType == GLOBAL_REMAINING_CNT) return (float) _sessionRemainingCnt[clusterId];
+    if (_expansionType == FILTER_REMAINING_CNT) return (float) getFilterRemainingCount(clusterId);
     if (_expansionType == ESTIMATED_REMAINING_CNT) return getEstimatedRemainingCount(clusterId);
     if (_expansionType == ALL_REMAINING_CNT) {
-        double est = getEstimatedRemainingCount(clusterId);
-        if (_sessionRemainingCnt[clusterId] == 0) return 0.0;
+        float est = getEstimatedRemainingCount(clusterId);
+        if (_sessionRemainingCnt[clusterId] == 0) return 0.0f;
         if (_filterExactCnt[clusterId] == UINT32_MAX) {
             // FRC not cached
-            if (_sessionRemainingCnt[clusterId] < est) return _sessionRemainingCnt[clusterId];
+            if (_sessionRemainingCnt[clusterId] < est) return (float) _sessionRemainingCnt[clusterId];
             return est;
         }
         // FRC cached
-        return getFilterRemainingCount(clusterId);
+        return (float) getFilterRemainingCount(clusterId);
     }
     return _originalCnt[clusterId];
 }
 
-double ECPQueryOptimisationPolicies::getEstimatedRemainingCount(uint32_t clusterId) {
+float ECPQueryOptimisationPolicies::getEstimatedRemainingCount(uint32_t clusterId) {
     /**
      * Old method from research version of Exquisitor will not work for this version of Exquisitor
      * TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
@@ -244,5 +244,5 @@ double ECPQueryOptimisationPolicies::getEstimatedRemainingCount(uint32_t cluster
 //        }
 //    }
 
-    return 0.0;
+    return 0.0f;
 }

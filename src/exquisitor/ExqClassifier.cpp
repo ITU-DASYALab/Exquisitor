@@ -27,8 +27,8 @@ vector<float> ExqClassifier::train(vector<vector<float>> data, vector<float> lab
     }
 #endif
     //Controller calculates scores and creates the 2D data vector
-    int rows = data.size();
-    int cols = data[0].size();
+    int rows = (int) data.size();
+    int cols = (int) data[0].size();
     cv::Mat labelsMat(rows, 1, CV_32FC1);
     cv::Mat dataMat(rows, cols, CV_32F);
     for (int i = 0; i < rows; i++) {
@@ -86,8 +86,8 @@ void ExqClassifier::resetClassifier() {
     _svm->setSvmsgdType(SVMSGD::ASGD);
     _svm->setOptimalParameters();
     _svm->setMarginType(SVMSGD::HARD_MARGIN);
-    _svm->setMarginRegularization(0.01);
-    _svm->setInitialStepSize(0.01);
-    _svm->setStepDecreasingPower(0.75);
+    _svm->setMarginRegularization(0.01f);
+    _svm->setInitialStepSize(0.01f);
+    _svm->setStepDecreasingPower(0.75f);
     _svm->setTermCriteria(cv::TermCriteria(cv::TermCriteria::COUNT, 1000, 1));
 }

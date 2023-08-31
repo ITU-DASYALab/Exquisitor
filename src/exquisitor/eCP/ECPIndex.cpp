@@ -34,7 +34,12 @@ ECPIndex::ECPIndex(ECPConfig *cnfg, IExqFunctions<uint64_t>*& func, int featureD
     cout << "Index files loaded" << endl;
     // Double check the file size
     struct stat filestat{};
+#ifdef _MSC_VER
+    fstat(_fileno(_indxFile), &filestat);
+#else
     fstat(fileno(_indxFile), &filestat);
+#endif
+
     _maxClusters = filestat.st_size / _indexEntrySize;
     if (_maxClusters != cnfg->getNumClst()) {
         cout << "Index: Incorrect index file size " << filestat.st_size << \

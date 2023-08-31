@@ -27,8 +27,8 @@ ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsS
     this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
     this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        this->idsBitShifts[i] = i * this->idsFeatureShift + remainder(64, this->idsFeatureShift);
-        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + remainder(64, this->ratiosFeatureShift);
+        this->idsBitShifts[i] = i * this->idsFeatureShift + (uint64_t) remainder(64, this->idsFeatureShift);
+        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + (uint64_t) remainder(64, this->ratiosFeatureShift);
     }
 }
 
@@ -48,8 +48,8 @@ ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsS
     this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
     this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
     for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        this->idsBitShifts[i] = i * this->idsFeatureShift + remainder(64, this->idsFeatureShift);
-        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + remainder(64, this->ratiosFeatureShift);
+        this->idsBitShifts[i] = i * this->idsFeatureShift + (uint64_t) remainder(64, this->idsFeatureShift);
+        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + (uint64_t) remainder(64, this->ratiosFeatureShift);
     }
 }
 
@@ -75,7 +75,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExq
 #endif
     auto exqArr = ExqArray<pair<int, float>>(this->nDescFeatures);
 
-    int featId = top >> this->topFeatureShift;
+    int featId = (int) (top >> this->topFeatureShift);
 #ifdef DEBUG
     cout << "(ExqFncR64) Top Feature ID: " << featId << endl;
 #endif
@@ -87,7 +87,7 @@ inline ExqArray<pair<int, float>> ExqFunctionsR64::getDescriptorInformation(IExq
 
     for (int i = 0; i < iota; i++) {
         for (int j = 0; j < (this->nDescFeatures-1); j++) {
-            featId = (featureIds->getItem(i) >> this->idsBitShifts[j]) & this->idsMask;
+            featId = (int) ((featureIds->getItem(i) >> this->idsBitShifts[j]) & this->idsMask);
 #ifdef DEBUG
             cout << "(ExqFncR64) Feature ID: " << featId << endl;
 #endif
@@ -118,12 +118,12 @@ inline float ExqFunctionsR64::distance(vector<float>& model, float bias, IExqDes
     auto featureRatios = (ExqArray<uint64_t>*) descriptor.getFeatureRatios();
 
     float score = bias;
-    int featId = top >> this->topFeatureShift;
+    int featId = (int) (top >> this->topFeatureShift);
     float featVal = (top & this->topMask) / this->topDivisor;
     score += model[featId] * featVal;
     for (int i = 0; i < iota; i++) {
         for (int j = 0; j < (this->nDescFeatures - 1); j++) {
-            featId = (featureIds->getItem(i) >> this->idsBitShifts[j]) & this->idsMask;
+            featId = (int) ((featureIds->getItem(i) >> this->idsBitShifts[j]) & this->idsMask);
             featVal *= ((featureRatios->getItem(i) >> this->ratiosBitShifts[j]) & this->ratiosMask) /
                        this->ratiosDivisor;
             score += model[featId] * featVal;

@@ -2,12 +2,23 @@
 
 ECPConfig::ECPConfig(string filename) {
     // Open the file
+#ifdef _MSC_VER
+    FILE *file;
+    errno_t err = fopen_s(&file, filename.c_str(), "rb");
+    if (err == 0) {
+        cout << "ConfigMapper (" << filename << ")" << endl;
+        cout << "Error: open config file (ConfigMapper.cpp)" << endl;
+        exit(0);
+    }
+#else
     FILE *file = fopen(filename.c_str(), "rb");
     if (file == 0) {
         cout << "ConfigMapper (" << filename << ")" << endl;
         cout << "Error: open config file (ConfigMapper.cpp)" << endl;
         exit(0);
     }
+#endif
+    
 
     // Get the lines from the file one by one
     char param[1000];
