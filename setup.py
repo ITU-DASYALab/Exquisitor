@@ -1,37 +1,29 @@
 import os
+import json
 from pathlib import Path
-import sys
 from setuptools import Extension, setup
 
 os.environ['CC'] = 'g++'
-vcpkg_libs = os.path.join(
-                os.path.join(
-                    os.path.join(
-                        os.environ['VCPKG_ROOT'], 
-                    'installed'), 
-                os.environ['VCPKG_TRIPLET']), 
-            'lib')
-vcpkg_include = os.path.join(
-                    os.path.join(
-                        os.path.join(
-                            os.environ['VCPKG_ROOT'], 
-                        'installed'), 
-                    os.environ['VCPKG_TRIPLET']), 
-                'include')
-py_libs = os.path.join(sys.exec_prefix, 'libs')
-py_include = os.path.join(sys.exec_prefix,'include')
-# hdf5_libs = os.path.join(os.environ['HDF5_ROOT'], 'lib')
-# hdf5_include = os.path.join(os.environ['HDF5_ROOT'], 'include')
-# opencv_libs = os.environ['OPENCV_LIB']
-# opencv_include = os.environ['OPENCV_INCLUDE']
 
-# print(os.environ['CC'])
-# print(vcpkg_include)
-# print(vcpkg_libs)
-# print(hdf5_libs)
-# print(hdf5_include)
-# print(opencv_libs)
-# print(opencv_include)
+# Paths from environment variables
+inlcude_paths = [
+    str(Path(os.environ['PYTHON_INCLUDE'])),
+    str(Path(os.environ['HDF5_INCLUDE'])), 
+    str(Path(os.environ['OPENCV_INCLUDE'])) 
+]
+library_paths = [
+    str(Path(os.environ['PYTHON_LIBS'])),
+    str(Path(os.environ['HDF5_LIBS'])),
+    str(Path(os.environ['OPENCV_LIBS']))
+]
+
+# Libraries
+if os.name == 'nt':
+    libraries = ['python311', 'hdf5', 'hdf5_hl', 'opencv_ml', 'opencv_core']
+else:
+    libraries = ['python3.11', 'hdf5', 'hdf5_hl', 'opencv_ml', 'opencv_core']
+
+
 
 compile_args = []
 if (os.name == 'nt'):
@@ -60,31 +52,9 @@ sources = [
 exquisitor = Extension(
                 'exq',
                 sources=sources,
-                include_dirs=[
-                    py_include,
-                    # hdf5_include,
-                    # opencv_include
-                    vcpkg_include
-                    # '/Library/Frameworks/Python.framework/Versions/Current/include/python3.10', # Mac
-                    # '/usr/local/include/opencv4', # Mac/Linux
-                    # '/usr/local/Cellar/hdf5/1.12.1_1/include/hdf5' # Mac/Linux
-                    # 'C:/Program Files/WindowsApps/PythonSoftwareFoundation.Python3.10_1.10.2544.0_x64__qbz5n2kfra8p0/include', # Windows
-                    # 'C:/opencv/sources/build/install/include', # Windows
-                    # 'C:/Program Files/HDF_Group/HDF5/1.14.0/include' # Windows
-                ],
-                library_dirs=[
-                    py_libs,
-                    # hdf5_libs,
-                    # opencv_libs
-                    vcpkg_libs,
-                    # '/Library/Frameworks/Python.framework/Versions/Current/lib', # Mac
-                    # '/usr/local/Cellar/hdf5/1.12.1_1/lib', # Mac/Linux
-                    # '/usr/local/lib' # Mac/Linux, lib path where opencv_core and opencv_ml are
-                    # 'C:/Program Files/WindowsApps/PythonSoftwareFoundation.Python3.10_1.10.2544.0_x64__qbz5n2kfra8p0/lib', # Windows
-                    # 'C:/opencv/sources/build/lib', # Windows
-                    # 'C:/Program Files/HDF_Group/HDF5/1.14.0/lib', # Windows
-                ],
-                libraries=['python311', 'hdf5', 'hdf5_hl', 'opencv_core4', 'opencv_ml4'],
+                include_dirs=inlcude_paths,
+                library_dirs=library_paths,
+                libraries=libraries,
                 extra_compile_args=compile_args,
                 # [
                     # '/O2', '/std:c++20', # Windows

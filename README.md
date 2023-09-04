@@ -28,32 +28,8 @@ Using vcpkg install hdf5 and opencv (may need to install opencv using --host-tri
 
 # Installation
 
-Set the following environment variables:
-  * VCPKG_ROOT='C:\vcpkg'
-  * VCPKG_TRIPLET='x64-windows'
-  Examples for Windows
+In install_exq.sh / install_exq.bat change the paths to the correct locations for Python, HDF5 and OpenCV.
 
-Run the following commands:
-```
-python -m build
-pip install --force-reinstall dist/*.whl
-```
+Verify that the libraries for opencv libopencv_ml and libopencv_core exists. In some installations they have the name libopencv_ml4 and libopencv_core4 or libopencv_world4XX. Resolve these by either creating symbolic links to opencv_ml and opencv_core filenames or update setup.py "libraries" variable (Note: In the if-else clause 'nt' = Windows).
 
-
-## Old setup.py installation
-* Update include and library directory paths in setup.py
-* Add library directory for opencv and hdf5 to $LD_LIBRARY_PATH (Linux) or $DYLD_LIBRARY_PATH (MacOS). Example for .bashrc:
-    ```
-    export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH
-    or
-    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-    ```
-* python3 setup.py install
-* Test if everything is working by running the three test script with argument 0. (example: python3 test_initialize.py 0)
-* If you encounter error relating to unavailable function for macOS use the following command to set the target macOS version to 12:
-  ```
-  export MACOSX_DEPLOYMENT_TARGET=12.0
-  ```
-  All features should be available for macOS 10.15 and above.
-
-Note: If you are using CLion set X_LIBRARY_PATH under Environment Variable in the run configuration
+Run the appropriate install_exq script for your system.
