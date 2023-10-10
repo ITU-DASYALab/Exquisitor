@@ -11,27 +11,6 @@ using std::cout;
 using std::endl;
 
 
-ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, float topDivisor,
-                                 float ratiosDivisor) {
-    this->iota = iota;
-    this->nDescFeatures = nDescFeat;
-    this->topFeatureShift = topShift;
-    this->idsFeatureShift = idsShift;
-    this->ratiosFeatureShift = ratiosShift;
-    this->topMask = (uint64_t)(pow(2.0, this->topFeatureShift)-1);
-    this->topDivisor = topDivisor;
-    this->idsMask = (uint64_t)(pow(2, this->idsFeatureShift)-1);
-    this->ratiosMask = (uint64_t)(pow(2, this->ratiosFeatureShift)-1);
-    this->ratiosDivisor = ratiosDivisor;
-
-    this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
-    this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
-    for (int i = 0; i < (this->nDescFeatures-1); i++) {
-        this->idsBitShifts[i] = i * this->idsFeatureShift + (uint64_t) remainder(64, this->idsFeatureShift);
-        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + (uint64_t) remainder(64, this->ratiosFeatureShift);
-    }
-}
-
 ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask,
                                  float topDivisor, uint64_t idsMask, uint64_t ratiosMask, float ratiosDivisor) {
     this->iota = iota;
@@ -52,6 +31,32 @@ ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsS
         this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + (uint64_t) remainder(64, this->ratiosFeatureShift);
     }
 }
+
+ExqFunctionsR64::ExqFunctionsR64(int nDescFeat, int iota, int topShift,  int idsShift, int ratiosShift, int topMask, float topDivisor,
+                                 int idsMask, int ratiosMask, float ratiosDivisor) {
+    this->iota = iota;
+    this->nDescFeatures = nDescFeat;
+    this->topFeatureShift = topShift;
+    this->idsFeatureShift = idsShift;
+    this->ratiosFeatureShift = ratiosShift;
+    this->topMask = (uint64_t)(pow(2.0, topMask)-1);
+    cout << "(ExqFunc) topMask: " << this->topMask << endl;
+    this->topDivisor = topDivisor;
+    this->idsMask = (uint64_t)(pow(2, idsMask)-1);
+    cout << "(ExqFunc) idsMask: " << this->idsMask << endl;
+    this->ratiosMask = (uint64_t)(pow(2, ratiosMask)-1);
+    cout << "(ExqFunc) ratiosMask: " << this->ratiosMask << endl;
+    this->ratiosDivisor = ratiosDivisor;
+
+    this->idsBitShifts = new uint64_t[this->nDescFeatures-1];
+    this->ratiosBitShifts = new uint64_t[this->nDescFeatures-1];
+    for (int i = 0; i < (this->nDescFeatures-1); i++) {
+        this->idsBitShifts[i] = i * this->idsFeatureShift + (uint64_t) remainder(64, this->idsFeatureShift);
+        this->ratiosBitShifts[i] = i * this->ratiosFeatureShift + (uint64_t) remainder(64, this->ratiosFeatureShift);
+    }
+}
+
+
 
 ExqFunctionsR64::~ExqFunctionsR64() {
     delete this->idsBitShifts;

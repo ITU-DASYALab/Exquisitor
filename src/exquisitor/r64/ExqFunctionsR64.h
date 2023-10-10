@@ -22,9 +22,11 @@ namespace exq {
      */
     class ExqFunctionsR64 : public IExqFunctions<uint64_t> {
     public:
-        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, float topDivisor, float ratiosDivisor);
         ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, uint64_t topMask, float topDivisor,
                         uint64_t idsMask, uint64_t ratiosMask, float ratiosDivisor);
+
+        ExqFunctionsR64(int nDescFeat, int iota, int topShift, int idsShift, int ratiosShift, int topMask, float topDivisor,
+                        int idsMask, int ratiosMask, float ratiosDivisor);
 
         ~ExqFunctionsR64();
 

@@ -5,10 +5,10 @@ set HDF5_LIBS=C:\vcpkg\installed\x64-windows\lib
 set OPENCV_INCLUDE=C:\vcpkg\installed\x64-windows\include
 set OPENCV_LIBS=C:\vcpkg\installed\x64-windows\lib
 
-@REM python -m build
-@REM for %%f in (dist\*.whl) do (
-@REM     python -m pip install --force-reinstall dist\%%~Nf.whl
-@REM )
+python -m build
+for %%f in (dist\*.whl) do (
+    python -m pip install --force-reinstall dist\%%~Nf.whl
+)
 
 @REM In case the above fails with "ImportError: DLL load failed while importing exq",
 @REM run the following instead.

@@ -65,8 +65,8 @@ namespace exq {
                 IExqDataHandler<T>* handler,
                 vector<ExqClassifier*> classifiers,
                 ExqWorker<T>* worker,
-                const vector<ItemProperties>& itemProps,
-                const vector<vector<Props>>& vidProps,
+                // const vector<ItemProperties>& itemProps,
+                // const vector<vector<Props>>& vidProps,
                 vector<float> modWeights,
                 bool ffs,
                 int guaranteedSlots
@@ -171,9 +171,9 @@ namespace exq {
         IExqDataHandler<T>* _handler;
         vector<ExqClassifier*> _classifiers;
         ExqWorker<T>* _worker;
-        vector<ItemProperties> _itemProperties;
-        //collection -> video -> property -> value(s)
-        vector<vector<Props>> _vidProperties;
+        // vector<ItemProperties> _itemProperties;
+        // collection -> video -> property -> value(s)
+        // vector<vector<Props>> _vidProperties;
         ItemFilter _activeFilters;
 
         //TODO: Move this to another class along with sortItems, and assignRanking

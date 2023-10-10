@@ -38,15 +38,15 @@ void ExqDataHandlerECP::loadData(int workers) {
 }
 
 
-IExqDescriptor<uint64_t>* ExqDataHandlerECP::getDescriptor(uint32_t i) {
+inline IExqDescriptor<uint64_t>* ExqDataHandlerECP::getDescriptor(uint32_t i) {
     return (IExqDescriptor<uint64_t>*) _descriptors[0][i];
 }
 
-IExqDescriptor<uint64_t>* ExqDataHandlerECP::getDescriptor(uint32_t i, int mod) {
+inline IExqDescriptor<uint64_t>* ExqDataHandlerECP::getDescriptor(uint32_t i, int mod) {
     return (IExqDescriptor<uint64_t>*) _descriptors[mod][i];
 }
 
-int ExqDataHandlerECP::getTotalItemsCount(int mod) {
+inline int ExqDataHandlerECP::getTotalItemsCount(int mod) {
     return (int) _descriptors[mod].size();
 }
 
@@ -80,7 +80,7 @@ void ExqDataHandlerECP::getSegmentDescriptors(int currentSegment, int totalSegme
     auto clusterIdsPerMod = vector<vector<uint32_t>>(_modalities);
     auto totalData = vector<int>(_modalities);
     for (int m = 0; m < _modalities; m++) {
-        int chnk = _b[m]/ totalSegments;
+        int chnk = _b[m] / totalSegments;
         suggIdsPerMod[m] = vector<uint32_t>();
         _indx[m]->search(chnk, totalData[m], suggIdsPerMod[m], currentSegment,
                          totalSegments, seenItems, filters);
@@ -97,7 +97,7 @@ void ExqDataHandlerECP::getSegmentDescriptors(int currentSegment, int totalSegme
         cout << "(ExqHandler) descriptors[" << m << "].size(): " << descriptors[m].size() << endl;
         cout << "(ExqHandler) descriptorIds: ";
         for (int i = 0; i < (int)suggIdsPerMod[m].size(); i++) {
-            cout << descriptors[m][i].id << ", ";
+            cout << descriptors[m][i]->getId() << ", ";
         }
         cout << endl;
 #endif

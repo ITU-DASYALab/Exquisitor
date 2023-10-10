@@ -154,6 +154,7 @@ bool ECPIndex::set_b_clusters(vector<float> query, float bias, int b, bool resum
     }
 #if defined(DEBUG) || defined(DEBUG_TRAIN) || defined(DEBUG_SUGGEST)
     cout << "(ECPIndx) Got clusters" << endl;
+    cout << "descriptorIds size (" << clusters->getTopIds().size()  << ")" << endl;
 #endif
     _bClusters.clear();
     clusters->open();

@@ -5,7 +5,7 @@ ECPConfig::ECPConfig(string filename) {
 #ifdef _MSC_VER
     FILE *file;
     errno_t err = fopen_s(&file, filename.c_str(), "rb");
-    if (err == 0) {
+    if (err != 0) {
         cout << "ConfigMapper (" << filename << ")" << endl;
         cout << "Error: open config file (ConfigMapper.cpp)" << endl;
         exit(0);

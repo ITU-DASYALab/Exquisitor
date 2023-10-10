@@ -27,7 +27,8 @@ else:
 
 compile_args = []
 if (os.name == 'nt'):
-    compile_args = ['/O2', '/std:c++20']
+    compile_args = ['/O2', '/std:c++20', #, '/DDEBUG_SUGGEST']
+                    '/D_LARGE_FILE_SOURCE', '/D_FILE_OFFSET_BITS=64']
 else:
     compile_args = ['-O3', '-Wall', '-std=c++20']
 

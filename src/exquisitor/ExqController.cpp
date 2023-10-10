@@ -38,8 +38,8 @@ ExqController<T>::ExqController(
         IExqDataHandler<T>* handler,
         vector<ExqClassifier*> classifiers,
         ExqWorker<T>* worker,
-        const vector<ItemProperties>& itemProps,
-        const vector<vector<Props>>& vidProps,
+        // const vector<ItemProperties>& itemProps,
+        // const vector<vector<Props>>& vidProps,
         vector<float> modWeights,
         bool ffs,
         int guaranteedSlots
@@ -60,7 +60,7 @@ ExqController<T>::ExqController(
     _handler = handler;
     _classifiers = std::move(classifiers);
     _worker = worker;
-    _itemProperties = itemProps;
+    // _itemProperties = itemProps;
 #if defined(DEBUG) || defined(DEBUG_INIT_META)
     if (_itemProperties.size() != 0) {
         cout << "Checking item metadata" << endl;
@@ -89,7 +89,7 @@ ExqController<T>::ExqController(
         }
     }
 #endif
-    _vidProperties = vidProps;
+    // _vidProperties = vidProps;
 
     _orgModWeights = vector<float>(modWeights);
     _positivesFromMod = vector<float>(_modalities, 0.0f);
