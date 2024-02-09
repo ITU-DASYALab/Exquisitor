@@ -1,5 +1,5 @@
 import argparse
-import exq
+import exquisitor
 import datetime
 import json
 import csv
@@ -122,7 +122,7 @@ def test_one_modality():
     func_objs = [[5, 48, 16, 16, 281474976710655, float(2*pow(10, 14)), 65535, 65535, 50000.0, 1.0]]
     item_metadata = []
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
@@ -140,7 +140,7 @@ def test_two_modalities():
     func_objs = [[7, 54, 10, 10, 18014398509481983, float(pow(10, 16)), 1023, 1023, 1000.0, 1.0]]
     item_metadata = []
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
@@ -158,7 +158,7 @@ def test_two_modalities_different_compression():
     func_objs = [[]]
     item_metadata = [[]]
     video_metadata = [[]]
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
@@ -176,7 +176,7 @@ def test_three_modalities():
     func_objs = []
     item_metadata = []
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
@@ -200,7 +200,7 @@ def test_three_modalities_different_compression():
     ]
     item_metadata = []
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
     return 0
@@ -251,7 +251,7 @@ def test_filters_one_collection():
     print(items_meta[1])
     print(items_meta[2])
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
@@ -269,7 +269,7 @@ def test_filters_two_collections():
     func_objs = [[]]
     item_metadata = [[]]
     video_metadata = [[]]
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
@@ -313,7 +313,7 @@ def test_filters_videos_one_collection(filters_file):
             filters[vid_ids[i]]['tagIds']
         ]
         video_metadata[0].append(vid)
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
     return 0
@@ -332,7 +332,7 @@ def test_filters_videos_two_collections():
     func_objs = [[]]
     item_metadata = [[]]
     video_metadata = [[]]
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 

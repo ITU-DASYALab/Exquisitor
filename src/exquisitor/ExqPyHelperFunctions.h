@@ -183,6 +183,7 @@ namespace exq {
                 }
             }
         }
+        // TODO: What was the purpose of this filter? Seems unnecessary...
         cout << "Extracting Neg Vid" << endl;
         // Neg Video filters
         for (int i = 0; i < (int)PyList_Size(negVidFiltersPy); i++) { // collections

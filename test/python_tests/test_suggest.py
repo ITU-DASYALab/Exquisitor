@@ -1,5 +1,5 @@
 import argparse
-import exq
+import exquisitor
 import datetime
 from time import time
 import json
@@ -121,7 +121,7 @@ def single_modality_initialize():
     func_objs = [[5, 48, 16, 16, 281474976710655, float(2 * pow(10, 14)), 65535, 65535, 50000.0, 1.0]]
     item_metadata = []
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
 
@@ -150,7 +150,7 @@ def single_modality_initialize_with_metadata():
         items_meta.append(item)
     item_metadata = items_meta
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
 
@@ -167,7 +167,7 @@ def two_modalities_initialize():
     func_objs = [[7, 54, 10, 10, 18014398509481983, float(pow(10, 16)), 1023, 1023, 1000.0, 1.0]]
     item_metadata = []
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
     return 0
 
@@ -191,7 +191,7 @@ def three_modalities_initialize():
     ]
     item_metadata = []
     video_metadata = []
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
     return 0
@@ -236,7 +236,7 @@ def three_modalities_initialize_with_metadata(filters_file):
             filters[vid_ids[i]]['tagIds']
         ]
         video_metadata[0].append(vid)
-    exq.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
+    exquisitor.initialize(iota, noms, num_workers, segments, num_modalities, b, comp_conf_files, mod_feature_dimensions,
                    func_type, func_objs, item_metadata, video_metadata, 0, 1, False, 0)
 
     return 0
@@ -249,11 +249,11 @@ def test_single_modality_no_filters_no_seen():
     # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
     item_ids = [39310, 17230, 73524, 65850, 54647]
     labels = [1.0, 1.0, 1.0, -1.0, -1.0]
-    train_ret = exq.train(item_ids, labels, False, [])
+    train_ret = exquisitor.train(item_ids, labels, False, [])
     print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -269,12 +269,12 @@ def test_single_modality_no_filters_no_seen_two_rounds():
     # 3 Positive images of indoor setting (1 with a clock). 2 Negative outdoor images
     item_ids = [39310, 17230, 73524, 65850, 54647]
     labels = [1.0, 1.0, 1.0, -1.0, -1.0]
-    exq.reset_model()
-    train_ret = exq.train(item_ids, labels, False, [])
+    exquisitor.reset_model()
+    train_ret = exquisitor.train(item_ids, labels, False, [])
     print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -283,11 +283,11 @@ def test_single_modality_no_filters_no_seen_two_rounds():
 
     item_ids = [39310, 17230, 73524, 65850, 54647]
     labels = [1.0, 1.0, 1.0, -1.0, -1.0]
-    exq.reset_model()
-    train_ret = exq.train(item_ids, labels, False, [])
+    exquisitor.reset_model()
+    train_ret = exquisitor.train(item_ids, labels, False, [])
     print(train_ret)
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
     print("Total Times: ", total_times)
@@ -315,11 +315,11 @@ def test_single_modality_filters_no_exp():
     ]
     vid_filters = []
     filters = [collections, std_filters, coll_filters, vid_filters]
-    train_ret = exq.train(item_ids, labels, True, filters)
+    train_ret = exquisitor.train(item_ids, labels, True, filters)
     print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -348,11 +348,11 @@ def test_single_modality_filters_not_active_no_exp():
     ]
     vid_filters = []
     filters = [collections, std_filters, coll_filters, vid_filters]
-    train_ret = exq.train(item_ids, labels, True, filters)
+    train_ret = exquisitor.train(item_ids, labels, True, filters)
     print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -381,11 +381,11 @@ def test_single_modality_filters_incr():
     ]
     vid_filters = []
     filters = [collections, std_filters, coll_filters, vid_filters]
-    train_ret = exq.train(item_ids, labels, True, filters)
+    train_ret = exquisitor.train(item_ids, labels, True, filters)
     print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -413,11 +413,11 @@ def test_modalities_no_filters():
     # Random items just to see if the process works with multiple modalities
     item_ids = [39310, 17230, 73524, 65850, 54647]
     labels = [1.0, 1.0, 1.0, -1.0, -1.0]
-    train_ret = exq.train(item_ids, labels, False, [])
+    train_ret = exquisitor.train(item_ids, labels, False, [])
     print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -463,11 +463,11 @@ def test_three_modalities_with_filters():
         ]
     ]
     filters = [collections, std_filters, coll_filters, vid_filters]
-    train_ret = exq.train(item_ids, labels, True, filters)
+    train_ret = exquisitor.train(item_ids, labels, True, filters)
     print(train_ret)
     ts = time()
     (suggestions, total_items, worker_times, total_times, overhead) = \
-        exq.suggest(n_suggest, segments, seen, False, [])
+        exquisitor.suggest(n_suggest, segments, seen, False, [])
     ts = time() - ts
     print("Suggestions: ", suggestions)
     print("Total Items: ", total_items)
@@ -490,10 +490,10 @@ if __name__ == "__main__":
         initialize_metadata()
         single_modality_initialize_with_metadata()
         test_single_modality_filters_no_exp()
-        exq.reset_model()
+        exquisitor.reset_model()
         test_single_modality_filters_no_exp()
-        exq.reset_model()
-        exq.reset_model()
+        exquisitor.reset_model()
+        exquisitor.reset_model()
         test_single_modality_filters_not_active_no_exp()
         exit()
     elif args.test_group == 2:
