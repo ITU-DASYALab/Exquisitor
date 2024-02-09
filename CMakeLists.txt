@@ -16,11 +16,11 @@ link_directories(${Python3_LIBRARY_DIRS})
 include_directories(${Python3_INCLUDE_DIRS})
 
 # HDF5
-find_package(HDF5 CONFIG REQUIRED)
+find_package(HDF5 REQUIRED)
 include_directories(${HDF5_INCLUDE_DIRS})
 
 #OpenCV
-find_package(OpenCV CONFIG REQUIRED)
+find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Project Files

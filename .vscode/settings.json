@@ -17,10 +17,11 @@
         "xstring": "cpp"
     },
     //"cmake.generator": "MinGW Makefiles",
-    "cmake.generator": "Visual Studio 17 2022",
+    // "cmake.generator": "Visual Studio 17 2022",
+    "cmake.generator": "Unix Makefiles",
     "cmake.configureArgs": [
-        "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "-DVCPKG_TARGET_TRIPLET=x64-windows",
+    //     "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+    //     "-DVCPKG_TARGET_TRIPLET=x64-windows",
     ],
     "cmake.configureSettings": {},
 }

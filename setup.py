@@ -21,7 +21,7 @@ library_paths = [
 if os.name == 'nt':
     libraries = ['python311', 'hdf5', 'hdf5_hl', 'opencv_ml', 'opencv_core']
 else:
-    libraries = ['python3.11', 'hdf5', 'hdf5_hl', 'opencv_ml', 'opencv_core']
+    libraries = ['python3.10', 'hdf5_serial', 'hdf5_serial_hl', 'opencv_ml', 'opencv_core']
 
 
 

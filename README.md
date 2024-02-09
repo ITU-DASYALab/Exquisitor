@@ -16,10 +16,10 @@ for large multimedia collections using modest computing resources.
 
 ## Requirements
 
-* python 3.11 or higher
+* python 3.10 or higher
 * cmake 3.27 or higher
 * opencv 4.5.5 or higher
-* hdf5 1.14.0 or higher
+* hdf5 1.10.7 or higher
 
 ### Windows
 

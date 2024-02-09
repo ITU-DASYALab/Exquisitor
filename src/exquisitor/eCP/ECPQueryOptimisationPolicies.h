@@ -22,7 +22,7 @@ namespace exq {
         FILTER_REMAINING_CNT,
         ESTIMATED_REMAINING_CNT,
         ALL_REMAINING_CNT
-    };
+    }; 
 
     using std::vector;
     using std::map;
