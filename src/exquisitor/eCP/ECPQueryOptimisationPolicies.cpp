@@ -3,9 +3,12 @@
 //
 
 #include "ECPQueryOptimisationPolicies.h"
+#include <iostream>
 #include <filesystem>
 
 using namespace exq;
+using std::cout;
+using std::endl;
 
 ECPQueryOptimisationPolicies::ECPQueryOptimisationPolicies(ExpansionType expansionType, int statLevel,
                                                            vector<ECPCluster*>& clusters,
@@ -97,16 +100,17 @@ void ECPQueryOptimisationPolicies::gatherInformation(int*& levelSizes, ECPConfig
         for (int i = 0; i < numClusters; i++) {
             int temp_level = (int) cnfg->getNumLvls()-1;
             int p = i;
+            cout << "temp_level: " << temp_level << endl;
             while (temp_level != _statLevel) {
                 p = nodes[temp_level][p]->parent;
                 temp_level--;
             }
             _clusterToStatLevel[i] = p; //Map from selected cluster to stat level cluster
-            //cout << i << "\t" << clusterToStats[i] << endl;
+            cout << i << "\t" << _clusterToStatLevel[i] << endl;
             // Add each items filter statistics to the rightful stat level cluster
             _clusters[i]->open();
             ExqDescriptorR64* desc;
-            //cout << "Adding combinations for " << i << endl;
+            cout << "Adding combinations for " << i << endl;
             while((desc = _clusters[i]->next()) != NULL) {
                 addCombination(p, desc->getId());
                 clusterTotals[p]++;
@@ -136,18 +140,80 @@ void ECPQueryOptimisationPolicies::addCombination(uint32_t clusterId, uint32_t d
      * TODO: Overhaul it towards using optimal C++ functionality and the current filter management structure
      */
 
-    //struct MetaProbabilities {
-    //    // collection -> probabiltiy
-    //    map<int,float> collectionIdProb;
-    //    // collection -> video -> probability
-    //    vector<map<int,float>> videoIdProb;
-    //    // property -> value(s) -> probability
-    //    MetaPropsProbs stdPropProbs;
-    //    MetaPropsProbs collPropProbs;
-    //    // collection -> video -> property -> value(s) -> probability
-    //    vector<map<int,MetaPropsProbs>> vidPropProbs;
-    //};
-
+    auto keys = vector<string>();
+    cout << "_itemProps -> stdProps" << endl;
+    for (int i = 0; i < _itemProps->at(descId).stdProps.props.size(); i++) {
+        // vector (properties)
+        cout << "stdProps.props[" << i << "]" << endl;
+        for (auto& val : _itemProps->at(descId).stdProps.props[i]) {
+            // set
+            string base_key = "StP" + std::to_string(i) + std::to_string(val);
+            keys.push_back(base_key);
+            // auto res = _combinations[clusterId].insert({base_key, 1.0});
+            // if (!res.second) {
+            //    res.first->second = res.first->second + 1.0;
+            // }
+            // if (first) {
+            //     combo_key = base_key;
+            //     first = false;
+            // } else {
+            //     combo_key += "," + base_key;
+            //     auto res = _combinations[clusterId].insert({base_key, 1.0});
+            //     if (!res.second) {
+            //         res.first->second = res.first->second + 1.0;
+            //     }
+            // }
+        }
+    }
+    cout << "_itemProps -> collProps" << endl;
+    for (int i = 0; i < _itemProps->at(descId).collProps.props.size(); i++) {
+        // vector (properties)
+        cout << "collProps.props[" << i << "]"<< endl;
+        for (auto& val : _itemProps->at(descId).collProps.props[i]) {
+            //set
+            string base_key = "CoP" + std::to_string(i) + std::to_string(val);
+            keys.push_back(base_key);
+            // auto res = _combinations[clusterId].insert({base_key, 1.0});
+            // if (!res.second) {
+            //    res.first->second = res.first->second + 1.0;
+            // }
+            // if (first) {
+            //     combo_key = base_key;
+            //     first = false;
+            // } else {
+            //     combo_key += "," + base_key;
+            //     auto res = _combinations[clusterId].insert({base_key, 1.0});
+            //     if (!res.second) {
+            //         res.first->second = res.first->second + 1.0;
+            //     }
+            // }
+        }
+    }
+    int vidId = _itemProps->at(descId).vidId;
+    for (int i = 0; i < _vidProps->at(0)[vidId].props.size(); i++) {
+        // vector (properties)
+        cout << "vidProps->vidId.props[" << i << "]"<< endl;
+        for (auto& val : _vidProps->at(0)[vidId].props[i]) {
+            // set
+            string base_key = "VP" + std::to_string(i) + std::to_string(val);
+            keys.push_back(base_key);
+            // if (first) {
+            //     combo_key = base_key;
+            //     first = false;
+            // } else {
+            //     combo_key += "," + base_key;
+            //     auto res = _combinations[clusterId].insert({base_key, 1.0});
+            //     if (!res.second) {
+            //         res.first->second = res.first->second + 1.0;
+            //     }
+            // }
+        }
+    }
+    /// TODO: Too many combinations, deal with vid combinations differently
+    _addCombinations(clusterId, keys);
+    exit(0);
+ 
+    // Get the Key strings of each possible combinations and insert them into the combination map
     //std::string collFilter = "F,";
     //if (globalItemIdFilter > 0 && globalItemIdFilter >= descId) {
     //    collFilter = "T,";

@@ -12,6 +12,7 @@
 #include "../Metadata/ItemProperties.h"
 
 #include <vector>
+#include <cmath>
 #include <map>
 
 namespace exq {
@@ -26,6 +27,29 @@ namespace exq {
 
     using std::vector;
     using std::map;
+
+    // struct MetaPropsProbs {
+    //     vector<map<int,float>> props;
+    // };
+    /**
+     * TODO: Determine if this data structure is the best approach for Estimated Count
+     * collectionIdProb - probability of items being from a collection
+     * videoIdProb - probability of items being from a video of a collection
+     * stdPropProbs - probabilities of items standard properties
+     * collPropProbs - probabilities of items collection properties
+     * vidPropProbs - probabilties of items video properties
+     */
+    // struct MetaProbabilities {
+    //     // collection -> probabiltiy
+    //     map<int,float> collectionIdProb = map<int,float>();
+    //     // collection -> video -> probability
+    //     vector<map<int,float>> videoIdProb = vector<map<int,float>>();
+    //     // property -> value(s) -> probability
+    //     MetaPropsProbs stdPropProbs;
+    //     MetaPropsProbs collPropProbs;
+    //     // collection -> video -> property -> value(s) -> probability
+    //     vector<map<int,MetaPropsProbs>> vidPropProbs = vector<map<int,MetaPropsProbs>>();
+    // };
 
     /// This class contains the query optimisation policies used in the eCP index.
     /// There are 5 policies in total (see enum ExpansionType).
@@ -119,6 +143,7 @@ namespace exq {
             }
         }
 
+
     private:
         ExpansionType _expansionType;
         int _statLevel = 1;
@@ -137,6 +162,32 @@ namespace exq {
 
         vector<ItemProperties>* _itemProps;
         vector<vector<Props>>* _vidProps;
+
+        // Gets all 2^n-1 combinations from a vector of strings
+        inline void _addCombinations(int clusterId, vector<string>& keys) {
+            string emptyString;
+            vector<string> allCombinations;
+            int n = (int) std::pow(2.0, (double) keys.size());
+            cout << "Number of keys: " << keys.size() << endl;
+            allCombinations.reserve(n); // reserve 2^n
+            allCombinations.push_back(emptyString); // add empty string
+            for (auto it = allCombinations.begin(); it < allCombinations.end(); it++) {
+                auto currSize = allCombinations.size();
+                for (size_t j = 0; j < currSize; j++) {
+                    allCombinations.push_back(allCombinations[j] + *it);
+                }
+            }
+            // remove empty string
+            allCombinations.erase(allCombinations.begin());
+            cout << "Combinations being added for cluster " << clusterId << endl;
+            for (auto cmb : allCombinations) {
+                cout << cmb << endl;
+                auto res = _combinations[clusterId].insert({cmb,1.0});
+                if (!res.second) {
+                    res.first->second = res.first->second + 1.0;
+                }
+            }
+        }
     };
 }
 

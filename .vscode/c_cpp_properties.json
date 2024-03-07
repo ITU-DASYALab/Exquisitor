@@ -1,26 +1,26 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/include/c++/11",
-                "/usr/include/x86_64-linux-gnu/c++/11",
-                "/usr/include/c++/11/backward",
-                "/usr/lib/gcc/x86_64-linux-gnu/11/include",
-                "/usr/local/include",
-                "/usr/include/x86_64-linux-gnu",
-                "/usr/include"
+                "${workspaceFolder}/**"//,
+                // "/usr/include/c++/11",
+                // "/usr/include/x86_64-linux-gnu/c++/11",
+                // "/usr/include/c++/11/backward",
+                // "/usr/lib/gcc/x86_64-linux-gnu/11/include",
+                // "/usr/local/include",
+                // "/usr/include/x86_64-linux-gnu",
+                // "/usr/include"
             ],
             "defines": [
-                // "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
             "intelliSenseMode": "linux-gcc-x64",
             "cStandard": "c17",
             "cppStandard": "c++20",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compilerPath": "/usr/bin/g++"
         }
     ],
     "version": 4
